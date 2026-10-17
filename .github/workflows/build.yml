@@ -1,0 +1,144 @@
+name: Build desktop releases
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-build-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  FLUTTER_VERSION: '3.47.7'
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }}
+    if: github.event_name == 'push' || github.ref == 'refs/heads/master'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            platform: linux-x64
+          - os: windows-2022
+            platform: windows-x64
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine archive version
+        id: archive
+        shell: pwsh
+        env:
+          BUILD_REF_TYPE: ${{ github.ref_type }}
+          BUILD_REF_NAME: ${{ github.ref_name }}
+          BUILD_SHA: ${{ github.sha }}
+        run: |
+          $version = if ($env:BUILD_REF_TYPE -eq 'tag') {
+            $env:BUILD_REF_NAME -creplace '^v', ''
+          } else {
+            'master-' + $env:BUILD_SHA.Substring(0, 8)
+          }
+          $version = $version -replace '[^A-Za-z0-9._-]', '_'
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Install Linux build dependencies
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+
+      - name: Build Linux bundle
+        if: runner.os == 'Linux'
+        shell: bash
+        run: ./scripts/build-linux.sh
+
+      - name: Build Windows bundle
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./scripts/build-windows.ps1
+
+      - name: Archive Linux bundle
+        if: runner.os == 'Linux'
+        shell: bash
+        env:
+          ARCHIVE_VERSION: ${{ steps.archive.outputs.version }}
+        run: |
+          mkdir -p artifacts
+          tar -czf "artifacts/Wireglow-${ARCHIVE_VERSION}-linux-x64.tar.gz" -C dist linux-x64
+
+      - name: Archive Windows bundle
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          ARCHIVE_VERSION: ${{ steps.archive.outputs.version }}
+        run: |
+          New-Item -ItemType Directory -Path artifacts -Force | Out-Null
+          Compress-Archive -Path dist/windows-x64 -DestinationPath "artifacts/Wireglow-$env:ARCHIVE_VERSION-windows-x64.zip"
+
+      - name: Upload bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: Wireglow-${{ steps.archive.outputs.version }}-${{ matrix.platform }}
+          path: artifacts/*
+          if-no-files-found: error
+          retention-days: 14
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Download bundles
+        uses: actions/download-artifact@v4
+        with:
+          pattern: Wireglow-*
+          merge-multiple: true
+          path: artifacts
+
+      - name: Calculate archive checksums
+        shell: bash
+        working-directory: artifacts
+        run: sha256sum Wireglow-*-linux-x64.tar.gz Wireglow-*-windows-x64.zip > SHA256SUMS
+
+      - name: Publish release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$RELEASE_TAG" \
+            artifacts/Wireglow-*-linux-x64.tar.gz \
+            artifacts/Wireglow-*-windows-x64.zip \
+            artifacts/SHA256SUMS \
+            --verify-tag \
+            --title "$RELEASE_TAG" \
+            --generate-notes

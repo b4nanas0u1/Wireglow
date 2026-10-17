@@ -1,0 +1,39 @@
+# Go build outputs
+*.exe
+*.test
+*.out
+/build/
+/bin/
+/dist/
+
+# Local tools and generated caches
+.cache/
+
+# Flutter and Dart generated files
+ui/.dart_tool/
+ui/build/
+ui/.flutter-plugins
+ui/.flutter-plugins-dependencies
+ui/.packages
+ui/coverage/
+ui/.pub-cache/
+ui/.pub/
+
+# IDE and OS files
+.idea/
+.vscode/
+ui/.idea/
+ui/.vscode/
+.DS_Store
+Thumbs.db
+
+# Local configs, credentials, and runtime data
+.env
+.env.*
+!.env.example
+*.log
+*.pid
+*.sock
+*.db
+*.sqlite
+*.sqlite3

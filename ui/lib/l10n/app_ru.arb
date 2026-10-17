@@ -1,0 +1,135 @@
+{
+  "@@locale": "ru",
+  "notSet": "Не задано",
+  "starting": "Запускаем controller…",
+  "unknownState": "Состояние подключения неизвестно",
+  "disconnecting": "Отключаемся…",
+  "active": "Подключение активно",
+  "connecting": "Подключение…",
+  "failed": "Не удалось подключиться",
+  "addToConnect": "Добавьте ссылку для подключения",
+  "pressToConnect": "Нажмите на кнопку для подключения",
+  "disconnect": "Отключить",
+  "cancelConnection": "Отменить подключение",
+  "retry": "Попробовать снова",
+  "connect": "Подключить",
+  "connections": "Подключения",
+  "about": "О клиенте",
+  "profiles": "Профили",
+  "addByLink": "Добавить по ссылке",
+  "unnamed": "Без названия",
+  "connected": "Подключено",
+  "savedProfile": "Сохранённый профиль",
+  "deleteProfile": "Удалить профиль",
+  "checkingLatency": "Проверяем задержку…",
+  "checkFailed": "Проверка не прошла",
+  "latencyNotMeasured": "Задержка ещё не измерена",
+  "latencyHelp": "Время HTTPS-запроса через подключение. Проверяется каждые 30 секунд.",
+  "checkLatency": "Проверить задержку",
+  "noConnections": "Нет подключений",
+  "retryHelp": "Проверьте настройки подключения и доступ к сети, затем повторите попытку.",
+  "errorDetails": "Подробности ошибки",
+  "noErrorDetails": "Controller не сообщил подробностей.",
+  "properties": "Свойства подключения",
+  "systemProxy": "Системный прокси: подключение используют приложения с поддержкой системных настроек прокси.",
+  "localProxyHelp": "Локальный прокси: задайте показанный адрес в приложении. Системные настройки не изменяются.",
+  "provider": "Провайдер",
+  "turnTransport": "Транспорт TURN",
+  "notApplicable": "Не применяется",
+  "relayMode": "Режим relay",
+  "streams": "Потоки",
+  "streamsPerCredential": "Потоков на кред.",
+  "obfuscation": "Обфускация",
+  "confirmDelete": "Удалить профиль?",
+  "cancel": "Отмена",
+  "delete": "Удалить",
+  "insertLink": "Вставьте ссылку подключения.",
+  "addProfile": "Добавить профиль",
+  "closeAdd": "Закрыть добавление",
+  "pasteHelp": "Вставьте ссылку, которую вам прислали.",
+  "connectionLink": "Ссылка подключения",
+  "paste": "Вставить",
+  "nameFromLink": "Название берётся из ссылки.",
+  "add": "Добавить",
+  "browserFailed": "Не удалось открыть ссылку в браузере",
+  "openGithub": "Открыть на GitHub",
+  "repositoryMissing": "Репозиторий не указан при сборке",
+  "clientVersion": "Версия клиента",
+  "commit": "Коммит",
+  "tag": "Тег",
+  "buildTime": "Время сборки",
+  "engines": "Ядра",
+  "unknown": "неизвестен",
+  "language": "Язык",
+  "systemLanguage": "Системный",
+  "lostController": "Связь с controller потеряна. Состояние подключения неизвестно.",
+  "waitController": "Сначала отключитесь или дождитесь controller.",
+  "startFailed": "Не удалось запустить controller.",
+  "incompleteBundle": "Не найдены файлы приложения. Повторно распакуйте папку приложения целиком.",
+  "controllerFailed": "Controller не запустился. Проверьте systemd --user и отсутствие другого клиента.",
+  "settingsFailed": "Не удалось сохранить выбор языка.",
+  "latency": "Задержка: {delay} мс",
+  "@latency": {
+    "placeholders": {
+      "delay": {
+        "type": "String"
+      }
+    }
+  },
+  "lastSuccess": "Последний успех: {time}",
+  "@lastSuccess": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "localProxy": "Локальный HTTP/SOCKS proxy: {address}",
+  "@localProxy": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteDescription": "Профиль «{name}» будет удалён. Чтобы добавить его снова, понадобится ссылка подключения.",
+  "@deleteDescription": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "proxyMode": "Режим прокси",
+  "localProxyMode": "Локальный прокси",
+  "systemProxyMode": "Системный прокси",
+  "copyProxyAddress": "Скопировать адрес прокси",
+  "switchingProxyMode": "Меняем режим прокси…",
+  "proxyModeUnknown": "Режим прокси неизвестен",
+  "clientSettings": "Настройки",
+  "localAddresses": "Локальные адреса",
+  "proxyAddressLabel": "HTTP/SOCKS-прокси",
+  "relayAddressLabel": "Relay FreeTurn",
+  "addressesHelp": "Формат адреса: 127.0.0.1:порт. Все порты — от 1 до 65535 и должны отличаться. Изменения действуют для всех профилей при следующем подключении.",
+  "activeSettingsHelp": "Активное подключение использует прежние адреса до переподключения.",
+  "invalidLocalAddress": "Введите 127.0.0.1 и порт от 1 до 65535.",
+  "collidingPorts": "Порты должны отличаться.",
+  "saveSettings": "Сохранить",
+  "settingsSaved": "Настройки сохранены",
+  "resetSettings": "Вернуть значения по умолчанию",
+  "confirmResetSettings": "Сбросить настройки клиента?",
+  "resetSettingsDescription": "Вернуть адреса по умолчанию, локальный режим прокси и системный язык. Сохранённые профили останутся. Адреса активного подключения изменятся после переподключения.",
+  "reset": "Сбросить",
+  "settingsReset": "Настройки по умолчанию восстановлены",
+  "generalSettings": "Общее",
+  "networkSettings": "Сеть",
+  "relaySettings": "Релей",
+  "apiPortLabel": "Порт API mihomo",
+  "invalidAPIPort": "Введите порт от 1 до 65535.",
+  "profileActions": "Действия с профилем",
+  "editProfile": "Редактировать",
+  "colorTheme": "Цветовая тема",
+  "systemTheme": "Системная",
+  "darkTheme": "Тёмная",
+  "lightTheme": "Светлая"
+}

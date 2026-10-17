@@ -1,0 +1,158 @@
+edition = "2024";
+
+package wireglow.control;
+
+option go_package = "wireglow/internal/rpc/gen;controlpb";
+// Presence нужна у вложенных настроек; скалярный ноль соответствует Go DTO.
+option features.field_presence = IMPLICIT;
+
+import "google/protobuf/empty.proto";
+
+// Локальный controller; каждый RPC требует metadata x-wireglow-session-token.
+service ControllerService {
+  rpc GetSettings(google.protobuf.Empty) returns (ClientSettings);
+  rpc SetSettings(ClientSettings) returns (ClientSettings);
+  rpc GetCapabilities(google.protobuf.Empty) returns (Capabilities);
+  rpc Hello(google.protobuf.Empty) returns (HelloResponse);
+  rpc ListProfiles(google.protobuf.Empty) returns (ListProfilesResponse);
+  rpc PreviewImport(ImportProfileRequest) returns (ProfileSummary);
+  rpc ImportProfile(ImportProfileRequest) returns (ProfileSummary);
+  // Явное чтение для редактора: ответ содержит секреты, не предназначен для логов.
+  rpc GetProfile(ProfileRequest) returns (Profile);
+  rpc UpdateProfile(ProfileEdits) returns (ProfileSummary);
+  rpc DeleteProfile(ProfileRequest) returns (google.protobuf.Empty);
+  // ACK означает принятие запуска; результат и прогресс читаются из snapshots.
+  rpc Connect(ConnectRequest) returns (google.protobuf.Empty);
+  // Отменяет также незавершённый Connect; ждёт сетевого cleanup.
+  rpc Disconnect(google.protobuf.Empty) returns (Snapshot);
+  // Меняет настройки ОС активной сессии без перезапуска ядер.
+  rpc SwitchProxyMode(ProxyModeRequest) returns (Snapshot);
+  rpc GetSnapshot(google.protobuf.Empty) returns (Snapshot);
+  // HTTPS latency through the active connection; failure does not disconnect.
+  rpc CheckLatency(google.protobuf.Empty) returns (Snapshot);
+  // Первое сообщение — текущее состояние. Медленные клиенты пропускают промежуточные состояния.
+  // Поток не является журналом событий и не продлевает lease владельца.
+  rpc WatchSnapshots(google.protobuf.Empty) returns (stream Snapshot);
+}
+
+message HelloResponse {
+  string build_id = 1;
+  string epoch = 2;
+}
+enum ProxyMode {
+ PROXY_MODE_UNSPECIFIED = 0;
+ PROXY_MODE_LOCAL = 1;
+ PROXY_MODE_SYSTEM = 2;
+}
+message ConnectRequest {
+ string id = 1;
+ ProxyMode mode = 2;
+}
+message ProxyModeRequest { ProxyMode mode = 1; }
+message ClientSettings {
+ ProxyMode preferred_mode = 1;
+ string proxy_address = 2;
+ string relay_address = 3;
+ uint32 api_port = 4;
+}
+message Capabilities { string system_proxy_unavailable_reason = 1; }
+message ProfileRequest { string id = 1; }
+// Ограниченные поля редактора; секреты и настройки ядра не передаются.
+message ProfileEdits {
+  string id = 1;
+  string name = 2;
+  repeated string call_links = 3;
+  int64 streams = 4;
+  int64 streams_per_credential = 5;
+}
+message ImportProfileRequest {
+  string freeturn_link = 1;
+  reserved 2;
+}
+message ProfileSummary {
+  string id = 1;
+  string name = 2;
+  string provider = 3;
+ string peer = 4;
+ string turn_transport = 5;
+ string relay_mode = 6;
+ int64 streams = 7;
+ int64 streams_per_credential = 8;
+ string obfuscation_mode = 9;
+}
+message ListProfilesResponse { repeated ProfileSummary profiles = 1; }
+message Profile {
+  string id = 1;
+  Connection connection = 2;
+  reserved 3;
+}
+// Исходные настройки без effective defaults. Локальный ID принадлежит Profile.
+message Connection {
+  string name = 1;
+  string client_id = 2;
+  string provider = 3;
+  string turn_transport = 4;
+  string relay_mode = 5;
+  VKSettings vk = 6;
+  DNSSettings dns = 7;
+  int64 streams = 8;
+  int64 streams_per_credential = 9;
+  bool bond = 10;
+  KCPSettings kcp = 11;
+  WireGuardSettings wg = 12;
+  string peer = 13;
+  Obfuscation obfuscation = 14;
+}
+message VKSettings {
+  repeated string call_links = 1;
+  bool manual_captcha = 2;
+}
+message DNSSettings {
+  string mode = 1;
+  repeated string servers = 2;
+}
+message KCPSettings {
+  int64 no_delay = 1;
+  int64 interval = 2;
+  int64 resend = 3;
+  int64 nc = 4;
+  int64 snd_wnd = 5;
+  int64 rcv_wnd = 6;
+  int64 mtu = 7;
+  bool ack_no_delay = 8;
+}
+message WireGuardSettings { string config = 1; }
+message Obfuscation {
+  string mode = 1;
+  string key = 2;
+  int64 timing_ms = 3;
+}
+enum State {
+  STATE_UNSPECIFIED = 0;
+  STATE_IDLE = 1;
+  STATE_VALIDATING = 2;
+  STATE_STARTING_RELAY = 3;
+  STATE_STARTING_MIHOMO = 4;
+  STATE_PROBING = 5;
+  STATE_ACTIVATING_NETWORK = 6;
+  STATE_CONNECTED = 7;
+  STATE_STOPPING = 8;
+  STATE_FAILED = 9;
+}
+message Snapshot {
+  ProxyMode active_mode = 7;
+  State state = 1;
+  uint64 generation = 2;
+  string profile_id = 3;
+  string mixed_address = 4;
+  // Очищенное сообщение controller, без исходной ошибки engine/storage.
+  string error = 5;
+  Latency latency = 6;
+}
+message Latency {
+  bool checking = 1;
+  int64 delay_ms = 2;
+  int64 checked_at = 3;
+  int64 success_at = 4;
+  string error = 5;
+}
