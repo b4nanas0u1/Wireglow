@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../ui_error.dart';
+import '../storage_paths.dart';
 import 'bundle_paths.dart';
 
 import 'package:grpc/grpc.dart';
@@ -25,7 +26,6 @@ class ControllerRepository {
   ControllerServiceClient get client => _client!;
 
   Future<void> start() async {
-    final env = Platform.environment;
     final paths = BundlePaths();
     await paths.validate();
     final args = <String>[
@@ -35,14 +35,7 @@ class ControllerRepository {
       '--mihomo',
       paths.mihomo,
     ];
-    for (final entry in {
-      'WIREGLOW_DATA_DIR': '--data-dir',
-      'WIREGLOW_RUNTIME_DIR': '--runtime-dir',
-    }.entries) {
-      if (env[entry.key]?.isNotEmpty ?? false) {
-        args.addAll([entry.value, env[entry.key]!]);
-      }
-    }
+    args.addAll(StoragePaths().controllerArguments);
     final process = await Process.start(paths.controller, args);
     _owner = process;
     // Вывод ядер и backend не попадает в UI или его логи.

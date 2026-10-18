@@ -17,11 +17,38 @@ type Paths struct {
 }
 
 func DefaultPaths() (Paths, error) {
+	executable, err := os.Executable()
+	if err != nil {
+		return Paths{}, err
+	}
+	if paths, portable, err := portablePaths(executable); err != nil || portable {
+		return paths, err
+	}
 	config, err := os.UserConfigDir()
 	if err != nil {
 		return Paths{}, err
 	}
 	return makePaths(config)
+}
+
+// Controller lives in bin/ in a distribution. Also support a standalone binary.
+func portablePaths(executable string) (Paths, bool, error) {
+	root := filepath.Dir(executable)
+	if filepath.Base(root) == "bin" {
+		root = filepath.Dir(root)
+	}
+	marker, err := os.Stat(filepath.Join(root, "portable.json"))
+	if os.IsNotExist(err) {
+		return Paths{}, false, nil
+	}
+	if err != nil {
+		return Paths{}, false, err
+	}
+	if !marker.Mode().IsRegular() {
+		return Paths{}, false, errors.New("platform: portable.json must be a regular file")
+	}
+	data := filepath.Join(root, "data")
+	return Paths{Data: data, Runtime: filepath.Join(data, "runtime")}, true, nil
 }
 
 func ensureDir(path string) error {

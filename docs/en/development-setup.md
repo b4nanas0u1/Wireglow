@@ -91,7 +91,27 @@ cd <repository directory>
 
 Replace the placeholder with the URL from the repository's public page. If you already have the repository, change to its root and run `./scripts/build-linux.sh`. The full bundle will be created in `dist/linux-x64/`; launch it with `./dist/linux-x64/Wireglow`.
 
+For a portable bundle, run `./scripts/build-linux-portable.sh`
+(equivalent to `./scripts/build-linux.sh --portable`). The output is
+`dist/linux-x64-portable/`.
+The `portable.json` marker beside `Wireglow` selects `data/` for profiles,
+UI/backend preferences and the recovery journal, and `data/runtime/` for temporary
+session state. Without the marker, the existing OS directories are used.
+The portable GUI ignores `WIREGLOW_DATA_DIR` and `WIREGLOW_RUNTIME_DIR`;
+explicit controller CLI flags still take precedence.
+The build refuses to replace an existing portable directory: move it with its
+user data first. When updating, preserve user files in `data/` while replacing
+Flutter resources from the new bundle. See the bundle README for details.
+
+
 The script downloads the pinned network engines and builds the controller and UI. Go, Dart, generator, and engine caches stay in `.cache/` in the repository root. The Flutter SDK is resolved from `.cache/flutter/` or `PATH`. No adjacent project directories are required.
+
+
+When a tag is published, GitHub Actions builds both Linux variants and attaches
+`Wireglow-<version>-linux-x64.zip` and `Wireglow-<version>-linux-x64-portable.zip`
+to the release. Each ZIP contains the client files and directories directly at
+its root, without an enclosing distribution directory. The release `SHA256SUMS`
+contains archive checksums. Local build scripts only create directories.
 
 ## Common commands
 
