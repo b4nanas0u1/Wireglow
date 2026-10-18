@@ -1,0 +1,28 @@
+Wireglow for Debian 13 (trixie), amd64
+====================================
+
+Close Wireglow and let proxy recovery finish before upgrading or removing it.
+The package does not stop processes or restart the application automatically.
+Install or upgrade: sudo apt install ./wireglow_<version>_amd64.deb
+
+Run Wireglow from the applications menu or with the `wireglow` command.
+A graphical session and a running systemd user manager are required.
+Local proxy works independently of GNOME; system proxy requires GNOME GSettings.
+TUN is not implemented. No privileged helper or system service is installed.
+
+Profiles, preferences and the proxy recovery journal keep their existing paths:
+  ${XDG_CONFIG_HOME:-$HOME/.config}/wireglow/
+Runtime files use:
+  ${XDG_RUNTIME_DIR:-/run/user/<uid>}/wireglow/
+User data is created at application runtime, not during package installation.
+Upgrades, removal and purge leave user data intact. Back up profiles/settings
+while the app is stopped; do not transfer runtime files or recovery journals
+to another machine. Profiles contain credentials: keep backups private.
+
+If an older manually registered per-user desktop entry points to another copy,
+it overrides the system entry with the same application ID. Remove that stale
+entry from ${XDG_DATA_HOME:-$HOME/.local/share}/applications/ yourself if needed.
+The package does not edit per-user desktop entries.
+
+This package is unsigned. SHA-256 checksums detect accidental corruption; they
+do not authenticate the publisher. There is no APT repository or auto-updater.

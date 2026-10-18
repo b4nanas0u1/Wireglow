@@ -28,6 +28,14 @@ The project is under active development.
 - Routing rules to send selected services directly and route all other traffic through the connection.
 - Download free-turn-proxy releases from GitHub and choose which version to use.
 
+## Debian package
+
+Debian 13 amd64 builds include the UI, controller and both engines. Install a
+release `.deb` with `sudo apt install ./wireglow_<version>_amd64.deb`.
+Close Wireglow and wait for proxy recovery before upgrading or removing it.
+User profiles and preferences survive upgrades and removal. See the
+[build and installation guide](docs/en/development-setup.md#debian-13-amd64-package).
+
 ## Development
 
 Instructions for installing tools, setting up the environment, and building locally on Windows and Linux are available [here](docs/en/development-setup.md).

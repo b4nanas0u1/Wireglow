@@ -290,9 +290,89 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  build-debian:
+    name: Build Debian 13 amd64 package
+    needs: [test-go, test-flutter, integration]
+    if: github.event_name != 'workflow_dispatch' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-24.04
+    container: debian:trixie-slim
+    defaults:
+      run:
+        shell: bash
+    timeout-minutes: 45
+    steps:
+      - name: Install Debian build dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends git curl ca-certificates xz-utils unzip zip jq clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev dpkg-dev binutils desktop-file-utils shellcheck lintian
+
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Build Debian package
+        run: |
+          bash -n scripts/build-debian.sh scripts/package-debian.sh scripts/test-debian-package.sh
+          shellcheck scripts/build-debian.sh scripts/package-debian.sh scripts/test-debian-package.sh
+          desktop-file-validate scripts/linux/debian/wireglow.desktop
+          ./scripts/build-debian.sh
+          lintian dist/debian/*.deb
+
+      - name: Upload Debian package
+        uses: actions/upload-artifact@v7
+        with:
+          name: Wireglow-debian-amd64
+          path: dist/debian/wireglow_*.deb*
+          if-no-files-found: error
+          retention-days: 14
+
+  test-debian-package:
+    name: Install and upgrade Debian package
+    needs: build-debian
+    runs-on: ubuntu-24.04
+    container: debian:trixie-slim
+    defaults:
+      run:
+        shell: bash
+    timeout-minutes: 20
+    steps:
+      - name: Install package test tools
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends git ca-certificates binutils desktop-file-utils
+
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Download Debian package
+        uses: actions/download-artifact@v4
+        with:
+          name: Wireglow-debian-amd64
+          path: artifacts
+
+      - name: Verify package and test installation
+        env:
+          WIREGLOW_PACKAGE_TEST: '1'
+        run: |
+          (cd artifacts && sha256sum -c ./*.sha256)
+          ./scripts/test-debian-package.sh artifacts/*.deb
+
   release:
     name: Attach bundles to GitHub Release
-    needs: build
+    needs: [build, test-debian-package]
     if: github.event_name == 'release'
     runs-on: ubuntu-22.04
     timeout-minutes: 10
@@ -309,7 +389,7 @@ jobs:
       - name: Calculate archive checksums
         shell: bash
         working-directory: artifacts
-        run: sha256sum Wireglow-*-linux-x64.zip Wireglow-*-linux-x64-portable.zip Wireglow-*-windows-x64.zip > SHA256SUMS
+        run: sha256sum Wireglow-*-linux-x64.zip Wireglow-*-linux-x64-portable.zip Wireglow-*-windows-x64.zip wireglow_*_amd64.deb > SHA256SUMS
 
       - name: Upload release assets
         shell: bash
@@ -323,5 +403,6 @@ jobs:
             artifacts/Wireglow-*-linux-x64.zip \
             artifacts/Wireglow-*-linux-x64-portable.zip \
             artifacts/Wireglow-*-windows-x64.zip \
+            artifacts/wireglow_*_amd64.deb \
             artifacts/SHA256SUMS \
             --clobber

@@ -1,0 +1,9 @@
+Source: wireglow
+Section: net
+Priority: optional
+Maintainer: Wireglow contributors <b4nanas0u1@users.noreply.github.com>
+
+Package: wireglow
+Architecture: amd64
+Description: Desktop client for Free Turn Proxy connections
+ Flutter interface, Go controller, and bundled network engines.

@@ -1,0 +1,24 @@
+Wireglow source: https://github.com/b4nanas0u1/Wireglow
+This packaging does not grant or change the license of Wireglow itself.
+
+Bundled independent engines:
+  free-turn-proxy v4.0.3, Copyright (c) 2026, Happy Bunny License.
+  Source: https://github.com/hackdiaz-dev/free-turn-proxy/tree/v4.0.3
+  License text: licenses/free-turn-proxy.gz
+
+  mihomo v1.19.32, GPL version 3.
+  Source: https://github.com/MetaCubeX/mihomo/tree/v1.19.32
+  License text: licenses/mihomo.gz
+  On Debian systems, the full GPL version 3 text is also available in
+  /usr/share/common-licenses/GPL-3.
+
+The exact versions and release asset checksums are recorded in engines.yaml.
+Update these notices and license texts when changing the pinned engines.
+
+Flutter framework: Copyright 2014 The Flutter Authors, BSD license.
+  Source: https://github.com/flutter/flutter/tree/3.47.7
+  License text: licenses/flutter.gz
+
+Flutter and Dart dependency notices:
+  /usr/lib/wireglow/data/flutter_assets/NOTICES.Z
+System libraries are supplied by Debian under their respective licenses.

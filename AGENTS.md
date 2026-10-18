@@ -84,6 +84,7 @@ Full bundles are built from the repository root with:
 
 - Linux: `./scripts/build-linux.sh`
 - Linux portable: `./scripts/build-linux-portable.sh`
+- Debian 13 amd64 package: `./scripts/build-debian.sh`
 - Windows PowerShell: `./scripts/build-windows.ps1`
 
 These scripts are currently platform-specific; a shared cross-platform build

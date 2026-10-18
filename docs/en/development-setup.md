@@ -111,7 +111,69 @@ When a tag is published, GitHub Actions builds both Linux variants and attaches
 `Wireglow-<version>-linux-x64.zip` and `Wireglow-<version>-linux-x64-portable.zip`
 to the release. Each ZIP contains the client files and directories directly at
 its root, without an enclosing distribution directory. The release `SHA256SUMS`
-contains archive checksums. Local build scripts only create directories.
+contains archive and Debian package checksums. Local bundle scripts only create directories; the Debian build below creates a `.deb`.
+
+## Debian 13 amd64 package
+
+Build natively on Debian 13 (trixie), with the Go and Flutter versions above.
+Do not assume that a bundle built on Ubuntu has the same Debian dependencies.
+Install the Linux build dependencies above, plus packaging tools:
+
+```bash
+sudo apt-get install -y dpkg-dev binutils desktop-file-utils
+./scripts/build-debian.sh
+```
+
+The command builds the full regular Linux bundle and creates
+`dist/debian/wireglow_<version>_amd64.deb` and its `.sha256` file. To package an
+already built regular bundle without recompiling, use `./scripts/package-debian.sh`.
+Both commands accept an optional Debian version, for example
+`./scripts/build-debian.sh 0.1.0-1`. By default an exact version tag is used;
+untagged builds use the pubspec version plus the commit timestamp/hash.
+Prerelease `-` becomes Debian `~` so a stable release sorts after its prerelease.
+Dependencies are calculated from all bundled ELF binaries with `dpkg-shlibdeps`;
+missing library metadata is an error. Build on the target distribution.
+
+Copy the package to the target machine, close Wireglow and wait for proxy
+recovery to finish, then install or upgrade:
+
+```bash
+sudo apt install ./wireglow_<version>_amd64.deb
+```
+
+The package installs the client under `/usr/lib/wireglow`, the `wireglow` launcher
+under `/usr/bin`, and a system applications menu entry. No SDK or manual engine
+download is required on the target. A graphical session with a running systemd
+user manager is required. System proxy mode requires GNOME; other desktops can
+use local proxy mode. No TUN helper, APT repository, signing, auto-updater, or
+automatic process termination is added. **Close the client before every upgrade
+or removal.** A stale per-user desktop entry from a manual bundle install can
+override the system entry; remove that old entry yourself if necessary.
+
+Existing user paths stay unchanged: profiles, backend/UI preferences, and the
+proxy recovery journal use `${XDG_CONFIG_HOME:-$HOME/.config}/wireglow`; runtime
+uses `$XDG_RUNTIME_DIR/wireglow` (fallback `/run/user/<uid>/wireglow`). The package
+never installs user profiles or a portable marker. Upgrade, `apt remove wireglow`,
+and `apt purge wireglow` preserve user files. No data migration is performed.
+
+CI builds this package inside a Debian 13 container, then tests installation in
+a separate clean Debian container without build dependencies. The package test
+checks ELF resolution, the desktop entry, the installed CLI as an unprivileged
+user, and settings retention through upgrade, removal, reinstallation and purge.
+To run it manually **only inside a disposable Debian container**, as root:
+
+```bash
+apt-get update
+apt-get install -y --no-install-recommends binutils desktop-file-utils
+WIREGLOW_PACKAGE_TEST=1 ./scripts/test-debian-package.sh /path/to/wireglow_<version>_amd64.deb
+```
+
+These checks do not exercise a graphical session, user systemd, or a real remote
+connection. Desktop/proxy acceptance on Debian still requires a VM or real desktop.
+CI also runs ShellCheck and lintian for the packaging scripts and metadata.
+CI uploads the `.deb` and checksum on PRs/pushes; published releases also receive
+the `.deb` and its checksum in the common `SHA256SUMS`. Portable builds are unchanged.
+The platform scripts remain temporary; this does not select a shared build system.
 
 ## Checks and CI
 
