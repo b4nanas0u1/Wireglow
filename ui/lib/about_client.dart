@@ -87,8 +87,6 @@ class AboutClient extends StatelessWidget {
                   ? AppLocalizations.of(context)!.unknown
                   : appCommit,
             ),
-            if (appTag.isNotEmpty)
-              _field(context, AppLocalizations.of(context)!.tag, appTag),
             _field(
               context,
               AppLocalizations.of(context)!.buildTime,

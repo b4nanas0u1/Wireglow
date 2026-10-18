@@ -176,7 +176,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get repositoryMissing => 'Repository was not specified at build time';
 
   @override
-  String get clientVersion => 'Client version';
+  String get clientVersion => 'Version';
 
   @override
   String get commit => 'Commit';

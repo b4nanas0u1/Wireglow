@@ -54,7 +54,7 @@
   "browserFailed": "Could not open the link in your browser",
   "openGithub": "Open on GitHub",
   "repositoryMissing": "Repository was not specified at build time",
-  "clientVersion": "Client version",
+  "clientVersion": "Version",
   "commit": "Commit",
   "tag": "Tag",
   "buildTime": "Build time",

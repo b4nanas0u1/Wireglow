@@ -93,7 +93,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(brightness(), Brightness.light);
-      expect(find.text('Версия клиента'), findsOneWidget);
+      expect(find.text('Версия'), findsOneWidget);
       await tester.tap(find.byKey(const Key('theme-selector')));
       await tester.pumpAndSettle();
       await tester.tap(
