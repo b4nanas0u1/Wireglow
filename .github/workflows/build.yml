@@ -1,9 +1,6 @@
 name: Build desktop releases
 
 on:
-  push:
-    tags:
-      - '*'
   release:
     types: [published]
   workflow_dispatch:
@@ -21,7 +18,7 @@ env:
 jobs:
   build:
     name: Build ${{ matrix.platform }}
-    if: github.event_name == 'push' || github.event_name == 'release' || github.ref == 'refs/heads/master'
+    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master')
     strategy:
       fail-fast: false
       matrix:
@@ -122,9 +119,9 @@ jobs:
           retention-days: 14
 
   release:
-    name: Publish GitHub Release
+    name: Attach bundles to GitHub Release
     needs: build
-    if: (github.event_name == 'push' || github.event_name == 'release') && startsWith(github.ref, 'refs/tags/')
+    if: github.event_name == 'release'
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     permissions:
@@ -142,21 +139,13 @@ jobs:
         working-directory: artifacts
         run: sha256sum Wireglow-*-linux-x64.zip Wireglow-*-linux-x64-portable.zip Wireglow-*-windows-x64.zip > SHA256SUMS
 
-      - name: Publish release
+      - name: Upload release assets
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          # Keep the metadata of releases published through the GitHub UI.
-          if ! gh release view "$RELEASE_TAG" > /dev/null; then
-            gh release create "$RELEASE_TAG" \
-              --verify-tag \
-              --title "$RELEASE_TAG" \
-              --generate-notes || gh release view "$RELEASE_TAG" > /dev/null
-          fi
-
           # Re-running a job replaces its assets without recreating the release.
           gh release upload "$RELEASE_TAG" \
             artifacts/Wireglow-*-linux-x64.zip \
