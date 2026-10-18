@@ -113,6 +113,46 @@ cd <repository directory>
 и папки клиента, без внешней папки дистрибутива. Релизный `SHA256SUMS` содержит
 контрольные суммы архивов. Локальные сборочные скрипты создают только папки.
 
+## Проверки и CI
+
+GitHub Actions запускает проверки и сборки Linux, Linux portable и Windows
+при каждом обновлении PR, каждом коммите в `master` и публикации релиза.
+Ручная сборка через `workflow_dispatch` по-прежнему доступна для `master`.
+Архивы сохраняются как артефакты каждого запуска. Прикрепление архивов и
+`SHA256SUMS` к GitHub Release выполняется только по событию `release: published`
+после успешных проверок и сборок.
+
+На Linux и Windows выполняются:
+
+```sh
+go vet ./...
+go test -count=1 -timeout 120s ./...
+cd ui
+flutter pub get
+flutter analyze --no-pub
+flutter test --no-pub --reporter expanded
+```
+
+Отдельная Linux-задача проверяет systemd lifecycle, восстановление прокси,
+GNOME settings в изолированной D-Bus-сессии, настоящее ядро Mihomo и Dart↔Go IPC.
+Для локального запуска нужны работающий user systemd, `dbus-run-session`,
+`dconf-cli`, `gsettings-desktop-schemas`, Go и Flutter. Из корня репозитория:
+
+```bash
+source scripts/build-env.sh
+./scripts/download-linux-engines.sh
+WIREGLOW_SYSTEMD_TEST=1 WIREGLOW_RECOVERY_TEST=1 WIREGLOW_GSETTINGS_TEST=1 \
+  WIREGLOW_MIHOMO_TEST_BINARY="$cache_root/engines/linux-amd64/bin/mihomo" \
+  go test -count=1 -timeout 180s -v ./cmd/controller ./internal/infrastructure/platform ./internal/infrastructure/engines
+mkdir -p "$cache_root/bin"
+go build -o "$cache_root/bin/controller" ./cmd/controller
+(cd ui && flutter pub get)
+./ui/tool/smoke.sh
+```
+
+Без этих переменных обычный Go-прогон пропускает дополнительные Linux/Mihomo
+интеграции. Smoke использует фиктивные ядра; реальное VPN-подключение он не проверяет.
+
 ## Частые команды
 
 Из корня репозитория:
