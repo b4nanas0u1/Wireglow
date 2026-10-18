@@ -323,12 +323,15 @@ jobs:
           channel: stable
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
-      - name: Trust checkout for container build
+      - name: Trust Git repositories for container build
         run: |
           # Checkout configures Git with a temporary HOME. Go and the build
           # scripts need this entry in the container's regular Git config too.
+          # Flutter's SDK archive can also retain a different owner's UID.
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config --global --add safe.directory "$FLUTTER_ROOT"
           git -C "$GITHUB_WORKSPACE" status --porcelain > /dev/null
+          git -C "$FLUTTER_ROOT" rev-parse --verify HEAD > /dev/null
 
       - name: Build Debian package
         run: |
