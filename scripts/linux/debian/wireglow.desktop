@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Wireglow
+Comment=Client for Free Turn Proxy connections
+Comment[ru]=Клиент подключений Free Turn Proxy
+Exec=/usr/bin/wireglow
+Icon=dev.wireglow.wireglow_ui
+Terminal=false
+Categories=Network;
+StartupWMClass=dev.wireglow.wireglow_ui

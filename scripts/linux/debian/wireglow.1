@@ -1,0 +1,22 @@
+.TH WIREGLOW 1 "October 2026" "Wireglow" "User Commands"
+.SH NAME
+wireglow \- desktop client for Free Turn Proxy connections
+.SH SYNOPSIS
+.B wireglow
+.SH DESCRIPTION
+Wireglow manages connection profiles and local or GNOME system proxy sessions
+using its bundled controller, free-turn-proxy and mihomo engines.
+A graphical session and a running systemd user manager are required.
+.SH UPGRADING
+Close Wireglow and wait for proxy recovery to finish before upgrading or
+removing the package. The installer does not stop running clients.
+.SH FILES
+.TP
+.I ~/.config/wireglow/
+Profiles, preferences and the proxy recovery journal. XDG_CONFIG_HOME overrides
+the configuration base directory. Package removal preserves these files.
+.TP
+.I $XDG_RUNTIME_DIR/wireglow/
+Temporary session files. The fallback is /run/user/<uid>/wireglow/.
+.SH SEE ALSO
+.I /usr/share/doc/wireglow/README.Debian

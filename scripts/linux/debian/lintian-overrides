@@ -1,0 +1,11 @@
+# Flutter's pinned upstream engine embeds these libraries. Unbundling them
+# requires rebuilding the Flutter engine, outside this upstream binary package.
+wireglow: embedded-library freetype [usr/lib/wireglow/lib/libflutter_linux_gtk.so]
+wireglow: embedded-library libjpeg [usr/lib/wireglow/lib/libflutter_linux_gtk.so]
+# Go executables have their own runtime and do not statically link glibc.
+# Upstream engine binaries are shipped byte-for-byte from the pinned releases.
+wireglow: statically-linked-binary [usr/lib/wireglow/bin/controller]
+wireglow: statically-linked-binary [usr/lib/wireglow/bin/free-turn-proxy]
+wireglow: statically-linked-binary [usr/lib/wireglow/bin/mihomo]
+# Dart's AOT snapshot is loaded by Flutter, not linked as a system library.
+wireglow: shared-library-lacks-prerequisites [usr/lib/wireglow/lib/libapp.so]
