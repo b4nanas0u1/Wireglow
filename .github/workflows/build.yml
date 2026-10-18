@@ -323,6 +323,13 @@ jobs:
           channel: stable
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
+      - name: Trust checkout for container build
+        run: |
+          # Checkout configures Git with a temporary HOME. Go and the build
+          # scripts need this entry in the container's regular Git config too.
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git -C "$GITHUB_WORKSPACE" status --porcelain > /dev/null
+
       - name: Build Debian package
         run: |
           bash -n scripts/build-debian.sh scripts/package-debian.sh scripts/test-debian-package.sh
