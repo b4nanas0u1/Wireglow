@@ -119,22 +119,29 @@ GitHub Actions runs checks and Linux, Linux portable, and Windows builds on
 every PR update, every commit to `master`, and release publication. Manual builds
 through `workflow_dispatch` remain available for `master`.
 Stages run in order: lints → tests → builds → release publication.
-Regular and integration tests run in parallel after lints pass on both operating
-systems; builds wait for all tests. A failure blocks subsequent stages.
+Regular and integration tests run in parallel after both lint jobs pass;
+builds wait for all tests. A failure blocks subsequent stages.
 Go vet, Flutter analyze, Go tests, Flutter tests, Go integrations, and Dart↔Go IPC
-appear as separate jobs; Linux and Windows checks are also separate.
+appear as separate jobs. Both lint jobs run only on Linux; Go vet checks Linux
+and Windows code using `GOOS`. Linux and Windows tests are separate.
 Archives are retained
 as workflow artifacts. Archives and `SHA256SUMS` are attached to a GitHub Release
 only on `release: published`, after all checks and builds pass.
 
-Linux and Windows run:
+Lint commands (Linux), followed by tests (Linux and Windows):
 
 ```sh
-go vet ./...
-go test -count=1 -timeout 120s ./...
+GOOS=linux go vet ./...
+GOOS=windows go vet ./...
 cd ui
 flutter pub get
 flutter analyze --no-pub
+```
+
+```sh
+go test -count=1 -timeout 120s ./...
+cd ui
+flutter pub get
 flutter test --no-pub --reporter expanded
 ```
 

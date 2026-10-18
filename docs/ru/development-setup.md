@@ -120,21 +120,28 @@ GitHub Actions запускает проверки и сборки Linux, Linux 
 Ручная сборка через `workflow_dispatch` по-прежнему доступна для `master`.
 Этапы выполняются последовательно: линты → тесты → сборки → публикация релиза.
 Обычные и интеграционные тесты запускаются параллельно после успешных линтов
-на обеих ОС; сборки ждут завершения всех тестов. Ошибка блокирует следующие этапы.
+в обеих lint-jobs; сборки ждут завершения всех тестов. Ошибка блокирует следующие этапы.
 Go vet, Flutter analyze, Go-тесты, Flutter-тесты, Go-интеграции и Dart↔Go IPC
-отображаются отдельными jobs; проверки Linux и Windows также разделены.
+отображаются отдельными jobs. Обе lint-jobs запускаются только на Linux;
+Go vet проверяет Linux- и Windows-код через `GOOS`. Тесты Linux и Windows разделены.
 Архивы сохраняются как артефакты каждого запуска. Прикрепление архивов и
 `SHA256SUMS` к GitHub Release выполняется только по событию `release: published`
 после успешных проверок и сборок.
 
-На Linux и Windows выполняются:
+Команды линтов (Linux), затем тестов (Linux и Windows):
 
 ```sh
-go vet ./...
-go test -count=1 -timeout 120s ./...
+GOOS=linux go vet ./...
+GOOS=windows go vet ./...
 cd ui
 flutter pub get
 flutter analyze --no-pub
+```
+
+```sh
+go test -count=1 -timeout 120s ./...
+cd ui
+flutter pub get
 flutter test --no-pub --reporter expanded
 ```
 

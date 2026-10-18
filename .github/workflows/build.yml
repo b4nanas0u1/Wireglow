@@ -20,12 +20,8 @@ env:
 
 jobs:
   lint-go:
-    name: Go vet (${{ matrix.os }})
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-22.04, windows-2022]
-    runs-on: ${{ matrix.os }}
+    name: Go vet
+    runs-on: ubuntu-22.04
     timeout-minutes: 20
     steps:
       - name: Checkout
@@ -38,15 +34,13 @@ jobs:
           cache: false
 
       - name: Go vet
-        run: go vet ./...
+        run: |
+          GOOS=linux go vet ./...
+          GOOS=windows go vet ./...
 
   lint-flutter:
-    name: Flutter analyze (${{ matrix.os }})
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-22.04, windows-2022]
-    runs-on: ${{ matrix.os }}
+    name: Flutter analyze
+    runs-on: ubuntu-22.04
     timeout-minutes: 20
     steps:
       - name: Checkout
