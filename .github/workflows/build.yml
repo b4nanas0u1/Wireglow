@@ -19,8 +19,8 @@ env:
   FLUTTER_VERSION: '3.47.7'
 
 jobs:
-  checks:
-    name: Lints and tests (${{ matrix.os }})
+  lints:
+    name: Lints (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
@@ -46,9 +46,6 @@ jobs:
       - name: Go vet
         run: go vet ./...
 
-      - name: Go tests
-        run: go test -count=1 -timeout 120s ./...
-
       - name: Install Flutter dependencies
         working-directory: ui
         run: flutter pub get
@@ -57,12 +54,45 @@ jobs:
         working-directory: ui
         run: flutter analyze --no-pub
 
+  tests:
+    name: Tests (${{ matrix.os }})
+    needs: lints
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, windows-2022]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Go tests
+        run: go test -count=1 -timeout 120s ./...
+
+      - name: Install Flutter dependencies
+        working-directory: ui
+        run: flutter pub get
+
       - name: Flutter tests
         working-directory: ui
         run: flutter test --no-pub --reporter expanded
 
   integration:
     name: Integration tests (Linux)
+    needs: lints
     runs-on: ubuntu-22.04
     timeout-minutes: 20
     steps:
@@ -126,6 +156,7 @@ jobs:
 
   build:
     name: Build ${{ matrix.platform }}
+    needs: [tests, integration]
     if: github.event_name != 'workflow_dispatch' || github.ref == 'refs/heads/master'
     strategy:
       fail-fast: false
@@ -228,7 +259,7 @@ jobs:
 
   release:
     name: Attach bundles to GitHub Release
-    needs: [checks, integration, build]
+    needs: build
     if: github.event_name == 'release'
     runs-on: ubuntu-22.04
     timeout-minutes: 10

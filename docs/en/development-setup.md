@@ -117,7 +117,11 @@ contains archive checksums. Local build scripts only create directories.
 
 GitHub Actions runs checks and Linux, Linux portable, and Windows builds on
 every PR update, every commit to `master`, and release publication. Manual builds
-through `workflow_dispatch` remain available for `master`. Archives are retained
+through `workflow_dispatch` remain available for `master`.
+Stages run in order: lints → tests → builds → release publication.
+Regular and integration tests run in parallel after lints pass on both operating
+systems; builds wait for all tests. A failure blocks subsequent stages.
+Archives are retained
 as workflow artifacts. Archives and `SHA256SUMS` are attached to a GitHub Release
 only on `release: published`, after all checks and builds pass.
 
