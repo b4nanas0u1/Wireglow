@@ -121,6 +121,8 @@ GitHub Actions запускает проверки и сборки Linux, Linux 
 Этапы выполняются последовательно: линты → тесты → сборки → публикация релиза.
 Обычные и интеграционные тесты запускаются параллельно после успешных линтов
 на обеих ОС; сборки ждут завершения всех тестов. Ошибка блокирует следующие этапы.
+Go vet, Flutter analyze, Go-тесты, Flutter-тесты, Go-интеграции и Dart↔Go IPC
+отображаются отдельными jobs; проверки Linux и Windows также разделены.
 Архивы сохраняются как артефакты каждого запуска. Прикрепление архивов и
 `SHA256SUMS` к GitHub Release выполняется только по событию `release: published`
 после успешных проверок и сборок.
@@ -136,8 +138,9 @@ flutter analyze --no-pub
 flutter test --no-pub --reporter expanded
 ```
 
-Отдельная Linux-задача проверяет systemd lifecycle, восстановление прокси,
-GNOME settings в изолированной D-Bus-сессии, настоящее ядро Mihomo и Dart↔Go IPC.
+Отдельные Linux-задачи проверяют Go-интеграции (systemd lifecycle, восстановление
+прокси, GNOME settings в изолированной D-Bus-сессии, настоящее ядро Mihomo)
+и Dart↔Go IPC.
 Для локального запуска нужны работающий user systemd, `dbus-run-session`,
 `dconf-cli`, `gsettings-desktop-schemas`, Go и Flutter. Из корня репозитория:
 

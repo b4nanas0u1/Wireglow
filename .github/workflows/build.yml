@@ -19,8 +19,8 @@ env:
   FLUTTER_VERSION: '3.47.7'
 
 jobs:
-  lints:
-    name: Lints (${{ matrix.os }})
+  lint-go:
+    name: Go vet (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
@@ -37,14 +37,26 @@ jobs:
           go-version-file: go.mod
           cache: false
 
+      - name: Go vet
+        run: go vet ./...
+
+  lint-flutter:
+    name: Flutter analyze (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, windows-2022]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           flutter-version: ${{ env.FLUTTER_VERSION }}
-
-      - name: Go vet
-        run: go vet ./...
 
       - name: Install Flutter dependencies
         working-directory: ui
@@ -54,9 +66,9 @@ jobs:
         working-directory: ui
         run: flutter analyze --no-pub
 
-  tests:
-    name: Tests (${{ matrix.os }})
-    needs: lints
+  test-go:
+    name: Go tests (${{ matrix.os }})
+    needs: [lint-go, lint-flutter]
     strategy:
       fail-fast: false
       matrix:
@@ -73,14 +85,27 @@ jobs:
           go-version-file: go.mod
           cache: false
 
+      - name: Go tests
+        run: go test -count=1 -timeout 120s ./...
+
+  test-flutter:
+    name: Flutter tests (${{ matrix.os }})
+    needs: [lint-go, lint-flutter]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, windows-2022]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           flutter-version: ${{ env.FLUTTER_VERSION }}
-
-      - name: Go tests
-        run: go test -count=1 -timeout 120s ./...
 
       - name: Install Flutter dependencies
         working-directory: ui
@@ -91,8 +116,16 @@ jobs:
         run: flutter test --no-pub --reporter expanded
 
   integration:
-    name: Integration tests (Linux)
-    needs: lints
+    name: ${{ matrix.name }} (Linux)
+    needs: [lint-go, lint-flutter]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - suite: go
+            name: Go integration tests
+          - suite: dart-go
+            name: Dart and Go IPC smoke
     runs-on: ubuntu-22.04
     timeout-minutes: 20
     steps:
@@ -106,6 +139,7 @@ jobs:
           cache: false
 
       - name: Set up Flutter
+        if: matrix.suite == 'dart-go'
         uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -127,9 +161,11 @@ jobs:
           echo "DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS" >> "$GITHUB_ENV"
 
       - name: Download pinned engines
+        if: matrix.suite == 'go'
         run: ./scripts/download-linux-engines.sh
 
       - name: Go integration tests
+        if: matrix.suite == 'go'
         env:
           WIREGLOW_SYSTEMD_TEST: '1'
           WIREGLOW_RECOVERY_TEST: '1'
@@ -140,23 +176,26 @@ jobs:
           go test -count=1 -timeout 180s -v ./cmd/controller ./internal/infrastructure/platform ./internal/infrastructure/engines
 
       - name: Build controller for Dart interop
+        if: matrix.suite == 'dart-go'
         run: |
           source scripts/build-env.sh
           mkdir -p "$cache_root/bin"
           go build -o "$cache_root/bin/controller" ./cmd/controller
 
       - name: Install Dart dependencies
+        if: matrix.suite == 'dart-go'
         run: |
           source scripts/build-env.sh
           cd ui
           flutter pub get
 
       - name: Dart and Go integration smoke
+        if: matrix.suite == 'dart-go'
         run: ./ui/tool/smoke.sh
 
   build:
     name: Build ${{ matrix.platform }}
-    needs: [tests, integration]
+    needs: [test-go, test-flutter, integration]
     if: github.event_name != 'workflow_dispatch' || github.ref == 'refs/heads/master'
     strategy:
       fail-fast: false

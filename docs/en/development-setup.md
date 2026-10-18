@@ -121,6 +121,8 @@ through `workflow_dispatch` remain available for `master`.
 Stages run in order: lints → tests → builds → release publication.
 Regular and integration tests run in parallel after lints pass on both operating
 systems; builds wait for all tests. A failure blocks subsequent stages.
+Go vet, Flutter analyze, Go tests, Flutter tests, Go integrations, and Dart↔Go IPC
+appear as separate jobs; Linux and Windows checks are also separate.
 Archives are retained
 as workflow artifacts. Archives and `SHA256SUMS` are attached to a GitHub Release
 only on `release: published`, after all checks and builds pass.
@@ -136,8 +138,9 @@ flutter analyze --no-pub
 flutter test --no-pub --reporter expanded
 ```
 
-A separate Linux job checks systemd lifecycle, proxy recovery, GNOME settings
-in an isolated D-Bus session, the real Mihomo engine, and Dart↔Go IPC.
+Separate Linux jobs check Go integrations (systemd lifecycle, proxy recovery,
+GNOME settings in an isolated D-Bus session, and the real Mihomo engine)
+and Dart↔Go IPC.
 Local integration runs require a working user systemd, `dbus-run-session`,
 `dconf-cli`, `gsettings-desktop-schemas`, Go, and Flutter. From the repository root:
 
