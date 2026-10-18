@@ -425,7 +425,7 @@ abstract class AppLocalizations {
   /// No description provided for @clientVersion.
   ///
   /// In en, this message translates to:
-  /// **'Client version'**
+  /// **'Version'**
   String get clientVersion;
 
   /// No description provided for @commit.

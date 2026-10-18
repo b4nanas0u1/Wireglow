@@ -176,7 +176,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get repositoryMissing => 'Репозиторий не указан при сборке';
 
   @override
-  String get clientVersion => 'Версия клиента';
+  String get clientVersion => 'Версия';
 
   @override
   String get commit => 'Коммит';

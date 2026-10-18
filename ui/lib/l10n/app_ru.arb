@@ -54,7 +54,7 @@
   "browserFailed": "Не удалось открыть ссылку в браузере",
   "openGithub": "Открыть на GitHub",
   "repositoryMissing": "Репозиторий не указан при сборке",
-  "clientVersion": "Версия клиента",
+  "clientVersion": "Версия",
   "commit": "Коммит",
   "tag": "Тег",
   "buildTime": "Время сборки",
