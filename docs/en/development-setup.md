@@ -113,6 +113,59 @@ to the release. Each ZIP contains the client files and directories directly at
 its root, without an enclosing distribution directory. The release `SHA256SUMS`
 contains archive checksums. Local build scripts only create directories.
 
+## Checks and CI
+
+GitHub Actions runs checks and Linux, Linux portable, and Windows builds on
+every PR update, every commit to `master`, and release publication. Manual builds
+through `workflow_dispatch` remain available for `master`.
+Stages run in order: lints → tests → builds → release publication.
+Regular and integration tests run in parallel after both lint jobs pass;
+builds wait for all tests. A failure blocks subsequent stages.
+Go vet, Flutter analyze, Go tests, Flutter tests, Go integrations, and Dart↔Go IPC
+appear as separate jobs. Both lint jobs run only on Linux; Go vet checks Linux
+and Windows code using `GOOS`. Linux and Windows tests are separate.
+Archives are retained
+as workflow artifacts. Archives and `SHA256SUMS` are attached to a GitHub Release
+only on `release: published`, after all checks and builds pass.
+
+Lint commands (Linux), followed by tests (Linux and Windows):
+
+```sh
+GOOS=linux go vet ./...
+GOOS=windows go vet ./...
+cd ui
+flutter pub get
+flutter analyze --no-pub
+```
+
+```sh
+go test -count=1 -timeout 120s ./...
+cd ui
+flutter pub get
+flutter test --no-pub --reporter expanded
+```
+
+Separate Linux jobs check Go integrations (systemd lifecycle, proxy recovery,
+GNOME settings in an isolated D-Bus session, and the real Mihomo engine)
+and Dart↔Go IPC.
+Local integration runs require a working user systemd, `dbus-run-session`,
+`dconf-cli`, `gsettings-desktop-schemas`, Go, and Flutter. From the repository root:
+
+```bash
+source scripts/build-env.sh
+./scripts/download-linux-engines.sh
+WIREGLOW_SYSTEMD_TEST=1 WIREGLOW_RECOVERY_TEST=1 WIREGLOW_GSETTINGS_TEST=1 \
+  WIREGLOW_MIHOMO_TEST_BINARY="$cache_root/engines/linux-amd64/bin/mihomo" \
+  go test -count=1 -timeout 180s -v ./cmd/controller ./internal/infrastructure/platform ./internal/infrastructure/engines
+mkdir -p "$cache_root/bin"
+go build -o "$cache_root/bin/controller" ./cmd/controller
+(cd ui && flutter pub get)
+./ui/tool/smoke.sh
+```
+
+Without these variables, ordinary Go tests skip the additional Linux/Mihomo
+integrations. The smoke test uses fake engines and does not verify a real VPN connection.
+
 ## Common commands
 
 From the repository root:

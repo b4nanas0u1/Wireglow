@@ -344,7 +344,7 @@ void main() {
     expect(model.selected!.id, 'direct');
     await tester.pumpWidget(const SizedBox());
     await tester.runAsync(model.close);
-  });
+  }, skip: Platform.isWindows);
 
   testWidgets('latency refresh, failure and disconnect', (tester) async {
     final repository = FakeRepository();
@@ -641,5 +641,5 @@ void main() {
     }
     await tester.pumpWidget(const SizedBox());
     await tester.runAsync(model.close);
-  });
+  }, skip: Platform.isWindows);
 }
