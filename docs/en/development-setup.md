@@ -50,7 +50,7 @@ Flutter from `PATH` is used automatically. You can also place the SDK at `.cache
 Run `./scripts/build-windows-portable.ps1` (or `./scripts/build-windows.ps1 -Portable`).
 The separate output is `dist/windows-x64-portable/`; launch `Wireglow.exe` directly.
 The `portable.json` marker keeps profiles, UI/backend settings, and the proxy
-recovery journal in the bundle's `data/`, with sockets, locks, and launcher state
+recovery journal in the bundle's `data/`, with locks and launcher state
 in `data/runtime/`. Portable GUI ignores `WIREGLOW_DATA_DIR` and
 `WIREGLOW_RUNTIME_DIR`. The folder must be writable; write failures do not fall
 back to AppData. Visual C++ runtime DLLs are included, as in the regular bundle.
@@ -59,9 +59,15 @@ An existing portable output is never replaced: move it with its data before
 rebuilding. Close the application and wait for recovery before moving or updating
 the bundle. Preserve user files in `data/`, replacing only shipped Flutter resources
 (`app.so`, `icudtl.dat`, `flutter_assets/`) and other distribution files. Never
-apply an unfinished proxy recovery journal on another computer. Use a short
-extraction path because Windows Unix sockets limit its length. Verify the bundled
+apply an unfinished proxy recovery journal on another computer. Verify the bundled
 `SHA256SUMS` before first launch.
+
+Only transient IPC lives outside the portable folder. Windows creates its socket
+in a separate `%TEMP%/wg-<run ID>/` directory restricted to the current user and
+SYSTEM; Linux uses `$XDG_RUNTIME_DIR/wg-<run ID>/` (or `/run/user/<UID>/wg-<run ID>/`),
+with directory mode 0700 and socket mode 0600. The independent watchdog removes
+this directory after controller shutdown, including a GUI crash. IPC no longer
+depends on the extraction path; persistent data and recovery state remain portable.
 
 CI builds both Windows variants and publishes `Wireglow-<version>-windows-x64.zip`
 and `Wireglow-<version>-windows-x64-portable.zip` as artifacts and release assets.

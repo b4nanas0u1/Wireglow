@@ -135,7 +135,9 @@ test data. Profile summaries and routine status output must not expose secrets.
 
 Use isolated data and runtime directories for manual checks, through
 `WIREGLOW_DATA_DIR` and `WIREGLOW_RUNTIME_DIR` where supported. Portable GUI mode
-uses the bundle's `data/` and `data/runtime/` instead of these overrides. Preserve
+uses the bundle's `data/` and `data/runtime/` instead of these overrides. Only
+the transient IPC socket uses a private system runtime directory outside the
+bundle; the independent watchdog removes it after shutdown or GUI crash. Preserve
 existing portable user data; do not delete a populated bundle to make a build pass.
 Use the isolated proxy tests rather than changing a contributor's desktop proxy
 settings during routine verification.

@@ -497,7 +497,7 @@ abstract class AppLocalizations {
   /// No description provided for @controllerFailed.
   ///
   /// In en, this message translates to:
-  /// **'Controller did not start. Check systemd --user and make sure no other client is running.'**
+  /// **'Controller did not start. Check access to the data folder and make sure no other client is running.'**
   String get controllerFailed;
 
   /// No description provided for @settingsFailed.

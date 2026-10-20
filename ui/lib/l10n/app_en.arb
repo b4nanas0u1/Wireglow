@@ -66,7 +66,7 @@
   "waitController": "Disconnect first or wait for the controller.",
   "startFailed": "Could not start controller.",
   "incompleteBundle": "Application files are missing. Extract the complete application folder again.",
-  "controllerFailed": "Controller did not start. Check systemd --user and make sure no other client is running.",
+  "controllerFailed": "Controller did not start. Check access to the data folder and make sure no other client is running.",
   "settingsFailed": "Could not save the language preference.",
   "latency": "Latency: {delay} ms",
   "@latency": {

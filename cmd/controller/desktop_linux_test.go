@@ -59,7 +59,7 @@ func TestDesktopOwnerLifetime(t *testing.T) {
 				t.Fatal(err)
 			}
 			var identity platform.Identity
-			if err = persistence.ReadJSON(filepath.Join(filepath.Dir(endpoint.Socket), "controller.json"), &identity); err != nil {
+			if err = persistence.ReadJSON(filepath.Join(desktopRunDir(t, filepath.Join(run, "run")), "controller.json"), &identity); err != nil {
 				t.Fatal(err)
 			}
 			conn, err := grpc.NewClient("unix://"+endpoint.Socket, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -91,6 +91,18 @@ func TestDesktopOwnerLifetime(t *testing.T) {
 				select {
 				case <-ctx.Done():
 					t.Fatal("controller survived owner")
+				case <-time.After(100 * time.Millisecond):
+				}
+			}
+			for {
+				if _, err := os.Stat(filepath.Dir(endpoint.Socket)); os.IsNotExist(err) {
+					break
+				} else if err != nil {
+					t.Fatal(err)
+				}
+				select {
+				case <-ctx.Done():
+					t.Fatal("temporary IPC directory survived cleanup")
 				case <-time.After(100 * time.Millisecond):
 				}
 			}

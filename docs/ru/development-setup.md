@@ -51,7 +51,7 @@ Flutter из `PATH` используется автоматически. Мож�
 (или `./scripts/build-windows.ps1 -Portable`). Отдельный результат —
 `dist/windows-x64-portable/`; запускайте `Wireglow.exe` напрямую.
 Маркер `portable.json` сохраняет профили, настройки UI/backend и журнал
-восстановления прокси в `data/` внутри комплекта, а сокеты, блокировки и состояние
+восстановления прокси в `data/` внутри комплекта, а блокировки и состояние
 launcher — в `data/runtime/`. Portable GUI игнорирует `WIREGLOW_DATA_DIR` и
 `WIREGLOW_RUNTIME_DIR`. Папка должна быть доступна для записи; при ошибке перехода
 на AppData нет. DLL Visual C++ runtime включены, как в обычном комплекте.
@@ -61,8 +61,14 @@ launcher — в `data/runtime/`. Portable GUI игнорирует `WIREGLOW_DAT
 дождитесь recovery. Сохраняйте пользовательские файлы в `data/`, заменяя только
 ресурсы Flutter (`app.so`, `icudtl.dat`, `flutter_assets/`) и другие файлы поставки.
 Не применяйте незавершённый журнал восстановления прокси на другом компьютере.
-Распаковывайте по короткому пути: Unix-сокеты Windows ограничивают его длину.
 Проверяйте комплектный `SHA256SUMS` до первого запуска.
+
+Только временный IPC находится вне portable-папки. Windows создаёт сокет
+в отдельной папке `%TEMP%/wg-<run ID>/` с доступом текущего пользователя и SYSTEM;
+Linux использует `$XDG_RUNTIME_DIR/wg-<run ID>/` (или `/run/user/<UID>/wg-<run ID>/`),
+с правами 0700 на папку и 0600 на сокет. Независимый watchdog удаляет её после
+завершения controller, включая аварию GUI. Адрес IPC больше не зависит от пути
+распаковки; постоянные данные и recovery-состояние остаются в portable-папке.
 
 CI собирает оба Windows-варианта и публикует
 `Wireglow-<version>-windows-x64.zip` и `Wireglow-<version>-windows-x64-portable.zip`

@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -56,6 +57,9 @@ func TestWindowsDesktopOwnerLifetime(t *testing.T) {
 			executable := binary
 			args := []string{"desktop", "--data-dir", filepath.Join(base, "d"), "--runtime-dir", filepath.Join(base, "r")}
 			if scenario.portable {
+				// The bundle path itself exceeds the AF_UNIX limit. Only transient
+				// IPC belongs outside it; data and recovery state must stay inside.
+				base += strings.Repeat("p", max(0, 140-len(base)))
 				if err := os.MkdirAll(filepath.Join(base, "bin"), 0700); err != nil {
 					t.Fatal(err)
 				}
@@ -94,17 +98,22 @@ func TestWindowsDesktopOwnerLifetime(t *testing.T) {
 				t.Fatalf("desktop readiness: %v: %s", err, stderr.String())
 			}
 			if scenario.portable {
-				if filepath.Dir(filepath.Dir(endpoint.Socket)) != filepath.Join(base, "data", "runtime") {
-					t.Fatal("portable socket escaped bundle runtime")
+				if strings.HasPrefix(endpoint.Socket, base+string(filepath.Separator)) {
+					t.Fatal("portable socket depends on bundle path")
 				}
 				if info, err := os.Stat(filepath.Join(base, "data", "profiles")); err != nil || !info.IsDir() {
 					t.Fatalf("portable profiles directory missing: %v", err)
 				}
 			}
+			runtimeDir := filepath.Join(base, "r")
+			if scenario.portable {
+				runtimeDir = filepath.Join(base, "data", "runtime")
+			}
+			runDir := desktopRunDir(t, runtimeDir)
 			var identities [2]platform.Identity
 			var handles [2]windows.Handle
 			for i, file := range []string{"controller.json", "watchdog.json"} {
-				if err := persistence.ReadJSON(filepath.Join(filepath.Dir(endpoint.Socket), file), &identities[i]); err != nil {
+				if err := persistence.ReadJSON(filepath.Join(runDir, file), &identities[i]); err != nil {
 					t.Fatal(err)
 				}
 				handles[i], err = windows.OpenProcess(windows.SYNCHRONIZE, false, uint32(identities[i].PID))
@@ -136,7 +145,7 @@ func TestWindowsDesktopOwnerLifetime(t *testing.T) {
 			}
 			// Hold a snapshot of the lease across the next heartbeats. The old
 			// Windows rename implementation killed the owner on its next write.
-			root, err := os.OpenRoot(filepath.Dir(endpoint.Socket))
+			root, err := os.OpenRoot(runDir)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -168,6 +177,9 @@ func TestWindowsDesktopOwnerLifetime(t *testing.T) {
 				if err != nil || result != windows.WAIT_OBJECT_0 {
 					t.Fatalf("child survived desktop owner: %v, %v", result, err)
 				}
+			}
+			if _, err := os.Stat(filepath.Dir(endpoint.Socket)); !os.IsNotExist(err) {
+				t.Fatalf("temporary IPC directory survived cleanup: %v", err)
 			}
 		})
 	}
