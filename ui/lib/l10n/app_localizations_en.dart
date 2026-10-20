@@ -215,7 +215,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get controllerFailed =>
-      'Controller did not start. Check systemd --user and make sure no other client is running.';
+      'Controller did not start. Check access to the data folder and make sure no other client is running.';
 
   @override
   String get settingsFailed => 'Could not save the language preference.';

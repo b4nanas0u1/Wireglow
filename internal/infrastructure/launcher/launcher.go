@@ -279,7 +279,11 @@ func Worker(ctx context.Context, dir string) error {
 		if _, err = rand.Read(token); err != nil {
 			return err
 		}
-		endpoint := Endpoint{Socket: filepath.Join(dir, "control.sock"), Token: hex.EncodeToString(token)}
+		socket, err := platform.RPCSocketPath(r.RunID)
+		if err != nil {
+			return err
+		}
+		endpoint := Endpoint{Socket: socket, Token: hex.EncodeToString(token)}
 		listener, listenErr := net.Listen("unix", endpoint.Socket)
 		if listenErr != nil {
 			return listenErr
@@ -368,13 +372,20 @@ func feedOwner(ctx context.Context, r Request, dir string, beats chan<- struct{}
 }
 
 // Watchdog запускается отдельно от группы controller и до применения системного proxy.
-func Watchdog(ctx context.Context, dir string) error {
+func Watchdog(ctx context.Context, dir string) (result error) {
 	r, err := readRequest(dir)
 	if err != nil {
 		return err
 	}
 	if err := platform.EnsurePaths(r.Options.Paths); err != nil {
 		return err
+	}
+	if r.Desktop {
+		cleanup, err := platform.PrepareRPCSocket(r.RunID)
+		if err != nil {
+			return err
+		}
+		defer func() { result = errors.Join(result, cleanup()) }()
 	}
 	identitySelf, err := platform.ProcessIdentity(os.Getpid())
 	if err != nil {

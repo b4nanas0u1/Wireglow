@@ -125,21 +125,21 @@ func TestWindowsLastJobHandleClosesOnOwnerCrash(t *testing.T) {
 	if identity.PID == 0 {
 		t.Fatal("owner did not publish child")
 	}
+	// Retain the child's handle before killing its owner. Reopening its PID
+	// during termination can return ACCESS_DENIED; the retained handle proves
+	// that this exact child exits without races with PID reuse or image queries.
+	child, err := windows.OpenProcess(windows.SYNCHRONIZE, false, uint32(identity.PID))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer windows.CloseHandle(child)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	if err := owner.Stop(ctx); err != nil {
 		t.Fatal(err)
 	}
-	deadline = time.Now().Add(3 * time.Second)
-	for time.Now().Before(deadline) {
-		alive, err := identity.Alive()
-		if err != nil {
-			t.Fatal(err)
-		}
-		if !alive {
-			return
-		}
-		time.Sleep(10 * time.Millisecond)
+	result, err := windows.WaitForSingleObject(child, 3000)
+	if err != nil || result != windows.WAIT_OBJECT_0 {
+		t.Fatalf("Job child survived owner crash: wait result %v, error %v", result, err)
 	}
-	t.Fatal("Job child survived owner crash")
 }
