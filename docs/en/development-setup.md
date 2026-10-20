@@ -45,6 +45,28 @@ Replace the placeholder with the URL from the repository's public page. If you a
 
 Flutter from `PATH` is used automatically. You can also place the SDK at `.cache\flutter-windows\flutter` in the repository root; the build script will find it there. Build caches stay in the repository’s `.cache/` directory.
 
+### Portable Windows bundle
+
+Run `./scripts/build-windows-portable.ps1` (or `./scripts/build-windows.ps1 -Portable`).
+The separate output is `dist/windows-x64-portable/`; launch `Wireglow.exe` directly.
+The `portable.json` marker keeps profiles, UI/backend settings, and the proxy
+recovery journal in the bundle's `data/`, with sockets, locks, and launcher state
+in `data/runtime/`. Portable GUI ignores `WIREGLOW_DATA_DIR` and
+`WIREGLOW_RUNTIME_DIR`. The folder must be writable; write failures do not fall
+back to AppData. Visual C++ runtime DLLs are included, as in the regular bundle.
+
+An existing portable output is never replaced: move it with its data before
+rebuilding. Close the application and wait for recovery before moving or updating
+the bundle. Preserve user files in `data/`, replacing only shipped Flutter resources
+(`app.so`, `icudtl.dat`, `flutter_assets/`) and other distribution files. Never
+apply an unfinished proxy recovery journal on another computer. Use a short
+extraction path because Windows Unix sockets limit its length. Verify the bundled
+`SHA256SUMS` before first launch.
+
+CI builds both Windows variants and publishes `Wireglow-<version>-windows-x64.zip`
+and `Wireglow-<version>-windows-x64-portable.zip` as artifacts and release assets.
+Their files are directly at the ZIP root. Release `SHA256SUMS` includes both archives.
+
 ## Linux x64 (Ubuntu/Debian)
 
 ### 1. Install system dependencies
@@ -115,7 +137,7 @@ contains archive checksums. Local build scripts only create directories.
 
 ## Checks and CI
 
-GitHub Actions runs checks and Linux, Linux portable, and Windows builds on
+GitHub Actions runs checks and regular/portable Linux and Windows builds on
 every PR update, every commit to `master`, and release publication. Manual builds
 through `workflow_dispatch` remain available for `master`.
 Stages run in order: lints → tests → builds → release publication.

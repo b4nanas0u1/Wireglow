@@ -85,6 +85,7 @@ Full bundles are built from the repository root with:
 - Linux: `./scripts/build-linux.sh`
 - Linux portable: `./scripts/build-linux-portable.sh`
 - Windows PowerShell: `./scripts/build-windows.ps1`
+- Windows portable: `./scripts/build-windows-portable.ps1`
 
 These scripts are currently platform-specific; a shared cross-platform build
 system has not been selected. A Flutter-only build does not validate the full

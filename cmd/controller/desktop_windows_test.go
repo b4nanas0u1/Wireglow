@@ -38,16 +38,39 @@ func TestWindowsDesktopOwnerLifetime(t *testing.T) {
 	if out, err := exec.Command("go", "build", "-o", binary, ".").CombinedOutput(); err != nil {
 		t.Fatal(err, string(out))
 	}
-	for _, crash := range []bool{false, true} {
+	for _, scenario := range []struct{ crash, portable bool }{{false, false}, {true, false}, {false, true}, {true, true}} {
+		crash := scenario.crash
 		name := "eof"
 		if crash {
 			name = "crash"
+		}
+		if scenario.portable {
+			name = "portable-" + name
 		}
 		t.Run(name, func(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), 40*time.Second)
 			defer cancel()
 			base := filepath.Join(dir, name)
-			cmd := exec.CommandContext(ctx, binary, "desktop", "--data-dir", filepath.Join(base, "d"), "--runtime-dir", filepath.Join(base, "r"))
+			executable := binary
+			args := []string{"desktop", "--data-dir", filepath.Join(base, "d"), "--runtime-dir", filepath.Join(base, "r")}
+			if scenario.portable {
+				if err := os.MkdirAll(filepath.Join(base, "bin"), 0700); err != nil {
+					t.Fatal(err)
+				}
+				contents, err := os.ReadFile(binary)
+				if err != nil {
+					t.Fatal(err)
+				}
+				executable = filepath.Join(base, "bin", "controller.exe")
+				if err := os.WriteFile(executable, contents, 0700); err != nil {
+					t.Fatal(err)
+				}
+				if err := os.WriteFile(filepath.Join(base, "portable.json"), []byte("{}\n"), 0600); err != nil {
+					t.Fatal(err)
+				}
+				args = []string{"desktop"}
+			}
+			cmd := exec.CommandContext(ctx, executable, args...)
 			var stderr bytes.Buffer
 			cmd.Stderr = &stderr
 			stdin, err := cmd.StdinPipe()
@@ -65,6 +88,14 @@ func TestWindowsDesktopOwnerLifetime(t *testing.T) {
 			var endpoint launcher.Endpoint
 			if err = json.NewDecoder(stdout).Decode(&endpoint); err != nil {
 				t.Fatalf("desktop readiness: %v", err)
+			}
+			if scenario.portable {
+				if filepath.Dir(filepath.Dir(endpoint.Socket)) != filepath.Join(base, "data", "runtime") {
+					t.Fatal("portable socket escaped bundle runtime")
+				}
+				if info, err := os.Stat(filepath.Join(base, "data", "profiles")); err != nil || !info.IsDir() {
+					t.Fatalf("portable profiles directory missing: %v", err)
+				}
 			}
 			var identities [2]platform.Identity
 			var handles [2]windows.Handle

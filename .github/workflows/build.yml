@@ -201,6 +201,8 @@ jobs:
             platform: linux-x64-portable
           - os: windows-2022
             platform: windows-x64
+          - os: windows-2022
+            platform: windows-x64-portable
     runs-on: ${{ matrix.os }}
     timeout-minutes: 45
     steps:
@@ -259,7 +261,14 @@ jobs:
       - name: Build Windows bundle
         if: runner.os == 'Windows'
         shell: pwsh
-        run: ./scripts/build-windows.ps1
+        env:
+          BUNDLE_VARIANT: ${{ matrix.platform }}
+        run: |
+          if ($env:BUNDLE_VARIANT -eq 'windows-x64-portable') {
+            ./scripts/build-windows-portable.ps1
+          } else {
+            ./scripts/build-windows.ps1
+          }
 
       - name: Archive Linux bundle
         if: runner.os == 'Linux'
@@ -278,9 +287,10 @@ jobs:
         shell: pwsh
         env:
           ARCHIVE_VERSION: ${{ steps.archive.outputs.version }}
+          BUNDLE_VARIANT: ${{ matrix.platform }}
         run: |
           New-Item -ItemType Directory -Path artifacts -Force | Out-Null
-          Compress-Archive -Path dist/windows-x64 -DestinationPath "artifacts/Wireglow-$env:ARCHIVE_VERSION-windows-x64.zip"
+          Compress-Archive -Path "dist/$env:BUNDLE_VARIANT/*" -DestinationPath "artifacts/Wireglow-$env:ARCHIVE_VERSION-$env:BUNDLE_VARIANT.zip"
 
       - name: Upload bundle
         uses: actions/upload-artifact@v7
@@ -309,7 +319,7 @@ jobs:
       - name: Calculate archive checksums
         shell: bash
         working-directory: artifacts
-        run: sha256sum Wireglow-*-linux-x64.zip Wireglow-*-linux-x64-portable.zip Wireglow-*-windows-x64.zip > SHA256SUMS
+        run: sha256sum Wireglow-*-linux-x64.zip Wireglow-*-linux-x64-portable.zip Wireglow-*-windows-x64.zip Wireglow-*-windows-x64-portable.zip > SHA256SUMS
 
       - name: Upload release assets
         shell: bash
@@ -323,5 +333,6 @@ jobs:
             artifacts/Wireglow-*-linux-x64.zip \
             artifacts/Wireglow-*-linux-x64-portable.zip \
             artifacts/Wireglow-*-windows-x64.zip \
+            artifacts/Wireglow-*-windows-x64-portable.zip \
             artifacts/SHA256SUMS \
             --clobber
