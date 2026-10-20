@@ -142,7 +142,7 @@ flutter analyze --no-pub
 go test -count=1 -timeout 120s ./...
 cd ui
 flutter pub get
-flutter test --no-pub --reporter expanded
+flutter test --no-pub --reporter expanded --dart-define=APP_VERSION=0.1.0
 ```
 
 Separate Linux jobs check Go integrations (systemd lifecycle, proxy recovery,
@@ -177,3 +177,17 @@ go test ./...
 Build the full distribution with the platform script above. The build scripts run `flutter pub get` themselves. To work on only the Flutter UI, change to `ui/` and use regular Flutter commands, such as `flutter run -d windows` or `flutter run -d linux`.
 
 The currently supported local build targets are Windows x64 and Linux x64. The Bash and PowerShell build scripts are temporary and independent; a shared cross-platform build system has not been selected yet.
+
+The About tab shows the exact Git tag pointing at the built commit (including
+any `v` prefix), or `dev` when no tag points at it. Local scripts resolve the tag
+from Git; CI fetches tags and full history. Flutter builds run directly without
+`APP_VERSION` also show `dev`. The Flutter package version in `pubspec.yaml`
+is not the displayed client version.
+
+Golden test commands pin `APP_VERSION=0.1.0` to preserve the visual references.
+To check the default and tagged metadata separately, run from `ui/`:
+
+```sh
+flutter test --no-pub test/app_info_test.dart
+flutter test --no-pub --dart-define=APP_VERSION=v1.2.3 test/app_info_test.dart
+```

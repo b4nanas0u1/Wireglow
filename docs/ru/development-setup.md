@@ -142,7 +142,7 @@ flutter analyze --no-pub
 go test -count=1 -timeout 120s ./...
 cd ui
 flutter pub get
-flutter test --no-pub --reporter expanded
+flutter test --no-pub --reporter expanded --dart-define=APP_VERSION=0.1.0
 ```
 
 Отдельные Linux-задачи проверяют Go-интеграции (systemd lifecycle, восстановление
@@ -177,3 +177,17 @@ go test ./...
 Сборка полного дистрибутива выполняется платформенным сценарием выше. Сценарии сборки сами выполняют `flutter pub get`. Для работы только с Flutter UI перейдите в `ui/` и используйте обычные команды Flutter, например `flutter run -d windows` или `flutter run -d linux`.
 
 Поддерживаемые локальные сборочные цели сейчас — Windows x64 и Linux x64. Сценарии Bash и PowerShell временные и независимые; единая кроссплатформенная система сборки пока не выбрана.
+
+Вкладка «О клиенте» показывает точный Git-тег собираемого коммита (включая
+префикс `v`, если он есть) или `dev`, если у коммита нет тега. Локальные скрипты
+определяют тег через Git; CI загружает теги и полную историю. Прямые сборки
+Flutter без `APP_VERSION` также показывают `dev`. Версия пакета Flutter из
+`pubspec.yaml` не используется как отображаемая версия клиента.
+
+Команды golden-тестов задают `APP_VERSION=0.1.0`, сохраняя стабильность эталонов.
+Для отдельной проверки версии по умолчанию и версии из тега выполните из `ui/`:
+
+```sh
+flutter test --no-pub test/app_info_test.dart
+flutter test --no-pub --dart-define=APP_VERSION=v1.2.3 test/app_info_test.dart
+```

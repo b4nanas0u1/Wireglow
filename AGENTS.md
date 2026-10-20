@@ -72,7 +72,7 @@ Standard UI checks, from `ui/`:
 ```sh
 flutter pub get
 flutter analyze --no-pub
-flutter test --no-pub --reporter expanded
+flutter test --no-pub --reporter expanded --dart-define=APP_VERSION=0.1.0
 ```
 
 For changes to lifecycle, proxy recovery, engine configuration, or IPC, use the
