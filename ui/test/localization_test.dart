@@ -93,7 +93,7 @@ void main() {
     await tester.pumpAndSettle();
     await languages.select('ru');
     await tester.pumpAndSettle();
-    expect(find.text('Версия клиента'), findsOneWidget);
+    expect(find.text('Версия'), findsOneWidget);
     await tester.runAsync(model.close);
     await tester.pumpWidget(const SizedBox());
     languages.dispose();
