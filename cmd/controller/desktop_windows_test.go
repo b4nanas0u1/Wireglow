@@ -29,7 +29,7 @@ import (
 // private temporary data. It never imports a profile or changes system proxy.
 func TestWindowsDesktopOwnerLifetime(t *testing.T) {
 	// Keep the AF_UNIX path below the Windows sockaddr length limit.
-	dir, err := os.MkdirTemp("", "ft-rpc-")
+	dir, err := os.MkdirTemp("", "wg-")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +38,7 @@ func TestWindowsDesktopOwnerLifetime(t *testing.T) {
 	if out, err := exec.Command("go", "build", "-o", binary, ".").CombinedOutput(); err != nil {
 		t.Fatal(err, string(out))
 	}
-	for _, scenario := range []struct{ crash, portable bool }{{false, false}, {true, false}, {false, true}, {true, true}} {
+	for index, scenario := range []struct{ crash, portable bool }{{false, false}, {true, false}, {false, true}, {true, true}} {
 		crash := scenario.crash
 		name := "eof"
 		if crash {
@@ -50,7 +50,9 @@ func TestWindowsDesktopOwnerLifetime(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), 40*time.Second)
 			defer cancel()
-			base := filepath.Join(dir, name)
+			// Descriptive subtest names make portable socket paths too long
+			// under the CI runner's TEMP. Keep fixture paths short independently.
+			base := filepath.Join(dir, string(rune('a'+index)))
 			executable := binary
 			args := []string{"desktop", "--data-dir", filepath.Join(base, "d"), "--runtime-dir", filepath.Join(base, "r")}
 			if scenario.portable {
@@ -87,7 +89,9 @@ func TestWindowsDesktopOwnerLifetime(t *testing.T) {
 			defer cmd.Process.Kill()
 			var endpoint launcher.Endpoint
 			if err = json.NewDecoder(stdout).Decode(&endpoint); err != nil {
-				t.Fatalf("desktop readiness: %v", err)
+				_ = cmd.Process.Kill()
+				_ = cmd.Wait()
+				t.Fatalf("desktop readiness: %v: %s", err, stderr.String())
 			}
 			if scenario.portable {
 				if filepath.Dir(filepath.Dir(endpoint.Socket)) != filepath.Join(base, "data", "runtime") {
