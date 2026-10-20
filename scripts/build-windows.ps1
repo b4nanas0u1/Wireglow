@@ -115,8 +115,7 @@ try {
             if ($LASTEXITCODE -ne 0) { $commit = '' }
             if ($commit) { $tag = & git tag --points-at HEAD | Select-Object -First 1 }
         }
-        $version = [regex]::Match((Get-Content -LiteralPath 'ui/pubspec.yaml' -Raw), '(?m)^version:\s*([^+\r\n]+)').Groups[1].Value
-        if (-not $version) { throw 'Missing UI version in pubspec.yaml.' }
+        $version = if ($tag) { $tag } else { 'dev' }
         $buildTime = (Get-Date).ToUniversalTime().ToString('yyyy-MM-dd HH:mm:ss UTC')
         $defines = @(
             "--dart-define=APP_VERSION=$version"

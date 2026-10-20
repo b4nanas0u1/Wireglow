@@ -112,7 +112,7 @@ void main() {
     }
     await tester.runAsync(model.close);
     await tester.pumpWidget(const SizedBox());
-  }, skip: Platform.isWindows);
+  });
 
   testWidgets(
     'settings tab validates, saves, reports failures and confirms reset',

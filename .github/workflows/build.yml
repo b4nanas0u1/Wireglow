@@ -107,7 +107,16 @@ jobs:
 
       - name: Flutter tests
         working-directory: ui
-        run: flutter test --no-pub --reporter expanded
+        # Keep build metadata stable in the existing visual references.
+        run: flutter test --no-pub --reporter expanded --dart-define=APP_VERSION=0.1.0
+
+      - name: Default client version
+        working-directory: ui
+        run: flutter test --no-pub test/app_info_test.dart
+
+      - name: Tagged client version
+        working-directory: ui
+        run: flutter test --no-pub --dart-define=APP_VERSION=v1.2.3 test/app_info_test.dart
 
   integration:
     name: ${{ matrix.name }} (Linux)

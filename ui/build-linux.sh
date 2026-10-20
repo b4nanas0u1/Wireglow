@@ -15,9 +15,9 @@ free_turn_repository=$(manifest free-turn-proxy.repository)
 cd ui
 flutter clean
 flutter pub get
-version=$(sed -n 's/^version: \([^+]*\).*/\1/p' pubspec.yaml)
 commit=$(git -C "$root" rev-parse --short HEAD 2>/dev/null || printf 'неизвестен')
 tag=$(git -C "$root" describe --tags --exact-match HEAD 2>/dev/null || true)
+version=${tag:-dev}
 build_time=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
 flutter build linux --release --no-pub \
   --dart-define="APP_VERSION=$version" \

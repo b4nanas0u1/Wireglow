@@ -6,7 +6,7 @@ const appCommit = String.fromEnvironment('APP_COMMIT', defaultValue: '');
 const appBuildTime = String.fromEnvironment('APP_BUILD_TIME', defaultValue: '');
 const appTag = String.fromEnvironment('APP_TAG');
 
-const appVersion = String.fromEnvironment('APP_VERSION', defaultValue: '0.1.0');
+const appVersion = String.fromEnvironment('APP_VERSION', defaultValue: 'dev');
 
 // Версии и репозитории ядер берутся из общего манифеста при сборке.
 const mihomoVersion = String.fromEnvironment(
