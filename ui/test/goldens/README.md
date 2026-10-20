@@ -22,10 +22,13 @@ output. No Windows build or test run was performed for this update.
 To regenerate on the respective host, run from `ui/`:
 
 ```sh
-flutter test --no-pub --update-goldens test/connect_test.dart test/client_settings_test.dart
-flutter test --no-pub
+flutter test --no-pub --dart-define=APP_VERSION=0.1.0 --update-goldens test/connect_test.dart test/client_settings_test.dart
+flutter test --no-pub --dart-define=APP_VERSION=0.1.0
 ```
 
 After intentional visual changes, review failure images before updating the
 references on each supported host. Do not increase comparison tolerance to hide
 rendering or layout changes.
+
+Golden runs fix APP_VERSION to 0.1.0 to keep build metadata reproducible. The
+default dev version and release values are checked separately by app_info_test.dart.
