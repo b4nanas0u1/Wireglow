@@ -45,8 +45,9 @@ and its engine processes running.
 
 Use the current connection model and parser as the baseline. Do not add fields,
 compatibility aliases, migrations, or unsupported protocol options merely to
-match upstream examples or older descriptions. TUN and routing features listed
-on the roadmap are not implemented capabilities.
+match upstream examples or older descriptions. Linux TUN uses the optional restricted helper described in `docs/en/tun-mode.md`.
+Windows TUN is unavailable; user-defined routing remains unimplemented.
+Never activate TUN in the host network namespace during automated verification.
 
 ## Development and checks
 

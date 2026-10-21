@@ -338,4 +338,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get lightTheme => 'Светлая';
+
+  @override
+  String get tunMode => 'TUN';
+
+  @override
+  String get tunHelp =>
+      'TUN перехватывает IP-трафик. Включение переподключает сессию и использует 1.1.1.1 как прямой bootstrap DNS. Другой активный VPN блокирует включение.';
 }

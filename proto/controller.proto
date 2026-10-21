@@ -43,6 +43,7 @@ enum ProxyMode {
  PROXY_MODE_UNSPECIFIED = 0;
  PROXY_MODE_LOCAL = 1;
  PROXY_MODE_SYSTEM = 2;
+ PROXY_MODE_TUN = 3;
 }
 message ConnectRequest {
  string id = 1;
@@ -55,7 +56,7 @@ message ClientSettings {
  string relay_address = 3;
  uint32 api_port = 4;
 }
-message Capabilities { string system_proxy_unavailable_reason = 1; }
+message Capabilities { string system_proxy_unavailable_reason = 1; string tun_unavailable_reason = 2; }
 message ProfileRequest { string id = 1; }
 // Ограниченные поля редактора; секреты и настройки ядра не передаются.
 message ProfileEdits {

@@ -21,6 +21,7 @@ engines:
         # Вариант для базового x86_64.
         asset: mihomo-linux-amd64-v1-v1.19.32.gz
         sha256: 306f81e723e60ce6b828899a6fe83e1d00e9ecefb2dc8d4d849312a5bc00efdc
+        binary-sha256: 6de241191ca39f9ac1cd6e3194fc9303c19055d3549c8bdb4ff1349c89173819
         compression: gzip
       windows-amd64:
         # Вариант для базового x86_64.

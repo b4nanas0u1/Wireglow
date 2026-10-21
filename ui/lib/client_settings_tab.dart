@@ -1,3 +1,7 @@
+import 'checked_popup_menu.dart';
+
+import 'package:flutter/foundation.dart'
+    show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 
 import 'connect_model.dart';
@@ -220,27 +224,76 @@ class _ClientSettingsTabState extends State<ClientSettingsTab> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 block(context, l.generalSettings, [
-                  DropdownButtonFormField<ProxyMode>(
-                    key: ValueKey(m.preferredMode),
+                  CheckedPopupMenuButton<ProxyMode>(
+                    key: const Key('settings-proxy-mode-selector'),
+                    check: m.refreshModeAvailability,
+                    enabled: enabled,
                     initialValue: m.preferredMode,
-                    isExpanded: true,
-                    decoration: InputDecoration(labelText: l.proxyMode),
-                    items: [
-                      DropdownMenuItem(
+                    itemBuilder: (_) => [
+                      PopupMenuItem<ProxyMode>(
                         value: ProxyMode.PROXY_MODE_LOCAL,
                         child: Text(l.localProxyMode),
                       ),
-                      DropdownMenuItem(
+                      PopupMenuItem<ProxyMode>(
                         value: ProxyMode.PROXY_MODE_SYSTEM,
                         enabled: m.systemProxyUnavailableReason.isEmpty,
                         child: Text(l.systemProxyMode),
                       ),
+                      if (defaultTargetPlatform == TargetPlatform.linux ||
+                          m.preferredMode == ProxyMode.PROXY_MODE_TUN)
+                        PopupMenuItem<ProxyMode>(
+                          value: ProxyMode.PROXY_MODE_TUN,
+                          enabled:
+                              defaultTargetPlatform == TargetPlatform.linux &&
+                              m.modeEnabled(ProxyMode.PROXY_MODE_TUN),
+                          child: Text(l.tunMode),
+                        ),
                     ],
-                    onChanged: enabled ? (mode) => m.selectMode(mode!) : null,
+                    onSelected: m.selectMode,
+                    child: IgnorePointer(
+                      child: DropdownButtonFormField<ProxyMode>(
+                        key: ValueKey(m.preferredMode),
+                        initialValue: m.preferredMode,
+                        isExpanded: true,
+                        decoration: InputDecoration(labelText: l.proxyMode),
+                        items: [
+                          DropdownMenuItem(
+                            value: ProxyMode.PROXY_MODE_LOCAL,
+                            child: Text(l.localProxyMode),
+                          ),
+                          DropdownMenuItem(
+                            value: ProxyMode.PROXY_MODE_SYSTEM,
+                            enabled: m.systemProxyUnavailableReason.isEmpty,
+                            child: Text(l.systemProxyMode),
+                          ),
+                          if (defaultTargetPlatform == TargetPlatform.linux ||
+                              m.preferredMode == ProxyMode.PROXY_MODE_TUN)
+                            DropdownMenuItem(
+                              value: ProxyMode.PROXY_MODE_TUN,
+                              enabled:
+                                  defaultTargetPlatform ==
+                                      TargetPlatform.linux &&
+                                  m.modeEnabled(ProxyMode.PROXY_MODE_TUN),
+                              child: Text(l.tunMode),
+                            ),
+                        ],
+                        onChanged: enabled
+                            ? (mode) => m.selectMode(mode!)
+                            : null,
+                      ),
+                    ),
                   ),
                   if (m.systemProxyUnavailableReason.isNotEmpty) ...[
                     const SizedBox(height: 8),
                     Text(m.systemProxyUnavailableReason),
+                  ],
+                  if (defaultTargetPlatform == TargetPlatform.linux) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      m.tunUnavailableReason.isEmpty
+                          ? l.tunHelp
+                          : m.tunUnavailableReason,
+                    ),
                   ],
                   if (widget.languages != null) ...[
                     const SizedBox(height: 16),

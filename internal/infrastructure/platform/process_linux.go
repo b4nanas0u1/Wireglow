@@ -15,10 +15,11 @@ import (
 
 type Runner struct{}
 type process struct {
-	cmd  *exec.Cmd
-	done chan struct{}
-	err  error
-	stop sync.Mutex
+	cmd         *exec.Cmd
+	done        chan struct{}
+	err         error
+	stop        sync.Mutex
+	diagnostics *EngineDiagnostics
 }
 
 func (Runner) Start(ctx context.Context, spec ports.Command) (ports.Process, error) {
@@ -30,6 +31,20 @@ func (Runner) Start(ctx context.Context, spec ports.Command) (ports.Process, err
 	}
 	cmd := exec.Command(spec.Path, spec.Args...)
 	cmd.Dir = spec.Dir
+	if spec.ClearProxyEnv {
+		cmd.Env = withoutProxyEnvironment()
+	}
+	if spec.CaptureDiagnostics {
+		diagnostic := &EngineDiagnostics{}
+		cmd.Stdout = diagnostic
+		cmd.Stderr = diagnostic
+		started, err := startCommand(ctx, cmd)
+		if err != nil {
+			return nil, err
+		}
+		started.(*process).diagnostics = diagnostic
+		return started, nil
+	}
 	return startCommand(ctx, cmd)
 }
 
@@ -82,5 +97,20 @@ func (p *process) Stop(ctx context.Context) error {
 		return nil
 	case <-time.After(time.Second):
 		return errors.New("process: kill wait timed out")
+	}
+}
+
+func (p *process) PID() int { return p.cmd.Process.Pid }
+
+func (p *process) ProcessDiagnostic() string {
+	if p.diagnostics == nil {
+		return ""
+	}
+	return p.diagnostics.Summary()
+}
+
+func (p *process) ResetProcessDiagnostic() {
+	if p.diagnostics != nil {
+		p.diagnostics.Reset()
 	}
 }

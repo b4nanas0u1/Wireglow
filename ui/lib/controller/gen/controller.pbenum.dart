@@ -21,15 +21,18 @@ class ProxyMode extends $pb.ProtobufEnum {
       ProxyMode._(1, _omitEnumNames ? '' : 'PROXY_MODE_LOCAL');
   static const ProxyMode PROXY_MODE_SYSTEM =
       ProxyMode._(2, _omitEnumNames ? '' : 'PROXY_MODE_SYSTEM');
+  static const ProxyMode PROXY_MODE_TUN =
+      ProxyMode._(3, _omitEnumNames ? '' : 'PROXY_MODE_TUN');
 
   static const $core.List<ProxyMode> values = <ProxyMode>[
     PROXY_MODE_UNSPECIFIED,
     PROXY_MODE_LOCAL,
     PROXY_MODE_SYSTEM,
+    PROXY_MODE_TUN,
   ];
 
   static final $core.List<ProxyMode?> _byValue =
-      $pb.ProtobufEnum.$_initByValueList(values, 2);
+      $pb.ProtobufEnum.$_initByValueList(values, 3);
   static ProxyMode? valueOf($core.int value) =>
       value < 0 || value >= _byValue.length ? null : _byValue[value];
 

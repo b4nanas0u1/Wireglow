@@ -177,9 +177,19 @@ func (c *Controller) ConnectWithMode(ctx context.Context, p profile.Profile, mod
 	if err := c.network.Recover(ctx); err != nil {
 		return c.fail("network recovery failed", err)
 	}
-	plan, err := c.preparer.Prepare(ctx, p)
+	var plan *ports.Plan
+	var err error
+	if preparer, ok := c.preparer.(ports.ModePreparer); ok {
+		plan, err = preparer.PrepareForMode(ctx, p, mode)
+	} else {
+		plan, err = c.preparer.Prepare(ctx, p)
+	}
 	if err != nil {
 		return c.fail("connection preparation failed", err)
+	}
+	if mode == proxymode.Tun && !plan.TunReady {
+		_ = plan.Close()
+		return c.fail("TUN bootstrap unavailable", errors.New("tun: reconnect with TUN bootstrap"))
 	}
 	c.plan = plan
 	c.set(StartingRelay, "")
@@ -199,6 +209,9 @@ func (c *Controller) ConnectWithMode(ctx context.Context, p profile.Profile, mod
 	c.set(Probing, "")
 	if err = waitOutbound(ctx, plan.Probe); err != nil {
 		return c.fail("outbound probe failed", err)
+	}
+	if diagnostic, ok := c.engine.(ports.ProcessDiagnostic); ok {
+		diagnostic.ResetProcessDiagnostic()
 	}
 	c.set(ActivatingNetwork, "")
 	if err = c.network.Apply(ctx, plan.MixedAddress); err != nil {
@@ -231,6 +244,7 @@ func (c *Controller) ConnectWithMode(ctx context.Context, p profile.Profile, mod
 		c.set(Connected, "")
 	}
 	go c.monitor(generation, c.relay, c.engine)
+	c.watchNetwork(generation, c.network, c.relay)
 	return nil
 }
 
@@ -276,10 +290,28 @@ func (c *Controller) monitor(generation uint64, relay, engine ports.Process) {
 }
 
 func (c *Controller) fail(message string, cause error) error {
+	networkFailure := message == "network activation failed" || message == "probe after activation failed"
+	engine := c.engine
+	var diagnostic ports.DiagnosticError
+	if errors.As(cause, &diagnostic) {
+		message += ": " + diagnostic.PublicDiagnostic()
+	}
 	c.set(Stopping, "")
 	err := c.cleanup()
+	if diagnostic, ok := c.network.(ports.NetworkDiagnostic); ok && networkFailure {
+		if detail := diagnostic.NetworkDiagnostic(); detail != "" {
+			message += ": " + detail
+		}
+	}
 	if err != nil {
 		message += "; cleanup incomplete"
+	}
+	if process, ok := engine.(ports.ProcessDiagnostic); ok {
+		if detail := process.ProcessDiagnostic(); detail != "" {
+			message += "; mihomo: " + detail
+		} else if networkFailure {
+			message += "; mihomo: no outbound warnings"
+		}
 	}
 	c.set(Failed, message)
 	return errors.Join(cause, err)
@@ -394,4 +426,49 @@ func (c *Controller) WatchOwner(ctx context.Context, beats <-chan struct{}, time
 			timer.Reset(remaining)
 		}
 	}
+}
+
+// RelayPID is used only to authenticate the relay's process identity to TUN.
+// Session operations already serialize process replacement through op.
+func (c *Controller) RelayPID() int {
+	if p, ok := c.relay.(interface{ PID() int }); ok {
+		return p.PID()
+	}
+	return 0
+}
+
+// RelayDirectPeer is called by the network adapter under the session operation lock.
+func (c *Controller) RelayDirectPeer() string {
+	if c.plan != nil {
+		return c.plan.DirectPeer
+	}
+	return ""
+}
+
+// RelayUDPKeepalive is read by the network adapter under the session operation lock.
+func (c *Controller) RelayUDPKeepalive() bool {
+	return c.plan != nil && c.plan.RelayUDPKeepalive
+}
+func (c *Controller) watchNetwork(generation uint64, n ports.Network, relay ports.Process) {
+	health, ok := n.(interface{ Failed() <-chan struct{} })
+	if !ok {
+		return
+	}
+	done := health.Failed()
+	if done == nil {
+		return
+	}
+	go func() {
+		select {
+		case <-done:
+		case <-relay.Done():
+			return
+		}
+		c.op.Lock()
+		defer c.op.Unlock()
+		if c.Snapshot().Generation != generation || c.network != n || c.plan == nil {
+			return
+		}
+		_ = c.fail("TUN helper lost; connection stopped", errors.New("tun: helper lost"))
+	}()
 }

@@ -195,7 +195,7 @@ func TestSwitchModeCancellationStillRollsBack(t *testing.T) {
 
 func TestSwitchModeRequiresActiveSession(t *testing.T) {
 	c, _, _, _, _ := switchHarness(t)
-	if err := c.SwitchMode(context.Background(), "tun"); !errors.Is(err, ErrModeSwitch) {
+	if err := c.SwitchMode(context.Background(), "unknown-mode"); !errors.Is(err, ErrModeSwitch) {
 		t.Fatal(err)
 	}
 	if err := c.Disconnect(); err != nil {

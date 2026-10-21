@@ -22,13 +22,14 @@ const ProxyMode$json = {
     {'1': 'PROXY_MODE_UNSPECIFIED', '2': 0},
     {'1': 'PROXY_MODE_LOCAL', '2': 1},
     {'1': 'PROXY_MODE_SYSTEM', '2': 2},
+    {'1': 'PROXY_MODE_TUN', '2': 3},
   ],
 };
 
 /// Descriptor for `ProxyMode`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List proxyModeDescriptor = $convert.base64Decode(
     'CglQcm94eU1vZGUSGgoWUFJPWFlfTU9ERV9VTlNQRUNJRklFRBAAEhQKEFBST1hZX01PREVfTE'
-    '9DQUwQARIVChFQUk9YWV9NT0RFX1NZU1RFTRAC');
+    '9DQUwQARIVChFQUk9YWV9NT0RFX1NZU1RFTRACEhIKDlBST1hZX01PREVfVFVOEAM=');
 
 @$core.Deprecated('Use stateDescriptor instead')
 const State$json = {
@@ -146,13 +147,21 @@ const Capabilities$json = {
       '5': 9,
       '10': 'systemProxyUnavailableReason'
     },
+    {
+      '1': 'tun_unavailable_reason',
+      '3': 2,
+      '4': 1,
+      '5': 9,
+      '10': 'tunUnavailableReason'
+    },
   ],
 };
 
 /// Descriptor for `Capabilities`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List capabilitiesDescriptor = $convert.base64Decode(
     'CgxDYXBhYmlsaXRpZXMSRQofc3lzdGVtX3Byb3h5X3VuYXZhaWxhYmxlX3JlYXNvbhgBIAEoCV'
-    'Icc3lzdGVtUHJveHlVbmF2YWlsYWJsZVJlYXNvbg==');
+    'Icc3lzdGVtUHJveHlVbmF2YWlsYWJsZVJlYXNvbhI0ChZ0dW5fdW5hdmFpbGFibGVfcmVhc29u'
+    'GAIgASgJUhR0dW5VbmF2YWlsYWJsZVJlYXNvbg==');
 
 @$core.Deprecated('Use profileRequestDescriptor instead')
 const ProfileRequest$json = {

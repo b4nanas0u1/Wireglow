@@ -174,9 +174,28 @@ jobs:
           WIREGLOW_RECOVERY_TEST: '1'
           WIREGLOW_GSETTINGS_TEST: '1'
           WIREGLOW_MIHOMO_TEST_BINARY: ${{ github.workspace }}/.cache/engines/linux-amd64/bin/mihomo
+          WIREGLOW_RELAY_TEST_BINARY: ${{ github.workspace }}/.cache/engines/linux-amd64/bin/free-turn-proxy
         run: |
           source scripts/build-env.sh
           go test -count=1 -timeout 180s -v ./cmd/controller ./internal/infrastructure/platform ./internal/infrastructure/engines
+
+      - name: Isolated TUN integration (real mihomo)
+        if: matrix.suite == 'go'
+        run: |
+          source scripts/build-env.sh
+          mkdir -p "$cache_root/bin"
+          go test -c -o "$cache_root/bin/tun.test" ./internal/infrastructure/tun
+          sudo unshare --net env WIREGLOW_TUN_TEST=1 WIREGLOW_HOST_NETNS="$(readlink /proc/self/ns/net)" \
+            WIREGLOW_MIHOMO_TEST_BINARY="$cache_root/engines/linux-amd64/bin/mihomo" \
+            "$cache_root/bin/tun.test" -test.v -test.run '^TestIsolated(Tun|EstablishedRelayTCP|EstablishedRelayUDP|EstablishedRelayUDPUnconnected|DirectUDP|TURNUDPIdle)$' -test.timeout 120s
+
+      - name: Portable helper bootstrap without installation
+        if: matrix.suite == 'go'
+        run: |
+          source scripts/build-env.sh
+          go build -o "$cache_root/bin/tun-helper" ./cmd/tun-helper
+          sudo unshare --mount --net --pid --fork python3 \
+            internal/infrastructure/tun/testdata/portable_helper.py "$GITHUB_WORKSPACE" "$(readlink /proc/self/ns/net)"
 
       - name: Build controller for Dart interop
         if: matrix.suite == 'dart-go'

@@ -23,11 +23,12 @@ type Engine struct {
 	Platforms  map[string]Asset `yaml:"platforms"`
 }
 
-// Asset pins the downloaded file, before decompression.
+// Asset pins the archive and optionally the decompressed privileged executable.
 type Asset struct {
-	Name        string `yaml:"asset"`
-	SHA256      string `yaml:"sha256"`
-	Compression string `yaml:"compression"`
+	Name         string `yaml:"asset"`
+	SHA256       string `yaml:"sha256"`
+	Compression  string `yaml:"compression"`
+	BinarySHA256 string `yaml:"binary-sha256,omitempty"`
 }
 
 type document struct {
@@ -65,6 +66,12 @@ func parse(input []byte) (document, error) {
 			return m, fmt.Errorf("invalid engine %s: repository, version and platforms required", name)
 		}
 		for platform, asset := range engine.Platforms {
+			if asset.BinarySHA256 != "" {
+				decoded, e := hex.DecodeString(asset.BinarySHA256)
+				if e != nil || len(decoded) != 32 {
+					return m, fmt.Errorf("invalid binary digest for %s/%s", name, platform)
+				}
+			}
 			digest, err := hex.DecodeString(asset.SHA256)
 			if !component.MatchString(platform) || !component.MatchString(asset.Name) || err != nil || len(digest) != 32 || (asset.Compression != "none" && asset.Compression != "gzip" && asset.Compression != "zip") {
 				return m, fmt.Errorf("invalid asset %s/%s: name, SHA-256 and supported compression required", name, platform)
@@ -107,6 +114,8 @@ func Field(path string) (string, error) {
 					return asset.Name, nil
 				case "sha256":
 					return asset.SHA256, nil
+				case "binary-sha256":
+					return asset.BinarySHA256, nil
 				case "compression":
 					return asset.Compression, nil
 				}

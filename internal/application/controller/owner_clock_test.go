@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"errors"
+	"sync/atomic"
 	"testing"
 	"testing/synctest"
 	"time"
@@ -16,10 +17,10 @@ func TestOwnerLeaseExcludesSleepButStillExpires(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		beats := make(chan struct{})
-		var awake time.Duration
+		var awake atomic.Int64
 		done := make(chan error, 1)
 		go func() {
-			done <- c.WatchOwner(ctx, beats, 8*time.Second, func() (time.Duration, error) { return awake, nil })
+			done <- c.WatchOwner(ctx, beats, 8*time.Second, func() (time.Duration, error) { return time.Duration(awake.Load()), nil })
 		}()
 		synctest.Wait()
 		// Simulate a Windows suspend: Go time advances but awake time does not.
@@ -30,10 +31,10 @@ func TestOwnerLeaseExcludesSleepButStillExpires(t *testing.T) {
 			t.Fatalf("sleep closed a live owner's controller: %v", err)
 		default:
 		}
-		awake = 7 * time.Second
+		awake.Store(int64(7 * time.Second))
 		beats <- struct{}{}
 		synctest.Wait()
-		awake = 14 * time.Second
+		awake.Store(int64(14 * time.Second))
 		time.Sleep(8 * time.Second)
 		synctest.Wait()
 		select {
@@ -41,7 +42,7 @@ func TestOwnerLeaseExcludesSleepButStillExpires(t *testing.T) {
 			t.Fatalf("heartbeat did not renew awake deadline: %v", err)
 		default:
 		}
-		awake = 15 * time.Second
+		awake.Store(int64(15 * time.Second))
 		time.Sleep(8 * time.Second)
 		synctest.Wait()
 		select {
