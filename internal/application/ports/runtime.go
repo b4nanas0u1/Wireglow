@@ -28,15 +28,16 @@ type Runner interface {
 
 // Plan содержит данные одной попытки; секреты не входят в snapshot контроллера.
 type Plan struct {
-	DirectPeer     string // Runtime-pinned IP:port; empty for non-direct sessions.
-	TunReady       bool
-	Relay          Command
-	Engine         Command
-	MixedAddress   string
-	Ready          func(context.Context) error
-	Probe          func(context.Context) error
-	MeasureLatency func(context.Context) (time.Duration, error)
-	Close          func() error
+	RelayUDPKeepalive bool   // TURN UDP transport needs a stable userspace mapping while idle.
+	DirectPeer        string // Runtime-pinned IP:port; empty for non-direct sessions.
+	TunReady          bool
+	Relay             Command
+	Engine            Command
+	MixedAddress      string
+	Ready             func(context.Context) error
+	Probe             func(context.Context) error
+	MeasureLatency    func(context.Context) (time.Duration, error)
+	Close             func() error
 }
 
 type Preparer interface {

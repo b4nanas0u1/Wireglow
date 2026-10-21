@@ -178,7 +178,7 @@ jobs:
           go test -c -o "$cache_root/bin/tun.test" ./internal/infrastructure/tun
           sudo unshare --net env WIREGLOW_TUN_TEST=1 WIREGLOW_HOST_NETNS="$(readlink /proc/self/ns/net)" \
             WIREGLOW_MIHOMO_TEST_BINARY="$cache_root/engines/linux-amd64/bin/mihomo" \
-            "$cache_root/bin/tun.test" -test.v -test.run '^TestIsolated(Tun|EstablishedRelayTCP|EstablishedRelayUDP|EstablishedRelayUDPUnconnected|DirectUDP)$' -test.timeout 60s
+            "$cache_root/bin/tun.test" -test.v -test.run '^TestIsolated(Tun|EstablishedRelayTCP|EstablishedRelayUDP|EstablishedRelayUDPUnconnected|DirectUDP|TURNUDPIdle)$' -test.timeout 120s
 
       - name: Portable helper bootstrap without installation
         if: matrix.suite == 'go'

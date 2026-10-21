@@ -277,10 +277,11 @@ func (p *Preparer) PrepareForMode(ctx context.Context, profile profile.Profile, 
 		return nil, errors.New("mihomo: configuration validation failed")
 	}
 	plan := &ports.Plan{
-		DirectPeer: directPeer,
-		TunReady:   mode == proxymode.Tun,
-		Relay:      ports.Command{Path: p.Relay.Path, Args: args, Dir: dir, ClearProxyEnv: true},
-		Engine:     ports.Command{CaptureDiagnostics: runtime.GOOS == "linux", Path: p.Mihomo.Path, Args: []string{"-d", dir, "-f", configPath}, Dir: dir}, MixedAddress: mixed,
+		RelayUDPKeepalive: mode == proxymode.Tun && profile.Connection.Provider == freeturn.ProviderVK && profile.Connection.TurnTransport == freeturn.TurnTransportUDP,
+		DirectPeer:        directPeer,
+		TunReady:          mode == proxymode.Tun,
+		Relay:             ports.Command{Path: p.Relay.Path, Args: args, Dir: dir, ClearProxyEnv: true},
+		Engine:            ports.Command{CaptureDiagnostics: runtime.GOOS == "linux", Path: p.Mihomo.Path, Args: []string{"-d", dir, "-f", configPath}, Dir: dir}, MixedAddress: mixed,
 		Close: func() error { return persistence.CleanupSession(p.RuntimeDir) },
 	}
 	plan.Ready = func(ctx context.Context) error { return waitAPI(ctx, api, secret) }

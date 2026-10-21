@@ -99,7 +99,7 @@ source scripts/build-env.sh
 go test -c -o "$cache_root/bin/tun.test" ./internal/infrastructure/tun
 unshare --user --map-root-user --net env WIREGLOW_TUN_TEST=1 WIREGLOW_HOST_NETNS="$(readlink /proc/self/ns/net)" \
   WIREGLOW_MIHOMO_TEST_BINARY="$cache_root/engines/linux-amd64/bin/mihomo" \
-  "$cache_root/bin/tun.test" -test.v -test.run '^TestIsolated(Tun|EstablishedRelayTCP|EstablishedRelayUDP|EstablishedRelayUDPUnconnected|DirectUDP)$' -test.timeout 60s
+  "$cache_root/bin/tun.test" -test.v -test.run '^TestIsolated(Tun|EstablishedRelayTCP|EstablishedRelayUDP|EstablishedRelayUDPUnconnected|DirectUDP|TURNUDPIdle)$' -test.timeout 120s
 ```
 
 Download pinned engines first with `./scripts/download-linux-engines.sh` and
@@ -215,8 +215,35 @@ installation and removed only on an exact match. Isolated IPv4/IPv6 tests create
 new sockets after activation, check source-port preservation, UID/destination-port
 isolation and cleanup after an engine crash.
 
-Known limitation for VK/TURN sessions: UDP exemptions are a snapshot taken at TUN activation.
-New or recreated FreeTurn sockets do not receive kernel exemptions during the
-session and depend on mihomo's process rule. Old port exemptions remain until
-TUN cleanup. FreeTurn can recreate transports during stream recovery; dynamic
-socket handling for VK/TURN remains unfinished.
+For VK with `transport=udp`, the helper sends a 20-byte STUN Binding
+indication every 15 seconds through each connected external UDP socket of the
+verified FreeTurn process. This keeps mihomo's 60-second UDP mapping alive during
+application idle time. The same socket and peer-visible source port remain in
+use; no extra kernel exemptions are added for new sockets. TCP transport and
+direct sessions do not enable this maintenance.
+
+The helper pins the process using a pidfd, checks fd inode and socket UID before
+each send, and borrows descriptors only for the send. It never reads application
+packets, changes socket flags/deadlines, or keeps closed relay sockets alive.
+Loopback sockets, unconnected listeners and the bootstrap DNS endpoint are
+excluded. Inspection/permission failures are reported through the existing
+session health channel; ordinary network errors remain FreeTurn's responsibility.
+The worker stops on session cleanup, controller loss or helper exit.
+
+This requires Linux 5.6 or newer with `pidfd_getfd` allowed by ptrace/LSM policy.
+The installed helper already has `CAP_SYS_PTRACE`; portable elevation supplies
+the required privilege. Denied socket access fails activation explicitly. Update
+both controller and helper together. FreeTurn and mihomo remain the pinned
+upstream binaries. See [pidfd_getfd](https://man7.org/linux/man-pages/man2/pidfd_getfd.2.html)
+and [STUN Binding indications](https://www.rfc-editor.org/rfc/rfc8489.html#section-6.3.2).
+
+The isolated idle regression opens a new relay UDP socket after TUN activation,
+waits 65 seconds, verifies the peer-visible endpoint and payload, and checks cleanup
+after a mihomo crash. A separate research fixture using actual FreeTurn v4.0.3
+TURN dialing and Pion TURN passed the same idle case over IPv4 and IPv6, including
+new allocations and alternating TURN endpoints. Live VK authentication, captcha
+and full DTLS/WG recovery remain outside these checks.
+
+Existing UDP source-port exemptions are still an activation-time snapshot and
+remain until TUN cleanup. The keepalive worker inspects new sockets for maintenance;
+it does not add or migrate kernel routing exceptions during a live allocation.

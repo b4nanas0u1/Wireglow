@@ -27,7 +27,7 @@ func TestClientLeaseReportsHelperFailure(t *testing.T) {
 		if readMessage(conn, &req) != nil {
 			return
 		}
-		if req.DirectPeer != "203.0.113.7:444" {
+		if req.DirectPeer != "" || !req.UDPKeepalive {
 			return
 		}
 		json.NewEncoder(conn).Encode(Response{Version: 1, ID: req.ID, Session: "session"})
@@ -36,7 +36,7 @@ func TestClientLeaseReportsHelperFailure(t *testing.T) {
 		}
 		json.NewEncoder(conn).Encode(Response{Version: 1, ID: req.ID, Error: "tun: engine exited"})
 	}()
-	client := &Client{Socket: socket, RelayPID: func() int { return os.Getpid() }, DirectPeer: func() string { return "203.0.113.7:444" }}
+	client := &Client{Socket: socket, RelayPID: func() int { return os.Getpid() }, UDPKeepalive: func() bool { return true }}
 	if err = client.Apply(context.Background(), "127.0.0.1:17891"); err != nil {
 		t.Fatal(err)
 	}

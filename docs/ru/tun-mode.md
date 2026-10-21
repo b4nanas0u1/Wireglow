@@ -102,7 +102,7 @@ source scripts/build-env.sh
 go test -c -o "$cache_root/bin/tun.test" ./internal/infrastructure/tun
 unshare --user --map-root-user --net env WIREGLOW_TUN_TEST=1 WIREGLOW_HOST_NETNS="$(readlink /proc/self/ns/net)" \
   WIREGLOW_MIHOMO_TEST_BINARY="$cache_root/engines/linux-amd64/bin/mihomo" \
-  "$cache_root/bin/tun.test" -test.v -test.run '^TestIsolated(Tun|EstablishedRelayTCP|EstablishedRelayUDP|EstablishedRelayUDPUnconnected|DirectUDP)$' -test.timeout 60s
+  "$cache_root/bin/tun.test" -test.v -test.run '^TestIsolated(Tun|EstablishedRelayTCP|EstablishedRelayUDP|EstablishedRelayUDPUnconnected|DirectUDP|TURNUDPIdle)$' -test.timeout 120s
 ```
 
 Заранее скачайте закреплённые ядра через `./scripts/download-linux-engines.sh` и
@@ -219,8 +219,35 @@ endpoint. Правило записывается в журнал до уста�
 активации, проверяют сохранение исходного порта, ограничения UID/порта назначения
 и очистку после аварии engine.
 
-Известное ограничение VK/TURN: исключения UDP строятся по снимку на момент активации
-TUN. Новые и пересозданные сокеты FreeTurn не получают исключений ядра во время
-сессии и зависят от правила процесса в mihomo. Исключения старых портов остаются
-до очистки TUN. FreeTurn может пересоздавать транспорт при восстановлении
-потоков; обработка смены сокетов VK/TURN пока не завершена.
+Для VK с `transport=udp` helper каждые 15 секунд отправляет 20-байтовый
+STUN Binding indication через каждый подключённый внешний UDP-сокет проверенного
+процесса FreeTurn. Это удерживает UDP-сессию mihomo с таймаутом 60 секунд при
+простое пользовательского трафика. Сохраняются сокет и видимый серверу исходный
+порт; новые исключения ядра для новых сокетов не добавляются. Для TCP-транспорта
+и direct этот механизм не включается.
+
+Helper фиксирует процесс через pidfd, перед каждой отправкой проверяет inode fd
+и UID сокета, дублирует дескриптор только на время отправки. Он не читает пакеты
+приложения, не меняет флаги/таймауты сокета и не удерживает закрытые сокеты relay.
+Loopback, неподключённые listeners и endpoint загрузочного DNS исключены.
+Ошибки проверки/доступа передаются через существующий контроль состояния сессии;
+обычные сетевые ошибки обрабатывает FreeTurn. Рабочий цикл завершается при
+очистке сессии, потере controller или выходе helper.
+
+Требуется Linux 5.6 или новее с разрешённым `pidfd_getfd` в политике ptrace/LSM.
+Устанавливаемый helper уже имеет `CAP_SYS_PTRACE`; portable получает нужные
+права при повышении привилегий. Запрет доступа к сокету явно прерывает активацию.
+Controller и helper нужно обновлять вместе. FreeTurn и mihomo остаются
+закреплёнными upstream-бинарниками. См. [pidfd_getfd](https://man7.org/linux/man-pages/man2/pidfd_getfd.2.html)
+и [STUN Binding indications](https://www.rfc-editor.org/rfc/rfc8489.html#section-6.3.2).
+
+Изолированная регрессия простоя открывает новый UDP-сокет relay после активации
+TUN, ждёт 65 секунд, проверяет видимый peer endpoint и данные, затем очистку
+после аварии mihomo. Отдельный исследовательский стенд с настоящим кодом TURN
+подключения FreeTurn v4.0.3 и Pion TURN прошёл тот же сценарий IPv4 и IPv6,
+включая новые аллокации и чередование TURN endpoint. Живая авторизация VK, captcha
+и полный цикл восстановления DTLS/WG этими проверками не покрыты.
+
+Исключения исходных UDP-портов по-прежнему строятся по снимку при активации и
+сохраняются до очистки TUN. Keepalive обнаруживает новые сокеты для обслуживания;
+он не добавляет и не переносит исключения маршрутизации во время живой аллокации.

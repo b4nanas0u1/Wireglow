@@ -64,3 +64,37 @@ func TestTunPreparationWithPinnedEngines(t *testing.T) {
 		})
 	}
 }
+
+func TestTunKeepaliveOnlyForVKUDPTransport(t *testing.T) {
+	relay, mihomo := os.Getenv("WIREGLOW_RELAY_TEST_BINARY"), os.Getenv("WIREGLOW_MIHOMO_TEST_BINARY")
+	if relay == "" || mihomo == "" {
+		t.Skip("pinned engines required")
+	}
+	for _, tc := range []struct {
+		provider, transport string
+		mode                proxymode.Mode
+		want                bool
+	}{
+		{freeturn.ProviderVK, freeturn.TurnTransportUDP, proxymode.Tun, true},
+		{freeturn.ProviderVK, freeturn.TurnTransportUDP, proxymode.Local, false},
+		{freeturn.ProviderVK, freeturn.TurnTransportTCP, proxymode.Tun, false},
+		{freeturn.ProviderVK, "", proxymode.Tun, false},
+		{freeturn.ProviderDirect, freeturn.TurnTransportUDP, proxymode.Tun, false},
+	} {
+		t.Run(tc.provider+"/"+tc.transport+"/"+string(tc.mode), func(t *testing.T) {
+			p := profile.Profile{Connection: freeturn.Connection{Provider: tc.provider, Peer: "127.0.0.1:56000", TurnTransport: tc.transport, WG: &freeturn.WireGuardSettings{Config: testWG}}}
+			if tc.provider == freeturn.ProviderVK {
+				p.Connection.VK = &freeturn.VKSettings{CallLinks: []string{"https://vk.com/call/join/synthetic"}}
+			}
+			preparer := &Preparer{Relay: Binary{Path: relay}, Mihomo: Binary{Path: mihomo}, RuntimeDir: t.TempDir(), ProbeURL: "https://example.test/probe"}
+			plan, err := preparer.PrepareForMode(t.Context(), p, tc.mode)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer plan.Close()
+			if plan.RelayUDPKeepalive != tc.want {
+				t.Fatal("incorrect UDP maintenance policy")
+			}
+		})
+	}
+}

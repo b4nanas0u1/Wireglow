@@ -15,6 +15,7 @@ type Client struct {
 	Socket         string
 	RelayPID       func() int
 	DirectPeer     func() string
+	UDPKeepalive   func() bool
 	mu             sync.Mutex
 	conn           net.Conn
 	session        string
@@ -81,6 +82,9 @@ func (c *Client) Apply(ctx context.Context, address string) (result error) {
 	request := Request{Version: ProtocolVersion, ID: c.sequence, Operation: "start", ProxyPort: port, RelayPID: c.RelayPID()}
 	if c.DirectPeer != nil {
 		request.DirectPeer = c.DirectPeer()
+	}
+	if c.UDPKeepalive != nil {
+		request.UDPKeepalive = c.UDPKeepalive()
 	}
 	response, err := exchange(ctx, conn, request)
 	if err != nil {

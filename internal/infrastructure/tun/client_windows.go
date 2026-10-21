@@ -12,6 +12,7 @@ type Client struct {
 	Socket         string
 	RelayPID       func() int
 	DirectPeer     func() string
+	UDPKeepalive   func() bool
 }
 
 func (*Client) Unavailable(context.Context) string { return "TUN is not available on Windows yet" }

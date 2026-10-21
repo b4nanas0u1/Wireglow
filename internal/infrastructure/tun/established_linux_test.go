@@ -2,6 +2,7 @@ package tun
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"encoding/json"
 	"io"
@@ -41,6 +42,12 @@ func TestEstablishedPeerChild(t *testing.T) {
 			n, peer, err := socket.ReadFrom(buffer[:])
 			if err != nil {
 				return
+			}
+			if n == 20 && bytes.Equal(buffer[:8], []byte{0, 0x11, 0, 0, 0x21, 0x12, 0xa4, 0x42}) {
+				continue
+			}
+			if string(buffer[:n]) == "new!!" {
+				first = peer.String()
 			}
 			if first == "" {
 				first = peer.String()
@@ -123,6 +130,24 @@ func TestEstablishedRelayChild(t *testing.T) {
 	io.WriteString(os.Stdout, "ready\n")
 	bufio.NewReader(os.Stdin).ReadString('\n')
 	exchange()
+	if os.Getenv("WIREGLOW_TURN_KEEPALIVE") == "1" {
+		fresh, err := net.DialTimeout("udp", establishedUDPRemote(), time.Second)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer fresh.Close()
+		conn = fresh
+		conn.SetDeadline(time.Now().Add(3 * time.Second))
+		if _, err := io.WriteString(conn, "new!!"); err != nil {
+			t.Fatal(err)
+		}
+		var response [5]byte
+		if _, err := io.ReadFull(conn, response[:]); err != nil || string(response[:]) != "new!!" {
+			t.Fatal("new UDP transport", err)
+		}
+		time.Sleep(65 * time.Second)
+		exchange()
+	}
 	if os.Getenv("WIREGLOW_DIRECT_RECREATE") == "1" {
 		// Keep all replacements open to force distinct ports, including sockets that
 		// are created for the first time after capture is enabled.
@@ -158,6 +183,13 @@ func TestIsolatedEstablishedRelayUDP(t *testing.T) { testEstablishedRelay(t, tru
 func TestIsolatedEstablishedRelayUDPUnconnected(t *testing.T) {
 	testEstablishedRelay(t, true, true, false)
 }
+
+// The peer ignores standard STUN keepalives but checks that application data
+// continues from the same external endpoint after mihomo's 60s idle timeout.
+func TestIsolatedTURNUDPIdle(t *testing.T) {
+	t.Setenv("WIREGLOW_TURN_KEEPALIVE", "1")
+	testEstablishedRelay(t, true, false, false)
+}
 func establishedUDPRemote() string {
 	if os.Getenv("WIREGLOW_DIRECT_IPV6") == "1" {
 		return "[2001:db8:42::99]:444"
@@ -182,7 +214,11 @@ func testEstablishedRelay(t *testing.T, udpMode, unconnected, direct bool) {
 	if host == "" || self == host {
 		t.Fatal("host namespace forbidden")
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	timeout := 15 * time.Second
+	if os.Getenv("WIREGLOW_TURN_KEEPALIVE") == "1" {
+		timeout = 90 * time.Second
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	binaryPath := os.Getenv("WIREGLOW_MIHOMO_TEST_BINARY")
 	if binaryPath == "" {
@@ -236,7 +272,7 @@ func testEstablishedRelay(t *testing.T, udpMode, unconnected, direct bool) {
 	server := &Server{UID: uint32(os.Getuid()), Binary: binaryPath, Runtime: t.TempDir()}
 	before4, _ := ip(ctx, "-4", "-j", "rule", "show")
 	before6, _ := ip(ctx, "-6", "-j", "rule", "show")
-	request := Request{ProxyPort: proxy.Addr().(*net.TCPAddr).Port, RelayPID: relay.Process.Pid}
+	request := Request{ProxyPort: proxy.Addr().(*net.TCPAddr).Port, RelayPID: relay.Process.Pid, UDPKeepalive: os.Getenv("WIREGLOW_TURN_KEEPALIVE") == "1"}
 	if direct {
 		request.DirectPeer = establishedUDPRemote()
 	}

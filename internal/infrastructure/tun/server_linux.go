@@ -27,6 +27,7 @@ import (
 // Server is installed root-owned together with its fixed mihomo binary.
 // It never executes a path received over IPC. Runtime must be root-only.
 type Server struct {
+	udpKeeper     *udpKeepalive
 	relayPID      int
 	relayRoutes   []relayRoute
 	relayUDP      []relayUDPRoute
@@ -584,6 +585,10 @@ func (s *Server) handle(ctx context.Context, conn *net.UnixConn) (attempted bool
 					default:
 						if e := s.checkUplink(ctx); e != nil {
 							response.Error = e.Error()
+						} else if s.udpKeeper != nil {
+							if e := s.udpKeeper.failure(); e != nil {
+								response.Error = e.Error()
+							}
 						}
 					}
 				}
@@ -624,6 +629,10 @@ func (s *Server) stop(cmd *exec.Cmd, exited chan error) error {
 		return nil
 	}
 	defer s.releaseNetwork()
+	if s.udpKeeper != nil {
+		s.udpKeeper.close()
+		s.udpKeeper = nil
+	}
 	if s.relayPID > 0 {
 		current, err := relayTCPRoutes(s.relayPID)
 		if err == nil {
@@ -666,7 +675,7 @@ func (s *Server) start(ctx context.Context, uid uint32, req Request) (*exec.Cmd,
 	if err := checkEngineDigest(s.Binary); err != nil {
 		return nil, nil, "", err
 	}
-	if req.ProxyPort < 1 || req.ProxyPort > 65535 || req.RelayPID <= 0 {
+	if req.ProxyPort < 1 || req.ProxyPort > 65535 || req.RelayPID <= 0 || (req.UDPKeepalive && req.DirectPeer != "") {
 		return nil, nil, "", errors.New("tun: invalid start request")
 	}
 	stat, err := os.Stat("/proc/" + strconv.Itoa(req.RelayPID))
@@ -683,6 +692,18 @@ func (s *Server) start(ctx context.Context, uid uint32, req Request) (*exec.Cmd,
 	}
 	if filepath.Base(path) != "free-turn-proxy" {
 		return nil, nil, "", errors.New("tun: unexpected relay executable")
+	}
+	var keeper *udpKeepalive
+	if req.UDPKeepalive {
+		keeper, err = newUDPKeepalive(req.RelayPID, uid)
+		if err != nil {
+			return nil, nil, "", err
+		}
+		defer func() {
+			if !keepLease {
+				keeper.close()
+			}
+		}()
 	}
 	if err := s.Cleanup(ctx); err != nil {
 		return nil, nil, "", err
@@ -812,6 +833,10 @@ func (s *Server) start(ctx context.Context, uid uint32, req Request) (*exec.Cmd,
 		}
 	}
 	keepLease = true
+	if keeper != nil {
+		s.udpKeeper = keeper
+		keeper.start()
+	}
 	s.relayPID = req.RelayPID
 	s.relayRoutes = relayRoutes
 	s.relayUDP = udpRoutes

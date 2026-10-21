@@ -19,13 +19,14 @@ const Lease = 15 * time.Second
 
 // Request deliberately contains no executable, config, provider or output paths.
 type Request struct {
-	Version    int    `json:"version"`
-	ID         uint64 `json:"id"`
-	Operation  string `json:"operation"`
-	Session    string `json:"session,omitempty"`
-	ProxyPort  int    `json:"proxyPort,omitempty"`
-	RelayPID   int    `json:"relayPID,omitempty"`
-	DirectPeer string `json:"directPeer,omitempty"`
+	Version      int    `json:"version"`
+	ID           uint64 `json:"id"`
+	Operation    string `json:"operation"`
+	Session      string `json:"session,omitempty"`
+	ProxyPort    int    `json:"proxyPort,omitempty"`
+	RelayPID     int    `json:"relayPID,omitempty"`
+	DirectPeer   string `json:"directPeer,omitempty"`
+	UDPKeepalive bool   `json:"udpKeepalive,omitempty"`
 }
 type Response struct {
 	Version int    `json:"version"`

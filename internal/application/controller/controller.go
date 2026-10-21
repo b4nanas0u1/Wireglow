@@ -444,6 +444,11 @@ func (c *Controller) RelayDirectPeer() string {
 	}
 	return ""
 }
+
+// RelayUDPKeepalive is read by the network adapter under the session operation lock.
+func (c *Controller) RelayUDPKeepalive() bool {
+	return c.plan != nil && c.plan.RelayUDPKeepalive
+}
 func (c *Controller) watchNetwork(generation uint64, n ports.Network, relay ports.Process) {
 	health, ok := n.(interface{ Failed() <-chan struct{} })
 	if !ok {
