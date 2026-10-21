@@ -99,7 +99,7 @@ source scripts/build-env.sh
 go test -c -o "$cache_root/bin/tun.test" ./internal/infrastructure/tun
 unshare --user --map-root-user --net env WIREGLOW_TUN_TEST=1 WIREGLOW_HOST_NETNS="$(readlink /proc/self/ns/net)" \
   WIREGLOW_MIHOMO_TEST_BINARY="$cache_root/engines/linux-amd64/bin/mihomo" \
-  "$cache_root/bin/tun.test" -test.v -test.run '^TestIsolated(Tun|EstablishedRelayTCP|EstablishedRelayUDP|EstablishedRelayUDPUnconnected)$' -test.timeout 60s
+  "$cache_root/bin/tun.test" -test.v -test.run '^TestIsolated(Tun|EstablishedRelayTCP|EstablishedRelayUDP|EstablishedRelayUDPUnconnected|DirectUDP)$' -test.timeout 60s
 ```
 
 Download pinned engines first with `./scripts/download-linux-engines.sh` and
@@ -204,8 +204,19 @@ rules. UDP rules are journaled and deleted only on an exact match. Regression
 tests compare the peer-visible endpoint before/after TUN for connected and
 unconnected UDP and verify cleanup after an engine crash.
 
-Known limitation: UDP exemptions are a snapshot taken at TUN activation.
+For direct sessions, priority `10216` selects `to <peer-IP> uidrange <UID>-<UID>
+ipproto udp dport <peer-port> lookup main`. Source ports are unrestricted, so
+new and recreated sockets bypass capture from their first packet. The peer is
+resolved before starting FreeTurn, and the same numeric IP is passed to FreeTurn
+and the helper for the session. The stored profile is unchanged; reconnecting
+resolves its hostname again. Other applications with the same UID also bypass
+TUN when sending UDP to this exact endpoint. The rule is journaled before
+installation and removed only on an exact match. Isolated IPv4/IPv6 tests create
+new sockets after activation, check source-port preservation, UID/destination-port
+isolation and cleanup after an engine crash.
+
+Known limitation for VK/TURN sessions: UDP exemptions are a snapshot taken at TUN activation.
 New or recreated FreeTurn sockets do not receive kernel exemptions during the
 session and depend on mihomo's process rule. Old port exemptions remain until
 TUN cleanup. FreeTurn can recreate transports during stream recovery; dynamic
-socket handling remains unfinished.
+socket handling for VK/TURN remains unfinished.

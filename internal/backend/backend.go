@@ -110,6 +110,7 @@ func Open(ctx context.Context, o Options) (*Backend, error) {
 	}}
 	b := &Backend{tun: tunClient, Controller: controller.New(platform.Runner{}, preparer, local, options), Profiles: &persistence.Profiles{Dir: filepath.Join(o.Paths.Data, "profiles")}, lock: lock, settingsPath: filepath.Join(o.Paths.Data, "client-settings.json")}
 	tunClient.RelayPID = b.Controller.RelayPID
+	tunClient.DirectPeer = b.Controller.RelayDirectPeer
 	preparer.Addresses = func() (string, string, string, error) {
 		s, err := b.GetSettings()
 		return s.RelayAddress, s.ProxyAddress, net.JoinHostPort("127.0.0.1", strconv.Itoa(s.APIPort)), err

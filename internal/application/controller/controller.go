@@ -436,6 +436,14 @@ func (c *Controller) RelayPID() int {
 	}
 	return 0
 }
+
+// RelayDirectPeer is called by the network adapter under the session operation lock.
+func (c *Controller) RelayDirectPeer() string {
+	if c.plan != nil {
+		return c.plan.DirectPeer
+	}
+	return ""
+}
 func (c *Controller) watchNetwork(generation uint64, n ports.Network, relay ports.Process) {
 	health, ok := n.(interface{ Failed() <-chan struct{} })
 	if !ok {

@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -22,13 +23,13 @@ func TestEstablishedPeerChild(t *testing.T) {
 	reader := bufio.NewReader(os.Stdin)
 	reader.ReadString('\n')
 	ctx := context.Background()
-	for _, args := range [][]string{{"link", "set", "lo", "up"}, {"link", "set", "peer0", "up"}, {"addr", "add", "203.0.113.99/24", "dev", "peer0"}} {
+	for _, args := range [][]string{{"link", "set", "lo", "up"}, {"link", "set", "peer0", "up"}, {"addr", "add", "203.0.113.99/24", "dev", "peer0"}, {"-6", "addr", "add", "2001:db8:42::99/64", "dev", "peer0", "nodad"}} {
 		if _, err := ip(ctx, args...); err != nil {
 			t.Fatal(err)
 		}
 	}
 	if os.Getenv("WIREGLOW_ESTABLISHED_UDP") == "1" {
-		socket, err := net.ListenPacket("udp4", "203.0.113.99:444")
+		socket, err := net.ListenPacket("udp", establishedUDPRemote())
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -44,7 +45,14 @@ func TestEstablishedPeerChild(t *testing.T) {
 			if first == "" {
 				first = peer.String()
 			}
-			if peer.String() != first {
+			if os.Getenv("WIREGLOW_DIRECT_RECREATE") == "1" {
+				_, port, _ := net.SplitHostPort(peer.String())
+				if string(buffer[:n]) != "port:"+port {
+					socket.WriteTo([]byte("changed"), peer)
+				} else {
+					socket.WriteTo(buffer[:n], peer)
+				}
+			} else if peer.String() != first {
 				socket.WriteTo([]byte("changed"), peer)
 			} else {
 				socket.WriteTo(buffer[:n], peer)
@@ -70,7 +78,7 @@ func TestEstablishedRelayChild(t *testing.T) {
 	}
 	network, remote := "tcp4", "203.0.113.99:443"
 	if os.Getenv("WIREGLOW_ESTABLISHED_UDP") == "1" {
-		network, remote = "udp4", "203.0.113.99:444"
+		network, remote = "udp", establishedUDPRemote()
 	}
 	var conn net.Conn
 	var err error
@@ -89,6 +97,19 @@ func TestEstablishedRelayChild(t *testing.T) {
 	}
 	defer conn.Close()
 	exchange := func() {
+		if os.Getenv("WIREGLOW_DIRECT_RECREATE") == "1" {
+			_, port, _ := net.SplitHostPort(conn.LocalAddr().String())
+			payload := "port:" + port
+			conn.SetDeadline(time.Now().Add(2 * time.Second))
+			if _, err := io.WriteString(conn, payload); err != nil {
+				t.Fatal(err)
+			}
+			b := make([]byte, len(payload))
+			if _, err := io.ReadFull(conn, b); err != nil || string(b) != payload {
+				t.Fatal("new socket first packet or source port lost", string(b), err)
+			}
+			return
+		}
 		conn.SetDeadline(time.Now().Add(2 * time.Second))
 		if _, err := io.WriteString(conn, "alive"); err != nil {
 			t.Fatal(err)
@@ -102,12 +123,57 @@ func TestEstablishedRelayChild(t *testing.T) {
 	io.WriteString(os.Stdout, "ready\n")
 	bufio.NewReader(os.Stdin).ReadString('\n')
 	exchange()
+	if os.Getenv("WIREGLOW_DIRECT_RECREATE") == "1" {
+		// Keep all replacements open to force distinct ports, including sockets that
+		// are created for the first time after capture is enabled.
+		for range 8 {
+			packet, err := net.ListenPacket("udp", ":0")
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer packet.Close()
+			peer, _ := net.ResolveUDPAddr("udp", remote)
+			conn = &testUDPConn{PacketConn: packet, peer: peer}
+			exchange()
+		}
+		// Also exercise closing a live transport and replacing it repeatedly.
+		for range 4 {
+			if err := conn.Close(); err != nil {
+				t.Fatal(err)
+			}
+			packet, err := net.ListenPacket("udp", ":0")
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer packet.Close()
+			peer, _ := net.ResolveUDPAddr("udp", remote)
+			conn = &testUDPConn{PacketConn: packet, peer: peer}
+			exchange()
+		}
+	}
 	io.WriteString(os.Stdout, "survived\n")
 }
-func TestIsolatedEstablishedRelayTCP(t *testing.T)            { testEstablishedRelay(t, false, false) }
-func TestIsolatedEstablishedRelayUDP(t *testing.T)            { testEstablishedRelay(t, true, false) }
-func TestIsolatedEstablishedRelayUDPUnconnected(t *testing.T) { testEstablishedRelay(t, true, true) }
-func testEstablishedRelay(t *testing.T, udpMode, unconnected bool) {
+func TestIsolatedEstablishedRelayTCP(t *testing.T) { testEstablishedRelay(t, false, false, false) }
+func TestIsolatedEstablishedRelayUDP(t *testing.T) { testEstablishedRelay(t, true, false, false) }
+func TestIsolatedEstablishedRelayUDPUnconnected(t *testing.T) {
+	testEstablishedRelay(t, true, true, false)
+}
+func establishedUDPRemote() string {
+	if os.Getenv("WIREGLOW_DIRECT_IPV6") == "1" {
+		return "[2001:db8:42::99]:444"
+	}
+	return "203.0.113.99:444"
+}
+func TestIsolatedDirectUDP(t *testing.T) {
+	for _, ipv6 := range []string{"0", "1"} {
+		t.Run("ipv6="+ipv6, func(t *testing.T) {
+			t.Setenv("WIREGLOW_DIRECT_IPV6", ipv6)
+			t.Setenv("WIREGLOW_DIRECT_RECREATE", "1")
+			testEstablishedRelay(t, true, true, true)
+		})
+	}
+}
+func testEstablishedRelay(t *testing.T, udpMode, unconnected, direct bool) {
 	if os.Getenv("WIREGLOW_TUN_TEST") != "1" {
 		t.Skip("isolated namespace required")
 	}
@@ -132,7 +198,7 @@ func testEstablishedRelay(t *testing.T, udpMode, unconnected bool) {
 		t.Fatal(err)
 	}
 	defer func() { peer.Process.Kill(); peer.Wait() }()
-	for _, args := range [][]string{{"link", "set", "lo", "up"}, {"link", "add", "uplink0", "type", "veth", "peer", "name", "peer0"}, {"link", "set", "peer0", "netns", strconv.Itoa(peer.Process.Pid)}, {"link", "set", "uplink0", "up"}, {"addr", "add", "203.0.113.2/24", "dev", "uplink0"}, {"route", "add", "default", "dev", "uplink0"}} {
+	for _, args := range [][]string{{"link", "set", "lo", "up"}, {"link", "add", "uplink0", "type", "veth", "peer", "name", "peer0"}, {"link", "set", "peer0", "netns", strconv.Itoa(peer.Process.Pid)}, {"link", "set", "uplink0", "up"}, {"addr", "add", "203.0.113.2/24", "dev", "uplink0"}, {"route", "add", "default", "dev", "uplink0"}, {"-6", "addr", "add", "2001:db8:42::2/64", "dev", "uplink0", "nodad"}, {"-6", "route", "add", "default", "dev", "uplink0"}} {
 		if _, err := ip(ctx, args...); err != nil {
 			t.Fatal(err)
 		}
@@ -170,7 +236,11 @@ func testEstablishedRelay(t *testing.T, udpMode, unconnected bool) {
 	server := &Server{UID: uint32(os.Getuid()), Binary: binaryPath, Runtime: t.TempDir()}
 	before4, _ := ip(ctx, "-4", "-j", "rule", "show")
 	before6, _ := ip(ctx, "-6", "-j", "rule", "show")
-	cmd, exited, _, err := server.start(ctx, uint32(os.Getuid()), Request{ProxyPort: proxy.Addr().(*net.TCPAddr).Port, RelayPID: relay.Process.Pid})
+	request := Request{ProxyPort: proxy.Addr().(*net.TCPAddr).Port, RelayPID: relay.Process.Pid}
+	if direct {
+		request.DirectPeer = establishedUDPRemote()
+	}
+	cmd, exited, _, err := server.start(ctx, uint32(os.Getuid()), request)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -180,7 +250,7 @@ func testEstablishedRelay(t *testing.T, udpMode, unconnected bool) {
 		t.Fatal(err)
 	}
 	var recovery journal
-	if json.Unmarshal(record, &recovery) != nil || (!udpMode && len(recovery.RelayTCP) == 0) || (udpMode && len(recovery.RelayUDP) == 0) {
+	if json.Unmarshal(record, &recovery) != nil || (!udpMode && len(recovery.RelayTCP) == 0) || (udpMode && !direct && len(recovery.RelayUDP) == 0) || (direct && (len(recovery.Direct) != 1 || len(recovery.RelayUDP) != 0)) {
 		t.Fatal("missing journaled TCP exemption")
 	}
 	io.WriteString(input, "go\n")
@@ -188,7 +258,19 @@ func testEstablishedRelay(t *testing.T, udpMode, unconnected bool) {
 		t.Fatal("relay transport did not survive TUN activation", line, err)
 	}
 	if tcp.Load() != 0 || udp.Load() != 0 {
-		t.Fatal("existing transport captured by proxy")
+		t.Fatal("relay transport captured by proxy")
+	}
+	if direct {
+		address, _, _ := net.SplitHostPort(establishedUDPRemote())
+		for _, check := range []struct {
+			uid  uint32
+			port string
+		}{{uint32(os.Getuid()), "445"}, {uint32(os.Getuid() + 1), "444"}} {
+			route, err := ip(ctx, "route", "get", address, "uid", strconv.FormatUint(uint64(check.uid), 10), "ipproto", "udp", "dport", check.port)
+			if err != nil || !strings.Contains(string(route), recovery.Device) {
+				t.Fatal("direct exemption broader than UID and endpoint", string(route), err)
+			}
+		}
 	}
 	// Cleanup after an engine crash must also remove the exact socket rules.
 	cmd.Process.Kill()

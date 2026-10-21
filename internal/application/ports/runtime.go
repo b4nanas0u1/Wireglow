@@ -28,6 +28,7 @@ type Runner interface {
 
 // Plan содержит данные одной попытки; секреты не входят в snapshot контроллера.
 type Plan struct {
+	DirectPeer     string // Runtime-pinned IP:port; empty for non-direct sessions.
 	TunReady       bool
 	Relay          Command
 	Engine         Command

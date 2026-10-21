@@ -42,6 +42,7 @@ type Server struct {
 	mu            sync.Mutex
 }
 type journal struct {
+	Direct   []directRoute   `json:"direct,omitempty"`
 	RelayUDP []relayUDPRoute `json:"relayUDP,omitempty"`
 	RelayTCP []relayRoute    `json:"relayTCP,omitempty"`
 	Device   string          `json:"device"`
@@ -160,7 +161,7 @@ func (s *Server) preflight(ctx context.Context) (string, error) {
 			return "", err
 		}
 		for _, r := range rules {
-			if r.Priority == 10217 || r.Priority == 10218 || r.Priority == 10219 || r.Priority == 10220 || fmt.Sprint(r.Table) == "20220" {
+			if r.Priority == 10216 || r.Priority == 10217 || r.Priority == 10218 || r.Priority == 10219 || r.Priority == 10220 || fmt.Sprint(r.Table) == "20220" {
 				return "", errors.New("tun: reserved routing resources are busy")
 			}
 		}
@@ -240,6 +241,14 @@ func (s *Server) Cleanup(ctx context.Context) (result error) {
 			return errors.New("tun: invalid UDP recovery route")
 		}
 	}
+	if len(j.Direct) > 1 {
+		return errors.New("tun: invalid direct recovery routes")
+	}
+	for _, route := range j.Direct {
+		if !route.valid() {
+			return errors.New("tun: invalid direct recovery route")
+		}
+	}
 	for _, route := range j.RelayTCP {
 		if !route.valid() {
 			return errors.New("tun: invalid relay recovery route")
@@ -270,6 +279,24 @@ func (s *Server) Cleanup(ctx context.Context) (result error) {
 			return e
 		}
 		for _, r := range rules {
+			if r.Priority == 10216 {
+				matched := false
+				for _, route := range j.Direct {
+					args := route.args("del")
+					host, port, _ := net.SplitHostPort(route.Peer)
+					if args[0] == family && r.Src == "all" && r.Dst == host && r.Mark == nil && len(r.Not) == 0 && r.OIF == "" && r.UIDStart != nil && r.UIDEnd != nil && *r.UIDStart == route.UID && *r.UIDEnd == route.UID && r.Protocol == "udp" && r.Sport == nil && fmt.Sprint(r.Dport) == port && fmt.Sprint(r.Table) == "main" {
+						matched = true
+						if _, e = ip(ctx, args...); e != nil {
+							return e
+						}
+						break
+					}
+				}
+				if !matched {
+					return errors.New("tun: direct route ownership changed; recovery journal retained")
+				}
+				continue
+			}
 			if r.Priority == 10217 {
 				matched := false
 				for _, route := range j.RelayUDP {
@@ -682,11 +709,18 @@ func (s *Server) start(ctx context.Context, uid uint32, req Request) (*exec.Cmd,
 	if err != nil {
 		return nil, nil, "", err
 	}
-	udpRoutes, err := relayUDPRoutes(req.RelayPID, uid)
+	direct, err := directRoutes(req.DirectPeer, uid)
 	if err != nil {
 		return nil, nil, "", err
 	}
-	if err = s.writeJournal(journal{Device: device, Uplink: uplink, RelayTCP: relayRoutes, RelayUDP: udpRoutes}); err != nil {
+	var udpRoutes []relayUDPRoute
+	if req.DirectPeer == "" {
+		udpRoutes, err = relayUDPRoutes(req.RelayPID, uid)
+		if err != nil {
+			return nil, nil, "", err
+		}
+	}
+	if err = s.writeJournal(journal{Device: device, Uplink: uplink, RelayTCP: relayRoutes, RelayUDP: udpRoutes, Direct: direct}); err != nil {
 		return nil, nil, "", err
 	}
 	cmd := exec.Command(s.Binary, "-d", s.Runtime, "-f", config)
@@ -718,6 +752,11 @@ func (s *Server) start(ctx context.Context, uid uint32, req Request) (*exec.Cmd,
 		}
 		if _, err = net.InterfaceByName(device); err == nil {
 			break
+		}
+	}
+	for _, route := range direct {
+		if _, err = ip(ctx, route.args("add")...); err != nil {
+			return fail(err)
 		}
 	}
 	for _, route := range udpRoutes {

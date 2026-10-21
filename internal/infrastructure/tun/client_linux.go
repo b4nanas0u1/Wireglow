@@ -14,6 +14,7 @@ type Client struct {
 	helper         *helperProcess
 	Socket         string
 	RelayPID       func() int
+	DirectPeer     func() string
 	mu             sync.Mutex
 	conn           net.Conn
 	session        string
@@ -77,7 +78,11 @@ func (c *Client) Apply(ctx context.Context, address string) (result error) {
 		return errors.New("tun: helper unavailable")
 	}
 	c.sequence++
-	response, err := exchange(ctx, conn, Request{Version: ProtocolVersion, ID: c.sequence, Operation: "start", ProxyPort: port, RelayPID: c.RelayPID()})
+	request := Request{Version: ProtocolVersion, ID: c.sequence, Operation: "start", ProxyPort: port, RelayPID: c.RelayPID()}
+	if c.DirectPeer != nil {
+		request.DirectPeer = c.DirectPeer()
+	}
+	response, err := exchange(ctx, conn, request)
 	if err != nil {
 		conn.Close()
 		return err

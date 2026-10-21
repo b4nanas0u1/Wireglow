@@ -171,9 +171,17 @@ func (p *Preparer) Prepare(ctx context.Context, profile profile.Profile) (*ports
 }
 
 func (p *Preparer) PrepareForMode(ctx context.Context, profile profile.Profile, mode proxymode.Mode) (_ *ports.Plan, err error) {
+	directPeer := ""
 	if mode == proxymode.Tun {
 		// Override only the runtime copy. Stored/imported profile remains intact.
 		profile.Connection.DNS = freeturn.DNSSettings{Mode: freeturn.DNSModePlain, Servers: []string{tun.BootstrapDNS}}
+		if profile.Connection.Provider == freeturn.ProviderDirect {
+			directPeer, err = pinDirectPeer(ctx, profile.Connection.Peer, net.DefaultResolver.LookupNetIP)
+			if err != nil {
+				return nil, err
+			}
+			profile.Connection.Peer = directPeer
+		}
 	}
 
 	if mode := profile.Connection.RelayMode; mode != "" && mode != "udp" {
@@ -269,9 +277,10 @@ func (p *Preparer) PrepareForMode(ctx context.Context, profile profile.Profile, 
 		return nil, errors.New("mihomo: configuration validation failed")
 	}
 	plan := &ports.Plan{
-		TunReady: mode == proxymode.Tun,
-		Relay:    ports.Command{Path: p.Relay.Path, Args: args, Dir: dir, ClearProxyEnv: true},
-		Engine:   ports.Command{CaptureDiagnostics: runtime.GOOS == "linux", Path: p.Mihomo.Path, Args: []string{"-d", dir, "-f", configPath}, Dir: dir}, MixedAddress: mixed,
+		DirectPeer: directPeer,
+		TunReady:   mode == proxymode.Tun,
+		Relay:      ports.Command{Path: p.Relay.Path, Args: args, Dir: dir, ClearProxyEnv: true},
+		Engine:     ports.Command{CaptureDiagnostics: runtime.GOOS == "linux", Path: p.Mihomo.Path, Args: []string{"-d", dir, "-f", configPath}, Dir: dir}, MixedAddress: mixed,
 		Close: func() error { return persistence.CleanupSession(p.RuntimeDir) },
 	}
 	plan.Ready = func(ctx context.Context) error { return waitAPI(ctx, api, secret) }

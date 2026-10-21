@@ -102,7 +102,7 @@ source scripts/build-env.sh
 go test -c -o "$cache_root/bin/tun.test" ./internal/infrastructure/tun
 unshare --user --map-root-user --net env WIREGLOW_TUN_TEST=1 WIREGLOW_HOST_NETNS="$(readlink /proc/self/ns/net)" \
   WIREGLOW_MIHOMO_TEST_BINARY="$cache_root/engines/linux-amd64/bin/mihomo" \
-  "$cache_root/bin/tun.test" -test.v -test.run '^TestIsolated(Tun|EstablishedRelayTCP|EstablishedRelayUDP|EstablishedRelayUDPUnconnected)$' -test.timeout 60s
+  "$cache_root/bin/tun.test" -test.v -test.run '^TestIsolated(Tun|EstablishedRelayTCP|EstablishedRelayUDP|EstablishedRelayUDPUnconnected|DirectUDP)$' -test.timeout 60s
 ```
 
 Заранее скачайте закреплённые ядра через `./scripts/download-linux-engines.sh` и
@@ -208,8 +208,19 @@ UDP-правила входят в журнал и удаляются тольк
 Регрессия проверяет обмен с peer до/после TUN, неизменность source endpoint
 для connected и unconnected UDP и очистку после аварии engine.
 
-Известное ограничение: исключения UDP строятся по снимку на момент активации
+Для direct правило `10216` выбирает `to <peer-IP> uidrange <UID>-<UID>
+ipproto udp dport <peer-порт> lookup main`. Исходный порт не ограничен: новые и
+пересозданные сокеты идут мимо TUN с первого пакета. Peer разрешается до запуска
+FreeTurn; один и тот же числовой IP передаётся FreeTurn и helper на всю сессию.
+Сохранённый профиль не меняется; при переподключении домен разрешается заново.
+Другие приложения того же UID тоже обходят TUN при отправке UDP на этот точный
+endpoint. Правило записывается в журнал до установки и удаляется только по
+полному совпадению. Изолированные тесты IPv4/IPv6 создают новые сокеты после
+активации, проверяют сохранение исходного порта, ограничения UID/порта назначения
+и очистку после аварии engine.
+
+Известное ограничение VK/TURN: исключения UDP строятся по снимку на момент активации
 TUN. Новые и пересозданные сокеты FreeTurn не получают исключений ядра во время
 сессии и зависят от правила процесса в mihomo. Исключения старых портов остаются
 до очистки TUN. FreeTurn может пересоздавать транспорт при восстановлении
-потоков; обработка смены сокетов пока не завершена.
+потоков; обработка смены сокетов VK/TURN пока не завершена.

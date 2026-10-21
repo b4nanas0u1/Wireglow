@@ -11,6 +11,7 @@ type Client struct {
 	PortableHelper string
 	Socket         string
 	RelayPID       func() int
+	DirectPeer     func() string
 }
 
 func (*Client) Unavailable(context.Context) string { return "TUN is not available on Windows yet" }

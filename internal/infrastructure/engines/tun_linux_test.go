@@ -20,7 +20,7 @@ func TestTunPreparationWithPinnedEngines(t *testing.T) {
 	if relay == "" || mihomo == "" {
 		t.Skip("pinned relay and mihomo required")
 	}
-	original := profile.Profile{Connection: freeturn.Connection{Provider: freeturn.ProviderDirect, Peer: "127.0.0.1:56000", WG: &freeturn.WireGuardSettings{Config: testWG}, DNS: freeturn.DNSSettings{Mode: freeturn.DNSModeAuto, Servers: []string{"9.9.9.9"}}}}
+	original := profile.Profile{Connection: freeturn.Connection{Provider: freeturn.ProviderDirect, Peer: "localhost:56000", WG: &freeturn.WireGuardSettings{Config: testWG}, DNS: freeturn.DNSSettings{Mode: freeturn.DNSModeAuto, Servers: []string{"9.9.9.9"}}}}
 	for _, mode := range []proxymode.Mode{proxymode.Local, proxymode.Tun} {
 		t.Run(string(mode), func(t *testing.T) {
 			preparer := &Preparer{Relay: Binary{Path: relay}, Mihomo: Binary{Path: mihomo}, RuntimeDir: t.TempDir(), ProbeURL: "https://example.test/probe"}
@@ -46,16 +46,19 @@ func TestTunPreparationWithPinnedEngines(t *testing.T) {
 			}
 			args := strings.Join(plan.Relay.Args, " ")
 			if mode == proxymode.Tun {
+				if plan.DirectPeer != "127.0.0.1:56000" || !strings.Contains(args, "-peer "+plan.DirectPeer) {
+					t.Fatal("direct destination not handed to helper")
+				}
 				if !plan.TunReady || !strings.Contains(args, "-dns-mode plain") || !strings.Contains(args, "-dns-servers "+tun.BootstrapDNS) {
 					t.Fatal("bootstrap override missing")
 				}
-			} else if plan.TunReady || !strings.Contains(args, "-dns-mode auto") || !strings.Contains(args, "-dns-servers 9.9.9.9") {
+			} else if plan.DirectPeer != "" || plan.TunReady || !strings.Contains(args, "-dns-mode auto") || !strings.Contains(args, "-dns-servers 9.9.9.9") {
 				t.Fatal("local settings changed")
 			}
 			if !plan.Relay.ClearProxyEnv {
 				t.Fatal("proxy environment inherited")
 			}
-			if original.Connection.DNS.Mode != freeturn.DNSModeAuto || original.Connection.DNS.Servers[0] != "9.9.9.9" {
+			if original.Connection.Peer != "localhost:56000" || original.Connection.DNS.Mode != freeturn.DNSModeAuto || original.Connection.DNS.Servers[0] != "9.9.9.9" {
 				t.Fatal("stored profile mutated")
 			}
 		})
