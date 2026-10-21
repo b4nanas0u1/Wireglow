@@ -279,7 +279,12 @@ func Worker(ctx context.Context, dir string) error {
 		if _, err = rand.Read(token); err != nil {
 			return err
 		}
-		endpoint := Endpoint{Socket: filepath.Join(dir, "control.sock"), Token: hex.EncodeToString(token)}
+		socket, socketErr := platform.DesktopSocket(dir, r.RunID)
+		if socketErr != nil {
+			return socketErr
+		}
+		defer platform.CleanupDesktopSocket(r.RunID)
+		endpoint := Endpoint{Socket: socket, Token: hex.EncodeToString(token)}
 		listener, listenErr := net.Listen("unix", endpoint.Socket)
 		if listenErr != nil {
 			return listenErr
@@ -443,5 +448,9 @@ func Watchdog(ctx context.Context, dir string) error {
 	manager := &network.Manager{Path: filepath.Join(r.Options.Paths.Data, "proxy-journal.json"), Settings: platform.ProxySettings{}}
 	recoveryCtx, recoveryCancel := context.WithTimeout(ctx, 20*time.Second)
 	defer recoveryCancel()
-	return errors.Join(manager.Recover(recoveryCtx), persistence.CleanupSession(r.Options.Paths.Runtime))
+	var ipcErr error
+	if r.Desktop {
+		ipcErr = platform.CleanupDesktopSocket(r.RunID)
+	}
+	return errors.Join(manager.Recover(recoveryCtx), persistence.CleanupSession(r.Options.Paths.Runtime), ipcErr)
 }

@@ -17,7 +17,8 @@ func ProbeUDP(ctx context.Context, mixed string) error {
 	if _, err := loopbackPort(mixed); err != nil {
 		return err
 	}
-	failure := errors.New("probe: UDP path not confirmed")
+	failure := probeError("probe: UDP SOCKS association failed")
+	parentCtx := ctx
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 	control, err := (&net.Dialer{}).DialContext(ctx, "tcp4", mixed)
@@ -94,13 +95,28 @@ func ProbeUDP(ctx context.Context, mixed string) error {
 	}
 	query = append(query, 0, 0, 1, 0, 1)
 	// Один фиксированный resolver через PROXY, без fallback в физическую сеть.
+	failure = probeError("probe: UDP DNS request failed")
 	header := []byte{0, 0, 0, 1, 1, 1, 1, 1, 0, 53}
 	if _, err := packetConn.Write(append(header, query...)); err != nil {
 		return failure
 	}
 	buffer := make([]byte, 4096)
 	n, err := packetConn.Read(buffer)
-	if err != nil || n < 22 {
+	if err != nil {
+		if parentCtx.Err() != nil {
+			return probeError("probe: UDP DNS cancelled or startup deadline exceeded")
+		}
+		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+			return probeError("probe: UDP DNS timeout after 10s")
+		}
+		var timeout net.Error
+		if errors.As(err, &timeout) && timeout.Timeout() {
+			return probeError("probe: UDP DNS timeout after 10s")
+		}
+		return failure
+	}
+	failure = probeError("probe: UDP DNS response invalid")
+	if n < 22 {
 		return failure
 	}
 	if string(buffer[:10]) != string(header) {

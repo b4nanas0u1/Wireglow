@@ -339,4 +339,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lightTheme => 'Light';
+
+  @override
+  String get tunMode => 'TUN';
+
+  @override
+  String get tunHelp =>
+      'TUN captures IP traffic. Enabling it reconnects the session and uses 1.1.1.1 as direct bootstrap DNS. Other active VPNs block activation.';
 }

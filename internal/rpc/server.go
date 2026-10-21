@@ -99,6 +99,8 @@ func parseMode(mode pb.ProxyMode) (proxymode.Mode, error) {
 		return proxymode.Local, nil
 	case pb.ProxyMode_PROXY_MODE_SYSTEM:
 		return proxymode.System, nil
+	case pb.ProxyMode_PROXY_MODE_TUN:
+		return proxymode.Tun, nil
 	default:
 		return "", status.Error(codes.InvalidArgument, "invalid proxy mode")
 	}
@@ -109,6 +111,8 @@ func modeMessage(mode proxymode.Mode) pb.ProxyMode {
 		return pb.ProxyMode_PROXY_MODE_LOCAL
 	case proxymode.System:
 		return pb.ProxyMode_PROXY_MODE_SYSTEM
+	case proxymode.Tun:
+		return pb.ProxyMode_PROXY_MODE_TUN
 	default:
 		return pb.ProxyMode_PROXY_MODE_UNSPECIFIED
 	}
@@ -137,7 +141,7 @@ func (s *service) SetSettings(ctx context.Context, req *pb.ClientSettings) (*pb.
 	return s.GetSettings(ctx, &emptypb.Empty{})
 }
 func (s *service) GetCapabilities(ctx context.Context, _ *emptypb.Empty) (*pb.Capabilities, error) {
-	return pb.Capabilities_builder{SystemProxyUnavailableReason: s.backend.SystemProxyUnavailable(ctx)}.Build(), nil
+	return pb.Capabilities_builder{SystemProxyUnavailableReason: s.backend.SystemProxyUnavailable(ctx), TunUnavailableReason: s.backend.TunUnavailable(ctx)}.Build(), nil
 }
 
 func (s *service) ListProfiles(ctx context.Context, _ *emptypb.Empty) (*pb.ListProfilesResponse, error) {

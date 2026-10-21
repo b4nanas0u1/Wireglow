@@ -721,6 +721,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Light'**
   String get lightTheme;
+
+  /// No description provided for @tunMode.
+  ///
+  /// In en, this message translates to:
+  /// **'TUN'**
+  String get tunMode;
+
+  /// No description provided for @tunHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'TUN captures IP traffic. Enabling it reconnects the session and uses 1.1.1.1 as direct bootstrap DNS. Other active VPNs block activation.'**
+  String get tunHelp;
 }
 
 class _AppLocalizationsDelegate

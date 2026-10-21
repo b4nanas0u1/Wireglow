@@ -19,12 +19,13 @@ The project is under active development.
 - Import, store, and edit selected settings in free-turn-proxy profiles.
 - Connect and disconnect sessions, and view their status and latency.
 - Use a local HTTP/SOCKS proxy or switch to system proxy mode.
+- Experimental [Linux TUN mode](docs/en/tun-mode.md) with an installed helper or a temporary helper in portable builds.
 - Configure local addresses and ports for network components.
 - Use the interface in Russian or English.
 
 ## Roadmap
 
-- TUN mode for routing traffic without configuring a proxy in each application.
+- Windows TUN helper and end-to-end validation of remote TUN sessions.
 - Routing rules to send selected services directly and route all other traffic through the connection.
 - Download free-turn-proxy releases from GitHub and choose which version to use.
 

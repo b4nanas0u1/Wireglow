@@ -27,6 +27,7 @@ const (
 	ProxyMode_PROXY_MODE_UNSPECIFIED ProxyMode = 0
 	ProxyMode_PROXY_MODE_LOCAL       ProxyMode = 1
 	ProxyMode_PROXY_MODE_SYSTEM      ProxyMode = 2
+	ProxyMode_PROXY_MODE_TUN         ProxyMode = 3
 )
 
 // Enum value maps for ProxyMode.
@@ -35,11 +36,13 @@ var (
 		0: "PROXY_MODE_UNSPECIFIED",
 		1: "PROXY_MODE_LOCAL",
 		2: "PROXY_MODE_SYSTEM",
+		3: "PROXY_MODE_TUN",
 	}
 	ProxyMode_value = map[string]int32{
 		"PROXY_MODE_UNSPECIFIED": 0,
 		"PROXY_MODE_LOCAL":       1,
 		"PROXY_MODE_SYSTEM":      2,
+		"PROXY_MODE_TUN":         3,
 	}
 )
 
@@ -431,6 +434,7 @@ func (b0 ClientSettings_builder) Build() *ClientSettings {
 type Capabilities struct {
 	state                                   protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_SystemProxyUnavailableReason string                 `protobuf:"bytes,1,opt,name=system_proxy_unavailable_reason,json=systemProxyUnavailableReason"`
+	xxx_hidden_TunUnavailableReason         string                 `protobuf:"bytes,2,opt,name=tun_unavailable_reason,json=tunUnavailableReason"`
 	unknownFields                           protoimpl.UnknownFields
 	sizeCache                               protoimpl.SizeCache
 }
@@ -467,14 +471,26 @@ func (x *Capabilities) GetSystemProxyUnavailableReason() string {
 	return ""
 }
 
+func (x *Capabilities) GetTunUnavailableReason() string {
+	if x != nil {
+		return x.xxx_hidden_TunUnavailableReason
+	}
+	return ""
+}
+
 func (x *Capabilities) SetSystemProxyUnavailableReason(v string) {
 	x.xxx_hidden_SystemProxyUnavailableReason = v
+}
+
+func (x *Capabilities) SetTunUnavailableReason(v string) {
+	x.xxx_hidden_TunUnavailableReason = v
 }
 
 type Capabilities_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	SystemProxyUnavailableReason string
+	TunUnavailableReason         string
 }
 
 func (b0 Capabilities_builder) Build() *Capabilities {
@@ -482,6 +498,7 @@ func (b0 Capabilities_builder) Build() *Capabilities {
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_SystemProxyUnavailableReason = b.SystemProxyUnavailableReason
+	x.xxx_hidden_TunUnavailableReason = b.TunUnavailableReason
 	return m0
 }
 
@@ -2040,9 +2057,10 @@ const file_controller_proto_rawDesc = "" +
 	"\x0epreferred_mode\x18\x01 \x01(\x0e2\x1b.wireglow.control.ProxyModeR\rpreferredMode\x12#\n" +
 	"\rproxy_address\x18\x02 \x01(\tR\fproxyAddress\x12#\n" +
 	"\rrelay_address\x18\x03 \x01(\tR\frelayAddress\x12\x19\n" +
-	"\bapi_port\x18\x04 \x01(\rR\aapiPort\"U\n" +
+	"\bapi_port\x18\x04 \x01(\rR\aapiPort\"\x8b\x01\n" +
 	"\fCapabilities\x12E\n" +
-	"\x1fsystem_proxy_unavailable_reason\x18\x01 \x01(\tR\x1csystemProxyUnavailableReason\" \n" +
+	"\x1fsystem_proxy_unavailable_reason\x18\x01 \x01(\tR\x1csystemProxyUnavailableReason\x124\n" +
+	"\x16tun_unavailable_reason\x18\x02 \x01(\tR\x14tunUnavailableReason\" \n" +
 	"\x0eProfileRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\xa1\x01\n" +
 	"\fProfileEdits\x12\x0e\n" +
@@ -2133,11 +2151,12 @@ const file_controller_proto_rawDesc = "" +
 	"checked_at\x18\x03 \x01(\x03R\tcheckedAt\x12\x1d\n" +
 	"\n" +
 	"success_at\x18\x04 \x01(\x03R\tsuccessAt\x12\x14\n" +
-	"\x05error\x18\x05 \x01(\tR\x05error*T\n" +
+	"\x05error\x18\x05 \x01(\tR\x05error*h\n" +
 	"\tProxyMode\x12\x1a\n" +
 	"\x16PROXY_MODE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10PROXY_MODE_LOCAL\x10\x01\x12\x15\n" +
-	"\x11PROXY_MODE_SYSTEM\x10\x02*\xe5\x01\n" +
+	"\x11PROXY_MODE_SYSTEM\x10\x02\x12\x12\n" +
+	"\x0ePROXY_MODE_TUN\x10\x03*\xe5\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +

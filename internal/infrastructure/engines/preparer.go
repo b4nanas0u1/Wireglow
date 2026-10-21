@@ -4,24 +4,33 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/sha256"
+	"crypto/tls"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
+	"net/http/httptrace"
 	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
+	"sync/atomic"
+	"syscall"
 	"time"
 
 	"wireglow/internal/application/ports"
 	"wireglow/internal/domain/profile"
+	"wireglow/internal/domain/proxymode"
+	"wireglow/internal/freeturn"
 	"wireglow/internal/infrastructure/engines/manifest"
 	"wireglow/internal/infrastructure/persistence"
+	"wireglow/internal/infrastructure/tun"
 )
 
 type Binary struct {
@@ -79,7 +88,21 @@ func (p Ports) addresses() (relay, mixed, api string, err error) {
 	return net.JoinHostPort("127.0.0.1", strconv.Itoa(p.Relay)), net.JoinHostPort("127.0.0.1", strconv.Itoa(p.Mixed)), net.JoinHostPort("127.0.0.1", strconv.Itoa(p.API)), nil
 }
 
+type dnsConfig struct {
+	Enable      bool     `json:"enable"`
+	IPv6        bool     `json:"ipv6"`
+	Mode        string   `json:"enhanced-mode"`
+	Nameservers []string `json:"nameserver"`
+}
+
+func tunDNS() *dnsConfig {
+	// The outer TUN owns fake-IP mappings. Inner WG must never resolve through
+	// the captured system resolver and receive addresses from that other cache.
+	return &dnsConfig{Enable: true, Mode: "redir-host", Nameservers: []string{"https://1.0.0.1/dns-query#PROXY"}}
+}
+
 type config struct {
+	DNS         *dnsConfig `json:"dns,omitempty"`
 	MixedPort   int        `json:"mixed-port"`
 	BindAddress string     `json:"bind-address"`
 	AllowLAN    bool       `json:"allow-lan"`
@@ -143,7 +166,16 @@ func freePorts() (relay, mixed, api string, release func(), err error) {
 	return listeners[0].Addr().String(), listeners[1].Addr().String(), listeners[2].Addr().String(), release, nil
 }
 
-func (p *Preparer) Prepare(ctx context.Context, profile profile.Profile) (_ *ports.Plan, err error) {
+func (p *Preparer) Prepare(ctx context.Context, profile profile.Profile) (*ports.Plan, error) {
+	return p.PrepareForMode(ctx, profile, proxymode.Local)
+}
+
+func (p *Preparer) PrepareForMode(ctx context.Context, profile profile.Profile, mode proxymode.Mode) (_ *ports.Plan, err error) {
+	if mode == proxymode.Tun {
+		// Override only the runtime copy. Stored/imported profile remains intact.
+		profile.Connection.DNS = freeturn.DNSSettings{Mode: freeturn.DNSModePlain, Servers: []string{tun.BootstrapDNS}}
+	}
+
 	if mode := profile.Connection.RelayMode; mode != "" && mode != "udp" {
 		return nil, errors.New("engine: MVP supports only UDP relay with WG/AWG settings")
 	}
@@ -214,6 +246,12 @@ func (p *Preparer) Prepare(ctx context.Context, profile profile.Profile) (_ *por
 	secret := hex.EncodeToString(secretBytes)
 	mixedPort, _ := loopbackPort(mixed)
 	c := config{MixedPort: mixedPort, BindAddress: "127.0.0.1", Mode: "rule", LogLevel: "silent", Controller: api, Secret: secret, Proxies: []Outbound{outbound}, Rules: []string{"MATCH,PROXY"}}
+	if runtime.GOOS == "linux" {
+		c.LogLevel = "warning"
+	}
+	if mode == proxymode.Tun {
+		c.DNS = tunDNS()
+	}
 	configPath := filepath.Join(dir, "config.yaml")
 	// JSON — подмножество YAML: строки и ключи экранируются стандартным сериализатором.
 	if err := persistence.WriteJSON(configPath, c); err != nil {
@@ -231,8 +269,9 @@ func (p *Preparer) Prepare(ctx context.Context, profile profile.Profile) (_ *por
 		return nil, errors.New("mihomo: configuration validation failed")
 	}
 	plan := &ports.Plan{
-		Relay:  ports.Command{Path: p.Relay.Path, Args: args, Dir: dir},
-		Engine: ports.Command{Path: p.Mihomo.Path, Args: []string{"-d", dir, "-f", configPath}, Dir: dir}, MixedAddress: mixed,
+		TunReady: mode == proxymode.Tun,
+		Relay:    ports.Command{Path: p.Relay.Path, Args: args, Dir: dir, ClearProxyEnv: true},
+		Engine:   ports.Command{CaptureDiagnostics: runtime.GOOS == "linux", Path: p.Mihomo.Path, Args: []string{"-d", dir, "-f", configPath}, Dir: dir}, MixedAddress: mixed,
 		Close: func() error { return persistence.CleanupSession(p.RuntimeDir) },
 	}
 	plan.Ready = func(ctx context.Context) error { return waitAPI(ctx, api, secret) }
@@ -288,6 +327,12 @@ func waitAPI(ctx context.Context, address, secret string) error {
 	}
 }
 
+// probeError contains only fixed phase labels, never raw transport errors.
+type probeError string
+
+func (e probeError) Error() string            { return string(e) }
+func (e probeError) PublicDiagnostic() string { return string(e) }
+
 // Probe проверяет TLS и точный статус через mixed inbound; redirects запрещены.
 func Probe(ctx context.Context, address, target string, status int) error {
 	if _, err := loopbackPort(address); err != nil {
@@ -295,24 +340,82 @@ func Probe(ctx context.Context, address, target string, status int) error {
 	}
 	u, err := url.Parse(target)
 	if err != nil || u.Scheme != "https" || u.Hostname() == "" || u.User != nil {
-		return errors.New("probe: invalid HTTPS endpoint")
+		return probeError("probe: invalid HTTPS endpoint")
 	}
 	proxy, _ := url.Parse("http://" + address)
-	transport := &http.Transport{Proxy: http.ProxyURL(proxy), TLSHandshakeTimeout: 10 * time.Second}
+	var connectStatus atomic.Int32
+	var phase atomic.Value
+	phase.Store("local proxy CONNECT")
+	transport := &http.Transport{
+		Proxy: http.ProxyURL(proxy), TLSHandshakeTimeout: 10 * time.Second,
+		OnProxyConnectResponse: func(_ context.Context, _ *url.URL, _ *http.Request, response *http.Response) error {
+			connectStatus.Store(int32(response.StatusCode))
+			return nil
+		},
+	}
 	defer transport.CloseIdleConnections()
 	client := &http.Client{Transport: transport, Timeout: 15 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
 	req, err := http.NewRequestWithContext(ctx, "GET", target, nil)
 	if err != nil {
-		return errors.New("probe: request failed")
+		return probeError("probe: request failed")
 	}
+	req = req.WithContext(httptrace.WithClientTrace(req.Context(), &httptrace.ClientTrace{
+		TLSHandshakeStart: func() { phase.Store("TLS handshake") },
+		TLSHandshakeDone: func(_ tls.ConnectionState, err error) {
+			if err == nil {
+				phase.Store("HTTPS response")
+			}
+		},
+	}))
 	response, err := client.Do(req)
 	if err != nil {
-		return errors.New("probe: HTTPS path not confirmed")
+		return probeDiagnostic(ctx, err, phase.Load().(string), int(connectStatus.Load()))
 	}
 	defer response.Body.Close()
 	_, _ = io.Copy(io.Discard, io.LimitReader(response.Body, 4096))
 	if response.StatusCode != status {
-		return errors.New("probe: unexpected HTTP status " + strconv.Itoa(response.StatusCode))
+		return probeError("probe: unexpected HTTP status " + strconv.Itoa(response.StatusCode))
 	}
 	return nil
+}
+
+// Never publish err.Error(): transport errors can contain URLs and credentials.
+func probeDiagnostic(ctx context.Context, err error, phase string, connectStatus int) error {
+	prefix := "probe: " + phase + ": "
+	if connectStatus != 0 && connectStatus != http.StatusOK {
+		return probeError("probe: local proxy CONNECT returned HTTP " + strconv.Itoa(connectStatus))
+	}
+	if ctx.Err() != nil {
+		return probeError(prefix + "cancelled or startup deadline exceeded")
+	}
+	var timeout net.Error
+	if errors.As(err, &timeout) && timeout.Timeout() {
+		return probeError(prefix + "timed out")
+	}
+	var certificate *tls.CertificateVerificationError
+	if errors.As(err, &certificate) {
+		return probeError(prefix + "certificate verification failed")
+	}
+	var record tls.RecordHeaderError
+	if errors.As(err, &record) {
+		return probeError(prefix + "received non-TLS response")
+	}
+	for _, item := range []struct {
+		cause error
+		label string
+	}{
+		{io.EOF, "peer closed connection (EOF)"}, {io.ErrUnexpectedEOF, "peer closed connection (unexpected EOF)"},
+		{syscall.ECONNRESET, "connection reset"}, {syscall.ECONNREFUSED, "connection refused"},
+		{syscall.ENETUNREACH, "network unreachable"}, {syscall.EHOSTUNREACH, "host unreachable"},
+		{syscall.EPIPE, "broken pipe"},
+	} {
+		if errors.Is(err, item.cause) {
+			return probeError(prefix + item.label)
+		}
+	}
+	// The concrete error type gives a useful fallback without its private text.
+	for errors.Unwrap(err) != nil {
+		err = errors.Unwrap(err)
+	}
+	return probeError(prefix + fmt.Sprintf("transport error (%T)", err))
 }

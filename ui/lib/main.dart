@@ -1,7 +1,11 @@
+import 'checked_popup_menu.dart';
+
 import 'dart:async';
 import 'dart:ui' show AppExitResponse;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'
+    show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/services.dart';
 
 import 'app_info.dart';
@@ -304,15 +308,18 @@ class ConnectScreen extends StatelessWidget {
     final displayedMode = model.connected
         ? model.snapshot.activeMode
         : model.preferredMode;
-    String label(ProxyMode mode) => mode == ProxyMode.PROXY_MODE_SYSTEM
+    String label(ProxyMode mode) => mode == ProxyMode.PROXY_MODE_TUN
+        ? l.tunMode
+        : mode == ProxyMode.PROXY_MODE_SYSTEM
         ? l.systemProxyMode
         : mode == ProxyMode.PROXY_MODE_LOCAL
         ? l.localProxyMode
         : l.proxyModeUnknown;
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 260),
-      child: PopupMenuButton<ProxyMode>(
+      child: CheckedPopupMenuButton<ProxyMode>(
         key: const Key('proxy-mode-selector'),
+        check: model.refreshModeAvailability,
         tooltip: label(displayedMode),
         enabled:
             model.available &&
@@ -321,21 +328,19 @@ class ConnectScreen extends StatelessWidget {
             !model.stopping,
         initialValue: model.preferredMode,
         onSelected: model.selectMode,
-        padding: EdgeInsets.zero,
-        menuPadding: const EdgeInsets.symmetric(vertical: 4),
         constraints: const BoxConstraints(minWidth: 144, maxWidth: 200),
         itemBuilder: (context) => [
           for (final mode in [
             ProxyMode.PROXY_MODE_LOCAL,
             ProxyMode.PROXY_MODE_SYSTEM,
+            if (defaultTargetPlatform == TargetPlatform.linux)
+              ProxyMode.PROXY_MODE_TUN,
           ])
             PopupMenuItem<ProxyMode>(
               value: mode,
               height: 32,
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              enabled:
-                  mode != ProxyMode.PROXY_MODE_SYSTEM ||
-                  model.systemProxyUnavailableReason.isEmpty,
+              enabled: model.modeEnabled(mode),
               child: Semantics(
                 checked: mode == displayedMode,
                 child: Row(
@@ -351,9 +356,7 @@ class ConnectScreen extends StatelessWidget {
                     const SizedBox(width: 8),
                     Flexible(
                       child: Tooltip(
-                        message: mode == ProxyMode.PROXY_MODE_SYSTEM
-                            ? model.systemProxyUnavailableReason
-                            : '',
+                        message: model.modeUnavailableReason(mode),
                         child: Text(
                           label(mode),
                           style: const TextStyle(fontSize: 13),
@@ -928,6 +931,11 @@ class ConnectScreen extends StatelessWidget {
                           : model.preferredMode) ==
                       ProxyMode.PROXY_MODE_SYSTEM
                 ? AppLocalizations.of(context)!.systemProxy
+                : (model.busySession
+                          ? model.snapshot.activeMode
+                          : model.preferredMode) ==
+                      ProxyMode.PROXY_MODE_TUN
+                ? AppLocalizations.of(context)!.tunHelp
                 : AppLocalizations.of(context)!.localProxyHelp,
             style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
           ),

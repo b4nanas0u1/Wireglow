@@ -25,7 +25,7 @@ func TestSettingsPersistAcrossBackendRestart(t *testing.T) {
 	if err := b.SetSettings(Settings{PreferredMode: proxymode.System}); err != nil {
 		t.Fatal(err)
 	}
-	if err := b.SetSettings(Settings{PreferredMode: "tun"}); err == nil {
+	if err := b.SetSettings(Settings{PreferredMode: "unknown-mode"}); err == nil {
 		t.Fatal("unsupported mode accepted")
 	}
 	if err := b.Close(); err != nil {
@@ -40,7 +40,7 @@ func TestSettingsPersistAcrossBackendRestart(t *testing.T) {
 	if err != nil || settings.PreferredMode != proxymode.System {
 		t.Fatalf("restored = %+v, %v", settings, err)
 	}
-	if err := os.WriteFile(restored.settingsPath, []byte(`{"preferredMode":"tun"}`), 0600); err != nil {
+	if err := os.WriteFile(restored.settingsPath, []byte(`{"preferredMode":"unknown-mode"}`), 0600); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := restored.GetSettings(); err == nil {

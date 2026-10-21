@@ -29,6 +29,10 @@ func (c *Controller) SwitchMode(ctx context.Context, mode proxymode.Mode) error 
 		c.mu.Unlock()
 		return nil
 	}
+	if mode == proxymode.Tun && !c.plan.TunReady {
+		c.mu.Unlock()
+		return errors.Join(ErrModeSwitch, errors.New("tun: reconnect to configure bootstrap DNS"))
+	}
 	address := c.snapshot.MixedAddress
 	c.mu.Unlock()
 	if c.options.NetworkForMode == nil {
@@ -60,6 +64,7 @@ func (c *Controller) SwitchMode(ctx context.Context, mode proxymode.Mode) error 
 		return errors.Join(ErrModeSwitch, err, rollbackErr)
 	}
 	c.modeResult(mode, "")
+	c.watchNetwork(c.Snapshot().Generation, target, c.relay)
 	return nil
 }
 

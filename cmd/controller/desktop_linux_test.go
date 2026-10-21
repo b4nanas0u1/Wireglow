@@ -32,13 +32,9 @@ func TestDesktopOwnerLifetime(t *testing.T) {
 	if out, err := exec.Command("go", "build", "-o", binary, ".").CombinedOutput(); err != nil {
 		t.Fatal(err, string(out))
 	}
-	for _, crash := range []bool{false, true} {
-		name := "stdin-eof"
-		if crash {
-			name = "owner-crash"
-		}
+	for _, name := range []string{"stdin-eof", "owner-crash", "controller-crash"} {
 		t.Run(name, func(t *testing.T) {
-			run := filepath.Join(dir, name)
+			run := filepath.Join(dir, "portable-path-longer-than-unix-socket-limit", "nested-client-distribution", name)
 			ctx, cancel := context.WithTimeout(context.Background(), 40*time.Second)
 			defer cancel()
 			cmd := exec.CommandContext(ctx, binary, "desktop", "--data-dir", filepath.Join(run, "data"), "--runtime-dir", filepath.Join(run, "run"))
@@ -59,7 +55,14 @@ func TestDesktopOwnerLifetime(t *testing.T) {
 				t.Fatal(err)
 			}
 			var identity platform.Identity
-			if err = persistence.ReadJSON(filepath.Join(filepath.Dir(endpoint.Socket), "controller.json"), &identity); err != nil {
+			ownerDirs, err := filepath.Glob(filepath.Join(run, "run", "owner-*"))
+			if err != nil || len(ownerDirs) != 1 {
+				t.Fatal("missing private owner state", err)
+			}
+			if len(endpoint.Socket) >= 108 || filepath.Dir(endpoint.Socket) == ownerDirs[0] {
+				t.Fatal("IPC still depends on portable path length")
+			}
+			if err = persistence.ReadJSON(filepath.Join(ownerDirs[0], "controller.json"), &identity); err != nil {
 				t.Fatal(err)
 			}
 			conn, err := grpc.NewClient("unix://"+endpoint.Socket, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -71,13 +74,21 @@ func TestDesktopOwnerLifetime(t *testing.T) {
 			if _, err = pb.NewControllerServiceClient(conn).Hello(callCtx, &emptypb.Empty{}); err != nil {
 				t.Fatal(err)
 			}
-			if crash {
+			if name == "controller-crash" {
+				process, err := os.FindProcess(identity.PID)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if err = process.Kill(); err != nil {
+					t.Fatal(err)
+				}
+			} else if name == "owner-crash" {
 				_ = cmd.Process.Kill()
 			} else {
 				_ = stdin.Close()
 			}
 			err = cmd.Wait()
-			if !crash && err != nil {
+			if name == "stdin-eof" && err != nil {
 				t.Fatal(err)
 			}
 			for {
@@ -93,6 +104,17 @@ func TestDesktopOwnerLifetime(t *testing.T) {
 					t.Fatal("controller survived owner")
 				case <-time.After(100 * time.Millisecond):
 				}
+			}
+			deadline := time.Now().Add(5 * time.Second)
+			for {
+				_, err := os.Stat(filepath.Dir(endpoint.Socket))
+				if os.IsNotExist(err) {
+					break
+				}
+				if time.Now().After(deadline) {
+					t.Fatal("IPC directory survived owner cleanup")
+				}
+				time.Sleep(50 * time.Millisecond)
 			}
 		})
 	}

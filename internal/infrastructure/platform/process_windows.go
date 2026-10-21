@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"sync"
+
 	"unsafe"
 
 	"wireglow/internal/application/ports"
@@ -15,6 +16,7 @@ import (
 
 type Runner struct{}
 type process struct {
+	pid    uint32
 	handle windows.Handle
 	job    windows.Handle
 	done   chan struct{}
@@ -71,7 +73,24 @@ func startWindows(ctx context.Context, spec ports.Command, managed bool) (ports.
 	si := windows.StartupInfo{Cb: uint32(unsafe.Sizeof(windows.StartupInfo{}))}
 	var pi windows.ProcessInformation
 	flags := uint32(windows.CREATE_SUSPENDED | windows.CREATE_NO_WINDOW)
-	if err = windows.CreateProcess(app, line, nil, nil, false, flags, nil, dir, &si, &pi); err != nil {
+	var environment *uint16
+	if spec.ClearProxyEnv {
+		var data []uint16
+		for _, entry := range withoutProxyEnvironment() {
+			encoded, e := windows.UTF16FromString(entry)
+			if e != nil {
+				if job != 0 {
+					windows.CloseHandle(job)
+				}
+				return nil, e
+			}
+			data = append(data, encoded...)
+		}
+		data = append(data, 0)
+		environment = &data[0]
+		flags |= windows.CREATE_UNICODE_ENVIRONMENT
+	}
+	if err = windows.CreateProcess(app, line, nil, nil, false, flags, environment, dir, &si, &pi); err != nil {
 		if job != 0 {
 			windows.CloseHandle(job)
 		}
@@ -96,7 +115,7 @@ func startWindows(ctx context.Context, spec ports.Command, managed bool) (ports.
 		abort()
 		return nil, err
 	}
-	p := &process{handle: pi.Process, job: job, done: make(chan struct{})}
+	p := &process{pid: pi.ProcessId, handle: pi.Process, job: job, done: make(chan struct{})}
 	go func() {
 		_, err := windows.WaitForSingleObject(pi.Process, windows.INFINITE)
 		var code uint32
@@ -158,3 +177,5 @@ func (p *process) Stop(ctx context.Context) error {
 		return ctx.Err()
 	}
 }
+
+func (p *process) PID() int { return int(p.pid) }

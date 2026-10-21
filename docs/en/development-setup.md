@@ -99,9 +99,10 @@ UI/backend preferences and the recovery journal, and `data/runtime/` for tempora
 session state. Without the marker, the existing OS directories are used.
 The portable GUI ignores `WIREGLOW_DATA_DIR` and `WIREGLOW_RUNTIME_DIR`;
 explicit controller CLI flags still take precedence.
-The build refuses to replace an existing portable directory: move it with its
-user data first. When updating, preserve user files in `data/` while replacing
-Flutter resources from the new bundle. See the bundle README for details.
+Rebuilding replaces the existing portable directory in `dist/` after successful
+packaging: obsolete application files are removed, user files in `data/` are
+preserved, and Flutter resources are refreshed. Close the portable app first.
+A failed build leaves the previous bundle intact. See the bundle README for details.
 
 
 The script downloads the pinned network engines and builds the controller and UI. Go, Dart, generator, and engine caches stay in `.cache/` in the repository root. The Flutter SDK is resolved from `.cache/flutter/` or `PATH`. No adjacent project directories are required.
@@ -177,3 +178,12 @@ go test ./...
 Build the full distribution with the platform script above. The build scripts run `flutter pub get` themselves. To work on only the Flutter UI, change to `ui/` and use regular Flutter commands, such as `flutter run -d windows` or `flutter run -d linux`.
 
 The currently supported local build targets are Windows x64 and Linux x64. The Bash and PowerShell build scripts are temporary and independent; a shared cross-platform build system has not been selected yet.
+
+
+For the optional Linux TUN helper, installation details and an isolated packet test that preserves other VPNs, see [TUN mode](tun-mode.md).
+
+The IPC smoke keeps temporary launcher state in a short system temporary directory. Test profile data stays in the repository cache; the Linux socket uses the private system runtime described below.
+
+On Linux, desktop controller IPC also uses a private short `$XDG_RUNTIME_DIR/wg-<run ID>` directory (or `/run/user/<UID>/wg-<run ID>`), independent of the bundle path length. Portable profiles, locks, lease files and recovery journals remain inside the bundle; the worker and watchdog clean up the transient socket directory.
+
+Portable Linux TUN uses a temporary polkit helper, with no service installation or autostart. The optional `install-tun-helper.sh` is shipped only with the regular Linux bundle. See [TUN mode](tun-mode.md).

@@ -319,10 +319,13 @@ class ClientSettings extends $pb.GeneratedMessage {
 class Capabilities extends $pb.GeneratedMessage {
   factory Capabilities({
     $core.String? systemProxyUnavailableReason,
+    $core.String? tunUnavailableReason,
   }) {
     final result = Capabilities._();
     if (systemProxyUnavailableReason != null)
       result.systemProxyUnavailableReason = systemProxyUnavailableReason;
+    if (tunUnavailableReason != null)
+      result.tunUnavailableReason = tunUnavailableReason;
     return result;
   }
 
@@ -341,6 +344,7 @@ class Capabilities extends $pb.GeneratedMessage {
           const $pb.PackageName(_omitMessageNames ? '' : 'wireglow.control'),
       createEmptyInstance: Capabilities.$_createMessage)
     ..aOS(1, _omitFieldNames ? '' : 'systemProxyUnavailableReason')
+    ..aOS(2, _omitFieldNames ? '' : 'tunUnavailableReason')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -373,6 +377,15 @@ class Capabilities extends $pb.GeneratedMessage {
   $core.bool hasSystemProxyUnavailableReason() => $_has(0);
   @$pb.TagNumber(1)
   void clearSystemProxyUnavailableReason() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get tunUnavailableReason => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set tunUnavailableReason($core.String value) => $_setString(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasTunUnavailableReason() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearTunUnavailableReason() => $_clearField(2);
 }
 
 class ProfileRequest extends $pb.GeneratedMessage {

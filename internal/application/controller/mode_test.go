@@ -28,7 +28,7 @@ func TestSessionModeSwitchUsesCorrectNetworkAndCleanup(t *testing.T) {
 		return local, nil
 	}
 	ctx := context.Background()
-	if err := c.ConnectWithMode(ctx, profile.Profile{}, "tun"); err == nil {
+	if err := c.ConnectWithMode(ctx, profile.Profile{}, "unknown-mode"); err == nil {
 		t.Fatal("unsupported mode accepted")
 	}
 	if selections != 0 {

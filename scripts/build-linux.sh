@@ -17,11 +17,6 @@ if (( $# > 1 )); then
   echo "Использование: $0 [--portable]" >&2
   exit 1
 fi
-# Never replace a portable folder that may already contain user data.
-if [[ $variant == linux-x64-portable && -e "$root/dist/$variant" ]]; then
-  echo "Каталог $root/dist/$variant уже существует. Переместите его перед сборкой, чтобы сохранить данные." >&2
-  exit 1
-fi
 source "$root/scripts/build-env.sh"
 # Абсолютные пути нужны после перехода в каталог Flutter.
 mkdir -p -- "$cache_root"
@@ -41,13 +36,25 @@ fi
 # Старый дистрибутив заменяется только после успешной сборки и упаковки.
 mkdir -p -- "$root/dist"
 staging=$(mktemp -d "$root/dist/.$variant.XXXXXX")
-trap 'rm -rf -- "$staging"' EXIT
+target="$root/dist/$variant"
+previous=
+cleanup() {
+  rm -rf -- "$staging"
+  if [[ -n "$previous" && -d "$previous" && ! -e "$target" ]]; then
+    mv -- "$previous" "$target"
+  fi
+}
+trap cleanup EXIT
 chmod 755 -- "$staging"
 mkdir -p -- "$staging/bin"
 cp -a -- "$bundle/." "$staging/"
 # Keep Flutter's build-tree name for flutter run; expose the product name in dist.
 mv -- "$staging/wireglow_ui" "$staging/$app_name"
 install -m 755 -- "$cache_root/bin/controller" "$staging/bin/controller"
+go -C "$root" build -o "$staging/bin/tun-helper" ./cmd/tun-helper
+if [[ $variant != linux-x64-portable ]]; then
+  install -m 755 -- "$scripts_root/linux/install-tun-helper.sh" "$staging/"
+fi
 install -m 755 -- "$relay" "$staging/bin/free-turn-proxy"
 install -m 755 -- "$mihomo" "$staging/bin/mihomo"
 install -m 755 -- "$scripts_root/linux/install-desktop.sh" "$staging/"
@@ -60,7 +67,50 @@ fi
   cd -- "$staging"
   find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
 )
-rm -rf -- "$root/dist/$variant"
-mv -- "$staging" "$root/dist/$variant"
+if [[ -e "$target" || -L "$target" ]]; then
+  if [[ ! -d "$target" || -L "$target" ]]; then
+    echo "Ожидался обычный каталог дистрибутива: $target" >&2
+    exit 1
+  fi
+  if [[ $variant == linux-x64-portable && ( -e "$target/data" || -L "$target/data" ) ]]; then
+    if [[ ! -d "$target/data" || -L "$target/data" ]]; then
+      echo "Ожидался обычный каталог portable-данных: $target/data" >&2
+      exit 1
+    fi
+    # Hold existing owner locks while copying data and replacing the bundle.
+    # No new lock files are created in an unused portable distribution.
+    portable_locks=()
+    for lock in launcher controller; do
+      lock_path="$target/data/runtime/$lock.lock"
+      if [[ -f "$lock_path" ]]; then
+        exec {lock_fd}<>"$lock_path"
+        if ! flock -n "$lock_fd"; then
+          echo 'Завершите portable-приложение перед заменой сборки.' >&2
+          exit 1
+        fi
+        portable_locks+=("$lock_fd")
+      fi
+    done
+    # data/ mixes user storage with Flutter resources. Replace shipped assets;
+    # carry over all other entries, including hidden files and recovery state.
+    # Keep user files out of the distribution's SHA256SUMS above.
+    (
+      shopt -s dotglob nullglob
+      for entry in "$target/data/"*; do
+        case "${entry##*/}" in
+          flutter_assets|icudtl.dat|app-name.txt|app-icon.png) continue ;;
+        esac
+        cp -a -- "$entry" "$staging/data/"
+      done
+    )
+    chmod --reference="$target/data" "$staging/data"
+  fi
+  previous="$staging.previous"
+  mv -- "$target" "$previous"
+fi
+mv -- "$staging" "$target"
+if [[ -n "$previous" ]]; then
+  rm -rf -- "$previous"
+fi
 echo "Дистрибутив: $root/dist/$variant"
 echo "Запуск: $root/dist/$variant/$app_name"

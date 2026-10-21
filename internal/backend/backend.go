@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"sync"
 
@@ -17,6 +18,7 @@ import (
 	"wireglow/internal/infrastructure/network"
 	"wireglow/internal/infrastructure/persistence"
 	"wireglow/internal/infrastructure/platform"
+	"wireglow/internal/infrastructure/tun"
 )
 
 type Options struct {
@@ -35,6 +37,7 @@ type Backend struct {
 	lock         *platform.Lock
 	settingsPath string
 	settingsMu   sync.Mutex
+	tun          *tun.Client
 	once         sync.Once
 	err          error
 }
@@ -85,13 +88,28 @@ func Open(ctx context.Context, o Options) (*Backend, error) {
 	if o.SystemProxy {
 		defaultMode = proxymode.System
 	} // Только для отдельной CLI-команды connect.
+	tunClient := &tun.Client{}
+	executable, err := os.Executable()
+	if err != nil {
+		return nil, err
+	}
+	if err = tunClient.ConfigurePortable(executable); err != nil {
+		return nil, err
+	}
 	options := controller.Options{DefaultMode: defaultMode, NetworkForMode: func(mode proxymode.Mode) (ports.Network, error) {
+		if mode == proxymode.Tun {
+			if runtime.GOOS != "linux" {
+				return nil, errors.New("tun: Windows helper not implemented")
+			}
+			return tunClient, nil
+		}
 		if mode == proxymode.Local {
 			return local, nil
 		}
 		return guardedNetwork{manager: manager, identity: o.RecoveryIdentity}, nil
 	}}
-	b := &Backend{Controller: controller.New(platform.Runner{}, preparer, local, options), Profiles: &persistence.Profiles{Dir: filepath.Join(o.Paths.Data, "profiles")}, lock: lock, settingsPath: filepath.Join(o.Paths.Data, "client-settings.json")}
+	b := &Backend{tun: tunClient, Controller: controller.New(platform.Runner{}, preparer, local, options), Profiles: &persistence.Profiles{Dir: filepath.Join(o.Paths.Data, "profiles")}, lock: lock, settingsPath: filepath.Join(o.Paths.Data, "client-settings.json")}
+	tunClient.RelayPID = b.Controller.RelayPID
 	preparer.Addresses = func() (string, string, string, error) {
 		s, err := b.GetSettings()
 		return s.RelayAddress, s.ProxyAddress, net.JoinHostPort("127.0.0.1", strconv.Itoa(s.APIPort)), err
@@ -111,4 +129,11 @@ func (b *Backend) Connect(ctx context.Context, id string) error {
 func (b *Backend) Close() error {
 	b.once.Do(func() { b.err = errors.Join(b.Controller.Shutdown(), b.lock.Close()) })
 	return b.err
+}
+
+func (b *Backend) TunUnavailable(ctx context.Context) string {
+	if b.tun == nil {
+		return "TUN helper unavailable"
+	}
+	return b.tun.Unavailable(ctx)
 }

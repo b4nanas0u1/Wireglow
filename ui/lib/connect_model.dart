@@ -22,10 +22,16 @@ class ConnectModel extends ChangeNotifier {
   String relayAddress = '127.0.0.1:17890';
   int apiPort = 17892;
   String systemProxyUnavailableReason = '';
+  String tunUnavailableReason = '';
+  String modeUnavailableReason(ProxyMode mode) =>
+      mode == ProxyMode.PROXY_MODE_TUN
+      ? tunUnavailableReason
+      : mode == ProxyMode.PROXY_MODE_SYSTEM
+      ? systemProxyUnavailableReason
+      : '';
+  bool modeEnabled(ProxyMode mode) => modeUnavailableReason(mode).isEmpty;
   bool switchingMode = false;
-  bool get modeAvailable =>
-      preferredMode != ProxyMode.PROXY_MODE_SYSTEM ||
-      systemProxyUnavailableReason.isEmpty;
+  bool get modeAvailable => modeEnabled(preferredMode);
 
   Future<void> selectMode(ProxyMode mode) async {
     if (!available ||
@@ -36,9 +42,8 @@ class ConnectModel extends ChangeNotifier {
             (!connected || snapshot.activeMode == mode))) {
       return;
     }
-    if (mode == ProxyMode.PROXY_MODE_SYSTEM &&
-        systemProxyUnavailableReason.isNotEmpty) {
-      error = systemProxyUnavailableReason;
+    if (!modeEnabled(mode)) {
+      error = modeUnavailableReason(mode);
       _notify();
       return;
     }
@@ -50,7 +55,15 @@ class ConnectModel extends ChangeNotifier {
     try {
       preferredMode = (await repository.setMode(mode)).preferredMode;
       if (applyToSession) {
-        _accept(await repository.switchMode(preferredMode));
+        if (preferredMode == ProxyMode.PROXY_MODE_TUN &&
+            snapshot.activeMode != preferredMode) {
+          final profileId = snapshot.profileId;
+          _accept(await repository.disconnect());
+          await repository.connect(profileId, mode: preferredMode);
+          _accept(await repository.snapshot());
+        } else {
+          _accept(await repository.switchMode(preferredMode));
+        }
       }
     } catch (e) {
       error = message(e);
@@ -176,10 +189,29 @@ class ConnectModel extends ChangeNotifier {
     }
   }
 
+  Future<bool> refreshModeAvailability() async {
+    if (!available || disposed) return false;
+    try {
+      final capabilities = await repository.capabilities();
+      if (disposed) return false;
+      systemProxyUnavailableReason = capabilities.systemProxyUnavailableReason;
+      tunUnavailableReason = capabilities.tunUnavailableReason;
+      _notify();
+      return true;
+    } catch (e) {
+      if (!disposed) {
+        error = message(e);
+        _notify();
+      }
+      return false;
+    }
+  }
+
   Future<void> _refresh() async {
     _acceptSettings(await repository.settings());
-    systemProxyUnavailableReason =
-        (await repository.capabilities()).systemProxyUnavailableReason;
+    final capabilities = await repository.capabilities();
+    systemProxyUnavailableReason = capabilities.systemProxyUnavailableReason;
+    tunUnavailableReason = capabilities.tunUnavailableReason;
     profiles = await repository.profiles();
     _accept(await repository.snapshot());
     selected =
