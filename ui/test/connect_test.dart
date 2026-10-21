@@ -7,6 +7,7 @@ import 'package:grpc/grpc.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:wireglow_ui/app_info.dart';
 import 'package:wireglow_ui/connect_model.dart';
 import 'package:wireglow_ui/controller/controller_repository.dart' hide State;
 import 'package:wireglow_ui/controller/gen/controller.pb.dart' as pb;
@@ -318,7 +319,17 @@ void main() {
     );
     await tester.tap(find.text('О клиенте'));
     await tester.pumpAndSettle();
-    expect(find.text('Версия клиента'), findsOneWidget);
+    expect(find.text('Версия'), findsOneWidget);
+    expect(find.text(appVersion), findsOneWidget);
+    expect(find.text('Тег'), findsNothing);
+    expect(
+      tester.getTopLeft(find.text('Версия')).dy,
+      lessThan(tester.getTopLeft(find.text('Коммит')).dy),
+    );
+    expect(
+      tester.getTopLeft(find.text('Коммит')).dy,
+      lessThan(tester.getTopLeft(find.text('Время сборки')).dy),
+    );
     expect(find.text('Коммит'), findsOneWidget);
     expect(find.text('Время сборки'), findsOneWidget);
     expect(find.text('mihomo'), findsOneWidget);
@@ -344,7 +355,7 @@ void main() {
     expect(model.selected!.id, 'direct');
     await tester.pumpWidget(const SizedBox());
     await tester.runAsync(model.close);
-  }, skip: Platform.isWindows);
+  });
 
   testWidgets('latency refresh, failure and disconnect', (tester) async {
     final repository = FakeRepository();
@@ -641,5 +652,5 @@ void main() {
     }
     await tester.pumpWidget(const SizedBox());
     await tester.runAsync(model.close);
-  }, skip: Platform.isWindows);
+  });
 }

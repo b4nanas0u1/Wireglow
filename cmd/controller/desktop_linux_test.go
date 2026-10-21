@@ -54,15 +54,11 @@ func TestDesktopOwnerLifetime(t *testing.T) {
 			if err = json.NewDecoder(stdout).Decode(&endpoint); err != nil {
 				t.Fatal(err)
 			}
-			var identity platform.Identity
-			ownerDirs, err := filepath.Glob(filepath.Join(run, "run", "owner-*"))
-			if err != nil || len(ownerDirs) != 1 {
-				t.Fatal("missing private owner state", err)
-			}
-			if len(endpoint.Socket) >= 108 || filepath.Dir(endpoint.Socket) == ownerDirs[0] {
+			if len(endpoint.Socket) >= 108 || filepath.Dir(endpoint.Socket) == desktopRunDir(t, filepath.Join(run, "run")) {
 				t.Fatal("IPC still depends on portable path length")
 			}
-			if err = persistence.ReadJSON(filepath.Join(ownerDirs[0], "controller.json"), &identity); err != nil {
+			var identity platform.Identity
+			if err = persistence.ReadJSON(filepath.Join(desktopRunDir(t, filepath.Join(run, "run")), "controller.json"), &identity); err != nil {
 				t.Fatal(err)
 			}
 			conn, err := grpc.NewClient("unix://"+endpoint.Socket, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -105,16 +101,17 @@ func TestDesktopOwnerLifetime(t *testing.T) {
 				case <-time.After(100 * time.Millisecond):
 				}
 			}
-			deadline := time.Now().Add(5 * time.Second)
 			for {
-				_, err := os.Stat(filepath.Dir(endpoint.Socket))
-				if os.IsNotExist(err) {
+				if _, err := os.Stat(filepath.Dir(endpoint.Socket)); os.IsNotExist(err) {
 					break
+				} else if err != nil {
+					t.Fatal(err)
 				}
-				if time.Now().After(deadline) {
-					t.Fatal("IPC directory survived owner cleanup")
+				select {
+				case <-ctx.Done():
+					t.Fatal("temporary IPC directory survived cleanup")
+				case <-time.After(100 * time.Millisecond):
 				}
-				time.Sleep(50 * time.Millisecond)
 			}
 		})
 	}

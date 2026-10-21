@@ -36,5 +36,7 @@ root-owned `wireglow-tun.service`. В portable-комплекте установ
 в стандартных каталогах пользователя. Для их переопределения доступны
 `WIREGLOW_DATA_DIR` и `WIREGLOW_RUNTIME_DIR`.
 При наличии `portable.json` все пользовательские данные находятся в `data/`
-рядом с приложением, временные файлы — в `data/runtime/`. В portable-режиме
+рядом с приложением, состояние launcher/recovery — в `data/runtime/`.
+Временный IPC-сокет создаётся отдельно в закрытом системном runtime и удаляется
+watchdog после завершения controller. В portable-режиме
 переменные каталогов игнорируются GUI. Явные CLI-флаги controller имеют приоритет.

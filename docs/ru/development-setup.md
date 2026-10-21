@@ -45,6 +45,36 @@ cd <каталог репозитория>
 
 Flutter из `PATH` используется автоматически. Можно также положить SDK в `.cache\flutter-windows\flutter` в корне репозитория — сборочный сценарий обнаружит его там. Кэши сборки хранятся только в `.cache/` внутри репозитория.
 
+### Portable-комплект Windows
+
+Запустите `./scripts/build-windows-portable.ps1`
+(или `./scripts/build-windows.ps1 -Portable`). Отдельный результат —
+`dist/windows-x64-portable/`; запускайте `Wireglow.exe` напрямую.
+Маркер `portable.json` сохраняет профили, настройки UI/backend и журнал
+восстановления прокси в `data/` внутри комплекта, а блокировки и состояние
+launcher — в `data/runtime/`. Portable GUI игнорирует `WIREGLOW_DATA_DIR` и
+`WIREGLOW_RUNTIME_DIR`. Папка должна быть доступна для записи; при ошибке перехода
+на AppData нет. DLL Visual C++ runtime включены, как в обычном комплекте.
+
+Существующий portable-каталог не заменяется: перед повторной сборкой переместите
+его вместе с данными. Перед переносом или обновлением закройте приложение и
+дождитесь recovery. Сохраняйте пользовательские файлы в `data/`, заменяя только
+ресурсы Flutter (`app.so`, `icudtl.dat`, `flutter_assets/`) и другие файлы поставки.
+Не применяйте незавершённый журнал восстановления прокси на другом компьютере.
+Проверяйте комплектный `SHA256SUMS` до первого запуска.
+
+Только временный IPC находится вне portable-папки. Windows создаёт сокет
+в отдельной папке `%TEMP%/wg-<run ID>/` с доступом текущего пользователя и SYSTEM;
+Linux использует `$XDG_RUNTIME_DIR/wg-<run ID>/` (или `/run/user/<UID>/wg-<run ID>/`),
+с правами 0700 на папку и 0600 на сокет. Независимый watchdog удаляет её после
+завершения controller, включая аварию GUI. Адрес IPC больше не зависит от пути
+распаковки; постоянные данные и recovery-состояние остаются в portable-папке.
+
+CI собирает оба Windows-варианта и публикует
+`Wireglow-<version>-windows-x64.zip` и `Wireglow-<version>-windows-x64-portable.zip`
+как артефакты и файлы релиза. Файлы лежат непосредственно в корне ZIP.
+Релизный `SHA256SUMS` включает оба архива.
+
 ## Linux x64 (Ubuntu/Debian)
 
 ### 1. Установите системные зависимости
@@ -116,7 +146,7 @@ cd <repository directory>
 
 ## Проверки и CI
 
-GitHub Actions запускает проверки и сборки Linux, Linux portable и Windows
+GitHub Actions запускает проверки и обычные/portable-сборки Linux и Windows
 при каждом обновлении PR, каждом коммите в `master` и публикации релиза.
 Ручная сборка через `workflow_dispatch` по-прежнему доступна для `master`.
 Этапы выполняются последовательно: линты → тесты → сборки → публикация релиза.
@@ -143,7 +173,7 @@ flutter analyze --no-pub
 go test -count=1 -timeout 120s ./...
 cd ui
 flutter pub get
-flutter test --no-pub --reporter expanded
+flutter test --no-pub --reporter expanded --dart-define=APP_VERSION=0.1.0
 ```
 
 Отдельные Linux-задачи проверяют Go-интеграции (systemd lifecycle, восстановление
@@ -187,3 +217,17 @@ IPC smoke размещает временное состояние launcher в �
 В Linux IPC desktop-controller также размещается в закрытом коротком каталоге `$XDG_RUNTIME_DIR/wg-<run ID>` или `/run/user/<UID>/wg-<run ID>`, независимо от длины пути комплекта. Portable-профили, блокировки, lease и recovery-журналы остаются внутри комплекта; worker и watchdog удаляют временный каталог сокета.
 
 Portable Linux TUN использует временный helper через polkit, без установки службы и автозапуска. Необязательный `install-tun-helper.sh` поставляется только с обычным Linux-комплектом. Подробности — в [инструкции TUN](tun-mode.md).
+
+Вкладка «О клиенте» показывает точный Git-тег собираемого коммита (включая
+префикс `v`, если он есть) или `dev`, если у коммита нет тега. Локальные скрипты
+определяют тег через Git; CI загружает теги и полную историю. Прямые сборки
+Flutter без `APP_VERSION` также показывают `dev`. Версия пакета Flutter из
+`pubspec.yaml` не используется как отображаемая версия клиента.
+
+Команды golden-тестов задают `APP_VERSION=0.1.0`, сохраняя стабильность эталонов.
+Для отдельной проверки версии по умолчанию и версии из тега выполните из `ui/`:
+
+```sh
+flutter test --no-pub test/app_info_test.dart
+flutter test --no-pub --dart-define=APP_VERSION=v1.2.3 test/app_info_test.dart
+```

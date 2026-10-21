@@ -176,7 +176,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get repositoryMissing => 'Repository was not specified at build time';
 
   @override
-  String get clientVersion => 'Client version';
+  String get clientVersion => 'Version';
 
   @override
   String get commit => 'Commit';
@@ -215,7 +215,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get controllerFailed =>
-      'Controller did not start. Check systemd --user and make sure no other client is running.';
+      'Controller did not start. Check access to the data folder and make sure no other client is running.';
 
   @override
   String get settingsFailed => 'Could not save the language preference.';

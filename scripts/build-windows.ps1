@@ -5,7 +5,7 @@ Temporary Windows x64 equivalent of build-linux.sh and ui/build-linux.sh.
 Replace these platform scripts with a shared cross-platform build system later.
 #>
 [CmdletBinding()]
-param()
+param([switch]$Portable)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -19,10 +19,15 @@ $sourceRoot = Split-Path -Parent $scriptsRoot
 $cacheRoot = Join-Path $sourceRoot '.cache'
 $cacheBin = Join-Path $cacheRoot 'bin'
 $distRoot = Join-Path $sourceRoot 'dist'
-$destination = Join-Path $distRoot 'windows-x64'
+$variant = if ($Portable) { 'windows-x64-portable' } else { 'windows-x64' }
+$destination = Join-Path $distRoot $variant
+# Portable output may contain user data. Refuse before downloading or building.
+if ($Portable -and (Test-Path -LiteralPath $destination)) {
+    throw "Portable output already exists: $destination. Move it with its data before building."
+}
 $buildId = [guid]::NewGuid().ToString('N')
-$staging = Join-Path $distRoot ".windows-x64.stage.$buildId"
-$previous = Join-Path $distRoot ".windows-x64.previous.$buildId"
+$staging = Join-Path $distRoot ".$variant.stage.$buildId"
+$previous = Join-Path $distRoot ".$variant.previous.$buildId"
 $manifestTool = Join-Path $cacheBin 'engine-manifest.exe'
 $savedEnvironment = @{}
 foreach ($name in @('GOCACHE', 'GOPATH', 'GOMODCACHE', 'ANALYZER_STATE_LOCATION_OVERRIDE', 'GOOS', 'GOARCH', 'PUB_CACHE', 'CI', 'FLUTTER_SUPPRESS_ANALYTICS')) {
@@ -69,14 +74,14 @@ function Copy-VCRuntime([string]$CMakeCache, [string]$Output) {
 function Assert-DistPath([string]$Path) {
     $full = [IO.Path]::GetFullPath($Path)
     if ([IO.Path]::GetDirectoryName($full) -ine $distRoot -or
-        [IO.Path]::GetFileName($full) -notmatch '^(windows-x64|\.windows-x64\.(stage|previous)\.[0-9a-f]{32})$') {
+        [IO.Path]::GetFileName($full) -notmatch '^(windows-x64(-portable)?|\.windows-x64(-portable)?\.(stage|previous)\.[0-9a-f]{32})$') {
         throw "Unexpected output path: $Path"
     }
 }
 
 function Remove-TemporaryOutput([string]$Path) {
     Assert-DistPath $Path
-    if ([IO.Path]::GetFileName($Path) -eq 'windows-x64') { throw 'Refusing to delete published output.' }
+    if ([IO.Path]::GetFileName($Path) -in @('windows-x64', 'windows-x64-portable')) { throw 'Refusing to delete published output.' }
     if (Test-Path -LiteralPath $Path) { Remove-Item -LiteralPath $Path -Recurse -Force }
 }
 
@@ -110,8 +115,7 @@ try {
             if ($LASTEXITCODE -ne 0) { $commit = '' }
             if ($commit) { $tag = & git tag --points-at HEAD | Select-Object -First 1 }
         }
-        $version = [regex]::Match((Get-Content -LiteralPath 'ui/pubspec.yaml' -Raw), '(?m)^version:\s*([^+\r\n]+)').Groups[1].Value
-        if (-not $version) { throw 'Missing UI version in pubspec.yaml.' }
+        $version = if ($tag) { $tag } else { 'dev' }
         $buildTime = (Get-Date).ToUniversalTime().ToString('yyyy-MM-dd HH:mm:ss UTC')
         $defines = @(
             "--dart-define=APP_VERSION=$version"
@@ -153,6 +157,12 @@ try {
         Copy-Item -LiteralPath (Join-Path $cacheRoot "engines/windows-amd64/bin/$engine.exe") -Destination $binOutput
     }
     Copy-Item -LiteralPath (Join-Path $scriptsRoot 'windows/README.md') -Destination $staging
+    if ($Portable) {
+        [IO.File]::WriteAllText((Join-Path $staging 'portable.json'), "{}`n", [Text.Encoding]::ASCII)
+        $readme = Join-Path $staging 'README.md'
+        $portableReadme = Get-Content -LiteralPath (Join-Path $scriptsRoot 'windows/README-portable.md') -Raw -Encoding UTF8
+        [IO.File]::AppendAllText($readme, "`n$portableReadme", [Text.UTF8Encoding]::new($false))
+    }
     $sums = @(Get-ChildItem -LiteralPath $staging -File -Recurse | Sort-Object FullName | ForEach-Object {
         $relative = $_.FullName.Substring($staging.Length + 1).Replace('\', '/')
         "{0}  {1}" -f (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant(), $relative
@@ -163,6 +173,10 @@ try {
     Assert-DistPath $destination
     Assert-DistPath $staging
     Assert-DistPath $previous
+    # Check again in case a portable folder appeared while the build was running.
+    if ($Portable -and (Test-Path -LiteralPath $destination)) {
+        throw "Portable output already exists: $destination. Move it with its data before building."
+    }
     if (Test-Path -LiteralPath $destination) { Move-Item -LiteralPath $destination -Destination $previous }
     try { Move-Item -LiteralPath $staging -Destination $destination } catch {
         if (Test-Path -LiteralPath $previous) { Move-Item -LiteralPath $previous -Destination $destination }

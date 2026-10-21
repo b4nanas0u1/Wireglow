@@ -279,11 +279,10 @@ func Worker(ctx context.Context, dir string) error {
 		if _, err = rand.Read(token); err != nil {
 			return err
 		}
-		socket, socketErr := platform.DesktopSocket(dir, r.RunID)
-		if socketErr != nil {
-			return socketErr
+		socket, err := platform.RPCSocketPath(r.RunID)
+		if err != nil {
+			return err
 		}
-		defer platform.CleanupDesktopSocket(r.RunID)
 		endpoint := Endpoint{Socket: socket, Token: hex.EncodeToString(token)}
 		listener, listenErr := net.Listen("unix", endpoint.Socket)
 		if listenErr != nil {
@@ -373,13 +372,20 @@ func feedOwner(ctx context.Context, r Request, dir string, beats chan<- struct{}
 }
 
 // Watchdog запускается отдельно от группы controller и до применения системного proxy.
-func Watchdog(ctx context.Context, dir string) error {
+func Watchdog(ctx context.Context, dir string) (result error) {
 	r, err := readRequest(dir)
 	if err != nil {
 		return err
 	}
 	if err := platform.EnsurePaths(r.Options.Paths); err != nil {
 		return err
+	}
+	if r.Desktop {
+		cleanup, err := platform.PrepareRPCSocket(r.RunID)
+		if err != nil {
+			return err
+		}
+		defer func() { result = errors.Join(result, cleanup()) }()
 	}
 	identitySelf, err := platform.ProcessIdentity(os.Getpid())
 	if err != nil {
@@ -448,9 +454,5 @@ func Watchdog(ctx context.Context, dir string) error {
 	manager := &network.Manager{Path: filepath.Join(r.Options.Paths.Data, "proxy-journal.json"), Settings: platform.ProxySettings{}}
 	recoveryCtx, recoveryCancel := context.WithTimeout(ctx, 20*time.Second)
 	defer recoveryCancel()
-	var ipcErr error
-	if r.Desktop {
-		ipcErr = platform.CleanupDesktopSocket(r.RunID)
-	}
-	return errors.Join(manager.Recover(recoveryCtx), persistence.CleanupSession(r.Options.Paths.Runtime), ipcErr)
+	return errors.Join(manager.Recover(recoveryCtx), persistence.CleanupSession(r.Options.Paths.Runtime))
 }

@@ -176,7 +176,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get repositoryMissing => 'Репозиторий не указан при сборке';
 
   @override
-  String get clientVersion => 'Версия клиента';
+  String get clientVersion => 'Версия';
 
   @override
   String get commit => 'Коммит';
@@ -215,7 +215,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get controllerFailed =>
-      'Controller не запустился. Проверьте systemd --user и отсутствие другого клиента.';
+      'Controller не запустился. Проверьте доступ к папке данных и отсутствие другого запущенного клиента.';
 
   @override
   String get settingsFailed => 'Не удалось сохранить выбор языка.';

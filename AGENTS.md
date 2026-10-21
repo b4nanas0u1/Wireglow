@@ -73,7 +73,7 @@ Standard UI checks, from `ui/`:
 ```sh
 flutter pub get
 flutter analyze --no-pub
-flutter test --no-pub --reporter expanded
+flutter test --no-pub --reporter expanded --dart-define=APP_VERSION=0.1.0
 ```
 
 For changes to lifecycle, proxy recovery, engine configuration, or IPC, use the
@@ -86,6 +86,7 @@ Full bundles are built from the repository root with:
 - Linux: `./scripts/build-linux.sh`
 - Linux portable: `./scripts/build-linux-portable.sh`
 - Windows PowerShell: `./scripts/build-windows.ps1`
+- Windows portable: `./scripts/build-windows-portable.ps1`
 
 These scripts are currently platform-specific; a shared cross-platform build
 system has not been selected. A Flutter-only build does not validate the full
@@ -135,7 +136,9 @@ test data. Profile summaries and routine status output must not expose secrets.
 
 Use isolated data and runtime directories for manual checks, through
 `WIREGLOW_DATA_DIR` and `WIREGLOW_RUNTIME_DIR` where supported. Portable GUI mode
-uses the bundle's `data/` and `data/runtime/` instead of these overrides. Preserve
+uses the bundle's `data/` and `data/runtime/` instead of these overrides. Only
+the transient IPC socket uses a private system runtime directory outside the
+bundle; the independent watchdog removes it after shutdown or GUI crash. Preserve
 existing portable user data; do not delete a populated bundle to make a build pass.
 Use the isolated proxy tests rather than changing a contributor's desktop proxy
 settings during routine verification.
