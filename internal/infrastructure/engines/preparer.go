@@ -284,7 +284,7 @@ func (p *Preparer) PrepareForMode(ctx context.Context, profile profile.Profile, 
 		Engine:            ports.Command{CaptureDiagnostics: runtime.GOOS == "linux", Path: p.Mihomo.Path, Args: []string{"-d", dir, "-f", configPath}, Dir: dir}, MixedAddress: mixed,
 		Close: func() error { return persistence.CleanupSession(p.RuntimeDir) },
 	}
-	plan.Ready = func(ctx context.Context) error { return waitAPI(ctx, api, secret) }
+	plan.Ready = func(ctx context.Context) error { return waitMihomo(ctx, api, secret, mixed) }
 	plan.MeasureLatency = func(ctx context.Context) (time.Duration, error) {
 		start := time.Now()
 		err := Probe(ctx, mixed, p.ProbeURL, status)
@@ -301,6 +301,29 @@ func (p *Preparer) PrepareForMode(ctx context.Context, profile profile.Profile, 
 	}
 	ok = true
 	return plan, nil
+}
+
+func waitMihomo(ctx context.Context, api, secret, mixed string) error {
+	if err := waitAPI(ctx, api, secret); err != nil {
+		return err
+	}
+	// Mihomo starts its API before applying the configuration and opening
+	// inbound listeners. A successful /version alone does not make Probe safe.
+	ticker := time.NewTicker(10 * time.Millisecond)
+	defer ticker.Stop()
+	dialer := net.Dialer{Timeout: time.Second}
+	for {
+		conn, err := dialer.DialContext(ctx, "tcp", mixed)
+		if err == nil {
+			conn.Close()
+			return nil
+		}
+		select {
+		case <-ctx.Done():
+			return errors.New("mihomo: local proxy readiness timed out or cancelled")
+		case <-ticker.C:
+		}
+	}
 }
 
 func waitAPI(ctx context.Context, address, secret string) error {

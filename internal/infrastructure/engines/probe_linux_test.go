@@ -104,7 +104,7 @@ func TestRealMihomoEOFRetainsSafeOutboundDiagnostic(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer func() { cmd.Process.Kill(); cmd.Wait() }()
-	if err = waitAPI(ctx, api, "test-token"); err != nil {
+	if err = waitMihomo(ctx, api, "test-token", mixed); err != nil {
 		t.Fatal(err)
 	}
 	diagnostic.Reset()
@@ -121,7 +121,7 @@ func TestRealMihomoEOFRetainsSafeOutboundDiagnostic(t *testing.T) {
 	cmd.Process.Kill()
 	cmd.Wait()
 	if summary := diagnostic.Summary(); summary != "outbound dial failed" && summary != "outbound connection refused" {
-		t.Fatalf("missing sanitized engine error %q, synthetic log %q", summary, syntheticLog.String())
+		t.Fatalf("missing sanitized engine error %q, probe error %v, synthetic log %q", summary, err, syntheticLog.String())
 	}
 
 }

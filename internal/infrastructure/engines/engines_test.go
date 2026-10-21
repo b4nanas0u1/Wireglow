@@ -3,6 +3,7 @@ package engines
 import (
 	"context"
 	"encoding/json"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -143,6 +144,59 @@ func TestReadinessRequiresAuthenticatedExpectedVersion(t *testing.T) {
 			err := waitAPI(ctx, strings.TrimPrefix(server.URL, "http://"), "token")
 			if (err == nil) != (version == manifest.Version("mihomo")) {
 				t.Fatal(err)
+			}
+		})
+	}
+}
+
+func TestReadinessWaitsForLocalProxyAfterAPI(t *testing.T) {
+	for _, open := range []bool{true, false} {
+		t.Run(map[bool]string{true: "delayed listener", false: "cancelled"}[open], func(t *testing.T) {
+			apiReached := make(chan struct{}, 1)
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				_ = json.NewEncoder(w).Encode(map[string]string{"version": manifest.Version("mihomo")})
+				select {
+				case apiReached <- struct{}{}:
+				default:
+				}
+			}))
+			defer server.Close()
+			listener, err := net.Listen("tcp4", "127.0.0.1:0")
+			if err != nil {
+				t.Fatal(err)
+			}
+			mixed := listener.Addr().String()
+			listener.Close()
+			ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+			defer cancel()
+			result := make(chan error, 1)
+			go func() { result <- waitMihomo(ctx, strings.TrimPrefix(server.URL, "http://"), "token", mixed) }()
+			select {
+			case <-apiReached:
+			case <-ctx.Done():
+				t.Fatal("API was not queried")
+			}
+			select {
+			case err := <-result:
+				t.Fatalf("ready before local proxy: %v", err)
+			case <-time.After(50 * time.Millisecond):
+			}
+			if open {
+				listener, err = net.Listen("tcp4", mixed)
+				if err != nil {
+					t.Fatal(err)
+				}
+				defer listener.Close()
+			} else {
+				cancel()
+			}
+			select {
+			case err := <-result:
+				if (err == nil) != open {
+					t.Fatalf("unexpected readiness result: %v", err)
+				}
+			case <-time.After(time.Second):
+				t.Fatal("readiness did not finish")
 			}
 		})
 	}
