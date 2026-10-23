@@ -7,7 +7,6 @@ import (
 	"net"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strconv"
 	"sync"
 
@@ -98,9 +97,6 @@ func Open(ctx context.Context, o Options) (*Backend, error) {
 	}
 	options := controller.Options{DefaultMode: defaultMode, NetworkForMode: func(mode proxymode.Mode) (ports.Network, error) {
 		if mode == proxymode.Tun {
-			if runtime.GOOS != "linux" {
-				return nil, errors.New("tun: Windows helper not implemented")
-			}
 			return tunClient, nil
 		}
 		if mode == proxymode.Local {

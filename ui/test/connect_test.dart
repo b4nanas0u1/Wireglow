@@ -26,6 +26,7 @@ class FakeRepository extends ControllerRepository {
   Object? settingsError;
   ProxyMode? connectedMode;
   String unavailableReason = '';
+  String tunUnavailableReason = '';
   Object? modeError;
   Completer<Snapshot>? switchGate;
   Object? switchError;
@@ -55,8 +56,10 @@ class FakeRepository extends ControllerRepository {
   }
 
   @override
-  Future<Capabilities> capabilities() async =>
-      Capabilities(systemProxyUnavailableReason: unavailableReason);
+  Future<Capabilities> capabilities() async => Capabilities(
+    systemProxyUnavailableReason: unavailableReason,
+    tunUnavailableReason: tunUnavailableReason,
+  );
   int connects = 0;
   int disconnects = 0;
   int latencyChecks = 0;
@@ -153,6 +156,36 @@ class FakeRepository extends ControllerRepository {
 }
 
 void main() {
+  testWidgets('Windows TUN menu refreshes VPN refusal before selection', (
+    tester,
+  ) async {
+    final repository = FakeRepository();
+    final model = ConnectModel(repository);
+    await model.start();
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: ConnectScreen(model: model),
+      ),
+    );
+    await tester.tap(find.byKey(const Key('proxy-mode-selector')));
+    await tester.pumpAndSettle();
+    final tun = find.widgetWithText(PopupMenuItem<ProxyMode>, 'TUN');
+    expect(tester.widget<PopupMenuItem<ProxyMode>>(tun).enabled, isTrue);
+    await tester.tap(tun);
+    await tester.pumpAndSettle();
+    expect(repository.savedMode, ProxyMode.PROXY_MODE_TUN);
+    repository.tunUnavailableReason = 'Another VPN is active';
+    await tester.tap(find.byKey(const Key('proxy-mode-selector')));
+    await tester.pumpAndSettle();
+    expect(tester.widget<PopupMenuItem<ProxyMode>>(tun).enabled, isFalse);
+    expect(model.tunUnavailableReason, 'Another VPN is active');
+    expect(repository.connects, 0);
+    await tester.pumpWidget(const SizedBox());
+    await tester.runAsync(model.close);
+  }, variant: TargetPlatformVariant.only(TargetPlatform.windows));
   testWidgets(
     'header proxy selector switches OS settings without reconnecting',
     (tester) async {

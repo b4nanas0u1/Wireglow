@@ -333,7 +333,8 @@ class ConnectScreen extends StatelessWidget {
           for (final mode in [
             ProxyMode.PROXY_MODE_LOCAL,
             ProxyMode.PROXY_MODE_SYSTEM,
-            if (defaultTargetPlatform == TargetPlatform.linux)
+            if (defaultTargetPlatform == TargetPlatform.linux ||
+                defaultTargetPlatform == TargetPlatform.windows)
               ProxyMode.PROXY_MODE_TUN,
           ])
             PopupMenuItem<ProxyMode>(
@@ -935,7 +936,9 @@ class ConnectScreen extends StatelessWidget {
                           ? model.snapshot.activeMode
                           : model.preferredMode) ==
                       ProxyMode.PROXY_MODE_TUN
-                ? AppLocalizations.of(context)!.tunHelp
+                ? (defaultTargetPlatform == TargetPlatform.windows
+                      ? AppLocalizations.of(context)!.tunHelpWindows
+                      : AppLocalizations.of(context)!.tunHelp)
                 : AppLocalizations.of(context)!.localProxyHelp,
             style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
           ),

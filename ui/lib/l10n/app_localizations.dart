@@ -728,6 +728,12 @@ abstract class AppLocalizations {
   /// **'TUN'**
   String get tunMode;
 
+  /// No description provided for @tunHelpWindows.
+  ///
+  /// In en, this message translates to:
+  /// **'Experimental Windows TUN requires the portable bundle and UAC elevation. It reconnects the session and uses direct HTTPS bootstrap DNS. Other active VPNs block activation. For TURN, select TCP transport; application UDP traffic is supported.'**
+  String get tunHelpWindows;
+
   /// No description provided for @tunHelp.
   ///
   /// In en, this message translates to:

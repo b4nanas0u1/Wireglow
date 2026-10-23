@@ -20,12 +20,13 @@ The project is under active development.
 - Connect and disconnect sessions, and view their status and latency.
 - Use a local HTTP/SOCKS proxy or switch to system proxy mode.
 - Experimental [Linux TUN mode](docs/en/tun-mode.md) with an installed helper or a temporary helper in portable builds.
+- Experimental Windows portable TUN with a temporary UAC helper; TURN currently requires TCP transport.
 - Configure local addresses and ports for network components.
 - Use the interface in Russian or English.
 
 ## Roadmap
 
-- Windows TUN helper and end-to-end validation of remote TUN sessions.
+- Windows installed-service TUN, TURN UDP transport preservation, and end-to-end validation of remote TUN sessions.
 - Routing rules to send selected services directly and route all other traffic through the connection.
 - Download free-turn-proxy releases from GitHub and choose which version to use.
 

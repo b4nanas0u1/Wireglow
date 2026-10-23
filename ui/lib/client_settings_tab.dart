@@ -240,12 +240,11 @@ class _ClientSettingsTabState extends State<ClientSettingsTab> {
                         child: Text(l.systemProxyMode),
                       ),
                       if (defaultTargetPlatform == TargetPlatform.linux ||
+                          defaultTargetPlatform == TargetPlatform.windows ||
                           m.preferredMode == ProxyMode.PROXY_MODE_TUN)
                         PopupMenuItem<ProxyMode>(
                           value: ProxyMode.PROXY_MODE_TUN,
-                          enabled:
-                              defaultTargetPlatform == TargetPlatform.linux &&
-                              m.modeEnabled(ProxyMode.PROXY_MODE_TUN),
+                          enabled: m.modeEnabled(ProxyMode.PROXY_MODE_TUN),
                           child: Text(l.tunMode),
                         ),
                     ],
@@ -267,13 +266,11 @@ class _ClientSettingsTabState extends State<ClientSettingsTab> {
                             child: Text(l.systemProxyMode),
                           ),
                           if (defaultTargetPlatform == TargetPlatform.linux ||
+                              defaultTargetPlatform == TargetPlatform.windows ||
                               m.preferredMode == ProxyMode.PROXY_MODE_TUN)
                             DropdownMenuItem(
                               value: ProxyMode.PROXY_MODE_TUN,
-                              enabled:
-                                  defaultTargetPlatform ==
-                                      TargetPlatform.linux &&
-                                  m.modeEnabled(ProxyMode.PROXY_MODE_TUN),
+                              enabled: m.modeEnabled(ProxyMode.PROXY_MODE_TUN),
                               child: Text(l.tunMode),
                             ),
                         ],
@@ -287,11 +284,14 @@ class _ClientSettingsTabState extends State<ClientSettingsTab> {
                     const SizedBox(height: 8),
                     Text(m.systemProxyUnavailableReason),
                   ],
-                  if (defaultTargetPlatform == TargetPlatform.linux) ...[
+                  if (defaultTargetPlatform == TargetPlatform.linux ||
+                      defaultTargetPlatform == TargetPlatform.windows) ...[
                     const SizedBox(height: 8),
                     Text(
                       m.tunUnavailableReason.isEmpty
-                          ? l.tunHelp
+                          ? (defaultTargetPlatform == TargetPlatform.windows
+                                ? l.tunHelpWindows
+                                : l.tunHelp)
                           : m.tunUnavailableReason,
                     ),
                   ],

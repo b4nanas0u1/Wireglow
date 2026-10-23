@@ -3,11 +3,14 @@ package engines
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
+	"wireglow/internal/application/ports"
 	"wireglow/internal/domain/profile"
 	"wireglow/internal/domain/proxymode"
 	"wireglow/internal/freeturn"
@@ -49,7 +52,11 @@ func TestTunPreparationWithPinnedEngines(t *testing.T) {
 				if plan.DirectPeer != "127.0.0.1:56000" || !strings.Contains(args, "-peer "+plan.DirectPeer) {
 					t.Fatal("direct destination not handed to helper")
 				}
-				if !plan.TunReady || !strings.Contains(args, "-dns-mode plain") || !strings.Contains(args, "-dns-servers "+tun.BootstrapDNS) {
+				bootstrapOK := strings.Contains(args, "-dns-mode plain") && strings.Contains(args, "-dns-servers "+tun.BootstrapDNS)
+				if runtime.GOOS == "windows" {
+					bootstrapOK = strings.Contains(args, "-dns-mode doh") && !strings.Contains(args, "-dns-servers")
+				}
+				if !plan.TunReady || !bootstrapOK {
 					t.Fatal("bootstrap override missing")
 				}
 			} else if plan.DirectPeer != "" || plan.TunReady || !strings.Contains(args, "-dns-mode auto") || !strings.Contains(args, "-dns-servers 9.9.9.9") {
@@ -88,6 +95,17 @@ func TestTunKeepaliveOnlyForVKUDPTransport(t *testing.T) {
 			}
 			preparer := &Preparer{Relay: Binary{Path: relay}, Mihomo: Binary{Path: mihomo}, RuntimeDir: t.TempDir(), ProbeURL: "https://example.test/probe"}
 			plan, err := preparer.PrepareForMode(t.Context(), p, tc.mode)
+			if runtime.GOOS == "windows" && tc.want {
+				if err == nil {
+					plan.Close()
+					t.Fatal("unverified TURN UDP accepted on Windows")
+				}
+				var diagnostic ports.DiagnosticError
+				if !errors.As(err, &diagnostic) || !strings.Contains(diagnostic.PublicDiagnostic(), "select TCP TURN transport") {
+					t.Fatal("TURN UDP refusal is hidden from the UI")
+				}
+				return
+			}
 			if err != nil {
 				t.Fatal(err)
 			}

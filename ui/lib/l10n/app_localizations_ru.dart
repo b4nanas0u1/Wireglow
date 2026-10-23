@@ -343,6 +343,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tunMode => 'TUN';
 
   @override
+  String get tunHelpWindows =>
+      'Экспериментальный Windows TUN требует portable-сборку и повышение прав через UAC. Он переподключает сессию и использует прямой HTTPS bootstrap DNS. Другой активный VPN блокирует включение. Для TURN выберите транспорт TCP; UDP-трафик приложений поддерживается.';
+
+  @override
   String get tunHelp =>
       'TUN перехватывает IP-трафик. Включение переподключает сессию и использует 1.1.1.1 как прямой bootstrap DNS. Другой активный VPN блокирует включение.';
 }

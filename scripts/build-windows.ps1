@@ -107,6 +107,7 @@ try {
     Push-Location -LiteralPath $sourceRoot
     try {
         Invoke-Checked 'go' @('build', '-o', (Join-Path $cacheBin 'controller.exe'), './cmd/controller')
+        Invoke-Checked 'go' @('build', '-o', (Join-Path $cacheBin 'tun-helper.exe'), './cmd/tun-helper')
         Invoke-Checked 'go' @('build', '-o', $manifestTool, './cmd/engine-manifest')
         $commit = ''
         $tag = ''
@@ -153,6 +154,7 @@ try {
     Get-ChildItem -LiteralPath $bundle -Force | Copy-Item -Destination $uiOutput -Recurse -Force
     Copy-VCRuntime (Join-Path $sourceRoot 'ui/build/windows/x64/CMakeCache.txt') $uiOutput
     Copy-Item -LiteralPath (Join-Path $cacheBin 'controller.exe') -Destination $binOutput
+    Copy-Item -LiteralPath (Join-Path $cacheBin 'tun-helper.exe') -Destination $binOutput
     foreach ($engine in @('free-turn-proxy', 'mihomo')) {
         Copy-Item -LiteralPath (Join-Path $cacheRoot "engines/windows-amd64/bin/$engine.exe") -Destination $binOutput
     }

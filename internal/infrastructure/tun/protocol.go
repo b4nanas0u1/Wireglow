@@ -32,6 +32,7 @@ type Response struct {
 	Version int    `json:"version"`
 	ID      uint64 `json:"id"`
 	Session string `json:"session,omitempty"`
+	Device  string `json:"device,omitempty"`
 	Error   string `json:"error,omitempty"`
 }
 
@@ -78,6 +79,10 @@ func exchange(ctx context.Context, conn net.Conn, request Request) (Response, er
 	stop := context.AfterFunc(ctx, func() { _ = conn.SetDeadline(time.Now()) })
 	defer stop()
 	deadline := time.Now().Add(12 * time.Second)
+	if request.Operation == "start" {
+		// First-time Windows Wintun provisioning can outlast an ordinary RPC.
+		deadline = time.Now().Add(45 * time.Second)
+	}
 	if d, ok := ctx.Deadline(); ok && d.Before(deadline) {
 		deadline = d
 	}

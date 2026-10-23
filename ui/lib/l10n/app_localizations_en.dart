@@ -344,6 +344,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tunMode => 'TUN';
 
   @override
+  String get tunHelpWindows =>
+      'Experimental Windows TUN requires the portable bundle and UAC elevation. It reconnects the session and uses direct HTTPS bootstrap DNS. Other active VPNs block activation. For TURN, select TCP transport; application UDP traffic is supported.';
+
+  @override
   String get tunHelp =>
       'TUN captures IP traffic. Enabling it reconnects the session and uses 1.1.1.1 as direct bootstrap DNS. Other active VPNs block activation.';
 }

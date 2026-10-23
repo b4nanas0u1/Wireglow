@@ -210,6 +210,13 @@ The currently supported local build targets are Windows x64 and Linux x64. The B
 
 For the optional Linux TUN helper, installation details and an isolated packet test that preserves other VPNs, see [TUN mode](tun-mode.md).
 
+Windows portable builds include `bin/tun-helper.exe`. Their experimental TUN uses
+a temporary UAC helper; the regular Windows service deployment is not implemented.
+TURN currently requires TCP transport. To run real Windows packet/recovery checks,
+start Windows Sandbox and run `./scripts/test-windows-tun-sandbox.ps1` from the
+repository root. The script never activates TUN on the host. See the same TUN guide
+for its scope and unverified scenarios.
+
 The IPC smoke keeps temporary launcher state in a short system temporary directory. Test profile data stays in the repository cache; the Linux socket uses the private system runtime described below.
 
 On Linux, desktop controller IPC also uses a private short `$XDG_RUNTIME_DIR/wg-<run ID>` directory (or `/run/user/<UID>/wg-<run ID>`), independent of the bundle path length. Portable profiles, locks, lease files and recovery journals remain inside the bundle; the worker and watchdog clean up the transient socket directory.

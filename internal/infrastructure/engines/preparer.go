@@ -173,8 +173,16 @@ func (p *Preparer) Prepare(ctx context.Context, profile profile.Profile) (*ports
 func (p *Preparer) PrepareForMode(ctx context.Context, profile profile.Profile, mode proxymode.Mode) (_ *ports.Plan, err error) {
 	directPeer := ""
 	if mode == proxymode.Tun {
+		if runtime.GOOS == "windows" && profile.Connection.Provider == freeturn.ProviderVK && profile.Connection.TurnTransport == freeturn.TurnTransportUDP {
+			return nil, windowsTURNUDPError{}
+		}
 		// Override only the runtime copy. Stored/imported profile remains intact.
 		profile.Connection.DNS = freeturn.DNSSettings{Mode: freeturn.DNSModePlain, Servers: []string{tun.BootstrapDNS}}
+		if runtime.GOOS == "windows" {
+			// Windows strict-route rejects physical port 53. The pinned relay's
+			// DoH resolver has numeric bootstrap addresses and no plain fallback.
+			profile.Connection.DNS = freeturn.DNSSettings{Mode: freeturn.DNSModeDoH}
+		}
 		if profile.Connection.Provider == freeturn.ProviderDirect {
 			directPeer, err = pinDirectPeer(ctx, profile.Connection.Peer, net.DefaultResolver.LookupNetIP)
 			if err != nil {

@@ -46,8 +46,11 @@ and its engine processes running.
 Use the current connection model and parser as the baseline. Do not add fields,
 compatibility aliases, migrations, or unsupported protocol options merely to
 match upstream examples or older descriptions. Linux TUN uses the optional restricted helper described in `docs/en/tun-mode.md`.
-Windows TUN is unavailable; user-defined routing remains unimplemented.
+Windows portable TUN uses a temporary UAC helper described in the same guide.
+Windows installed-service TUN and TURN UDP transport remain unavailable;
+application UDP through TUN is supported. User-defined routing remains unimplemented.
 Never activate TUN in the host network namespace during automated verification.
+Windows packet tests require Windows Sandbox and must refuse the host OS.
 
 ## Development and checks
 
