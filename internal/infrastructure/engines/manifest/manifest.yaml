@@ -1,0 +1,31 @@
+# Единственный источник версий и SHA-256 release assets внешних ядер.
+# При обновлении меняйте version, asset и sha256 вместе.
+engines:
+  free-turn-proxy:
+    repository: hackdiaz-dev/free-turn-proxy
+    version: "v4.0.3"
+    platforms:
+      linux-amd64:
+        asset: client-linux-amd64
+        sha256: ac9124bf61ac2e3fdc771a1c287ee39a9e5dbed11537482dddf0b8dbcdbf0396
+        compression: none
+      windows-amd64:
+        asset: client-windows-amd64.exe
+        sha256: d8db214b01e1a3062c2b691899bdfaffbd7c052d2ff4b2f8333577c014bc13da
+        compression: none
+  mihomo:
+    repository: MetaCubeX/mihomo
+    version: "v1.19.32"
+    platforms:
+      linux-amd64:
+        # Вариант для базового x86_64.
+        asset: mihomo-linux-amd64-v1-v1.19.32.gz
+        sha256: 306f81e723e60ce6b828899a6fe83e1d00e9ecefb2dc8d4d849312a5bc00efdc
+        binary-sha256: 6de241191ca39f9ac1cd6e3194fc9303c19055d3549c8bdb4ff1349c89173819
+        compression: gzip
+      windows-amd64:
+        # Вариант для базового x86_64.
+        asset: mihomo-windows-amd64-v1-v1.19.32.zip
+        sha256: 00549b347d8e124600e46cac67d59293358454f465e9d86d2511567da56b7029
+        binary-sha256: 0b54ea7b10e26f6ca628b49e77c13ad9b2587b23393a5b715769cbaeed012af6
+        compression: zip

@@ -1,0 +1,138 @@
+{
+  "@@locale": "en",
+  "notSet": "Not set",
+  "starting": "Starting controller…",
+  "unknownState": "Connection state unknown",
+  "disconnecting": "Disconnecting…",
+  "active": "Connection active",
+  "connecting": "Connecting…",
+  "failed": "Connection failed",
+  "addToConnect": "Add a link to connect",
+  "pressToConnect": "Press the button to connect",
+  "disconnect": "Disconnect",
+  "cancelConnection": "Cancel connection",
+  "retry": "Try again",
+  "connect": "Connect",
+  "connections": "Connections",
+  "about": "About",
+  "profiles": "Profiles",
+  "addByLink": "Add from link",
+  "unnamed": "Unnamed",
+  "connected": "Connected",
+  "savedProfile": "Saved profile",
+  "deleteProfile": "Delete profile",
+  "checkingLatency": "Checking latency…",
+  "checkFailed": "Check failed",
+  "latencyNotMeasured": "Latency not measured yet",
+  "latencyHelp": "HTTPS request time through the connection. Checked every 30 seconds.",
+  "checkLatency": "Check latency",
+  "noConnections": "No connections",
+  "retryHelp": "Check connection settings and network access, then try again.",
+  "errorDetails": "Error details",
+  "noErrorDetails": "Controller did not provide details.",
+  "properties": "Connection properties",
+  "systemProxy": "System proxy: used by applications that follow system proxy settings.",
+  "localProxyHelp": "Local proxy: enter the displayed address in your application. System settings are unchanged.",
+  "provider": "Provider",
+  "turnTransport": "TURN transport",
+  "notApplicable": "Not applicable",
+  "relayMode": "Relay mode",
+  "streams": "Streams",
+  "streamsPerCredential": "Streams per credential",
+  "obfuscation": "Obfuscation",
+  "confirmDelete": "Delete profile?",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "insertLink": "Paste a connection link.",
+  "addProfile": "Add profile",
+  "closeAdd": "Close add profile",
+  "pasteHelp": "Paste the link you received.",
+  "connectionLink": "Connection link",
+  "paste": "Paste",
+  "nameFromLink": "The name comes from the link.",
+  "add": "Add",
+  "browserFailed": "Could not open the link in your browser",
+  "openGithub": "Open on GitHub",
+  "repositoryMissing": "Repository was not specified at build time",
+  "clientVersion": "Version",
+  "commit": "Commit",
+  "tag": "Tag",
+  "buildTime": "Build time",
+  "engines": "Engines",
+  "unknown": "unknown",
+  "language": "Language",
+  "systemLanguage": "System",
+  "lostController": "Connection to controller lost. Connection state unknown.",
+  "waitController": "Disconnect first or wait for the controller.",
+  "startFailed": "Could not start controller.",
+  "incompleteBundle": "Application files are missing. Extract the complete application folder again.",
+  "controllerFailed": "Controller did not start. Check access to the data folder and make sure no other client is running.",
+  "settingsFailed": "Could not save the language preference.",
+  "latency": "Latency: {delay} ms",
+  "@latency": {
+    "placeholders": {
+      "delay": {
+        "type": "String"
+      }
+    }
+  },
+  "lastSuccess": "Last success: {time}",
+  "@lastSuccess": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "localProxy": "Local HTTP/SOCKS proxy: {address}",
+  "@localProxy": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteDescription": "Profile “{name}” will be deleted. You will need its connection link to add it again.",
+  "@deleteDescription": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "proxyMode": "Proxy mode",
+  "localProxyMode": "Local proxy",
+  "systemProxyMode": "System proxy",
+  "copyProxyAddress": "Copy proxy address",
+  "switchingProxyMode": "Switching proxy mode…",
+  "proxyModeUnknown": "Proxy mode unknown",
+  "clientSettings": "Settings",
+  "localAddresses": "Local addresses",
+  "proxyAddressLabel": "HTTP/SOCKS proxy",
+  "relayAddressLabel": "FreeTurn relay",
+  "addressesHelp": "Address format: 127.0.0.1:port. All ports must be between 1 and 65535 and must differ. Changes apply to all profiles on the next connection.",
+  "activeSettingsHelp": "The active connection keeps its current addresses until you reconnect.",
+  "invalidLocalAddress": "Enter 127.0.0.1 and a port from 1 to 65535.",
+  "collidingPorts": "Ports must differ.",
+  "saveSettings": "Save",
+  "settingsSaved": "Settings saved",
+  "resetSettings": "Reset to defaults",
+  "confirmResetSettings": "Reset client settings?",
+  "resetSettingsDescription": "Restore default addresses, local proxy mode and system language. Saved profiles will be kept. The active connection keeps its addresses until you reconnect.",
+  "reset": "Reset",
+  "settingsReset": "Default settings restored",
+  "generalSettings": "General",
+  "networkSettings": "Network",
+  "relaySettings": "Relay",
+  "apiPortLabel": "mihomo API port",
+  "invalidAPIPort": "Enter a port between 1 and 65535.",
+  "profileActions": "Profile actions",
+  "editProfile": "Edit",
+  "colorTheme": "Color theme",
+  "systemTheme": "System",
+  "darkTheme": "Dark",
+  "lightTheme": "Light",
+  "tunMode": "TUN",
+  "tunHelpWindows": "Experimental Windows TUN requires the portable bundle and UAC elevation. It reconnects the session and uses direct HTTPS bootstrap DNS. Other active VPNs block activation. For TURN, select TCP transport; application UDP traffic is supported.",
+  "tunHelp": "TUN captures IP traffic. Enabling it reconnects the session and uses 1.1.1.1 as direct bootstrap DNS. Other active VPNs block activation."
+}
