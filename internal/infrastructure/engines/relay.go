@@ -40,18 +40,18 @@ func RelayArgs(c freeturn.Connection, listen string) ([]string, error) {
 	if obf == "" {
 		obf = freeturn.ObfuscationModeNone
 	}
-	if mode != "udp" && mode != "tcp" || transport != "udp" && transport != "tcp" {
+	if mode != freeturn.RelayModeUDP && mode != freeturn.RelayModeTCP || transport != freeturn.TurnTransportUDP && transport != freeturn.TurnTransportTCP {
 		return nil, errors.New("relay: unsupported transport or mode")
 	}
-	if dns != "plain" && dns != "doh" && dns != "auto" {
+	if dns != freeturn.DNSModePlain && dns != freeturn.DNSModeDoH && dns != freeturn.DNSModeAuto {
 		return nil, errors.New("relay: unsupported DNS mode")
 	}
 	switch obf {
-	case "none", "rtpopus", "rtpopus2", "rtpopus3":
+	case freeturn.ObfuscationModeNone, freeturn.ObfuscationModeRTPOpus, freeturn.ObfuscationModeRTPOpus2, freeturn.ObfuscationModeRTPOpus3:
 	default:
 		return nil, errors.New("relay: unsupported obfuscation")
 	}
-	if obf != "none" {
+	if obf != freeturn.ObfuscationModeNone {
 		b, err := hex.DecodeString(c.Obfuscation.Key)
 		if err != nil || len(b) != 32 {
 			return nil, errors.New("relay: invalid obfuscation key")
@@ -60,7 +60,7 @@ func RelayArgs(c freeturn.Connection, listen string) ([]string, error) {
 	if c.Streams < 0 || c.StreamsPerCredential < 0 || c.Obfuscation.TimingMs < 0 {
 		return nil, errors.New("relay: negative setting")
 	}
-	if mode != "tcp" && (c.KCP != nil || c.Bond) {
+	if mode != freeturn.RelayModeTCP && (c.KCP != nil || c.Bond) {
 		return nil, errors.New("relay: KCP and bond require TCP")
 	}
 	args := []string{"-provider", c.Provider, "-peer", c.Peer, "-listen", listen, "-mode", mode, "-transport", transport, "-dns-mode", dns, "-obf-profile", obf, "-routes=false", "-debug=false"}
@@ -77,7 +77,7 @@ func RelayArgs(c freeturn.Connection, listen string) ([]string, error) {
 	if len(c.DNS.Servers) > 0 {
 		add("-dns-servers", strings.Join(c.DNS.Servers, ","))
 	}
-	if obf != "none" {
+	if obf != freeturn.ObfuscationModeNone {
 		add("-obf-key", c.Obfuscation.Key)
 	}
 	add("-obf-timing", (time.Duration(c.Obfuscation.TimingMs) * time.Millisecond).String())
@@ -93,6 +93,22 @@ func RelayArgs(c freeturn.Connection, listen string) ([]string, error) {
 		}
 		add("-links", strings.Join(c.VK.CallLinks, ","))
 		args = append(args, "-manual-captcha="+strconv.FormatBool(c.VK.ManualCaptcha))
+		if platform := c.VK.Platform; platform != "" {
+			if platform != freeturn.VKPlatformDesktop && platform != freeturn.VKPlatformMobile {
+				return nil, errors.New("relay: unsupported VK platform")
+			}
+			add("-platform", platform)
+		}
+		host, port, err := freeturn.SplitTURNAddress(c.VK.TurnAddress)
+		if err != nil {
+			return nil, err
+		}
+		if host != "" {
+			add("-turn", host)
+		}
+		if port != "" {
+			add("-port", port)
+		}
 	}
 	if k := c.KCP; k != nil {
 		if (k.NoDelay != 0 && k.NoDelay != 1) || (k.NC != 0 && k.NC != 1) || k.Interval <= 0 || k.Resend < 0 || k.SndWnd <= 0 || k.RcvWnd <= 0 || k.MTU < 300 || k.MTU > 1350 {

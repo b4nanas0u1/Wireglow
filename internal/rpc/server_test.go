@@ -640,3 +640,85 @@ func TestClientAddressesOverWire(t *testing.T) {
 		t.Fatalf("invalid write changed settings = %v, %v", result, err)
 	}
 }
+
+func TestProfileEditorAdvancedRoundTrip(t *testing.T) {
+	f := newFixture(t, nil)
+	imported, err := f.client.ImportProfile(f.ctx, pb.ImportProfileRequest_builder{FreeturnLink: link(`{"v":1,"provider":"vk","peer":"server.example:56000","name":"Original","cid":"unchanged-id","vk":"https://vk.ru/call/join/synthetic","obf":"rtpopus3","key":"private-key","wg":"private-wg"}`)}.Build())
+	if err != nil {
+		t.Fatal(err)
+	}
+	edits := pb.ProfileEdits_builder{Id: imported.GetId(), Name: "Edited", CallLinks: []string{"https://vk.ru/call/join/updated"}, Streams: 12, StreamsPerCredential: 4, Advanced: pb.ProfileAdvancedEdits_builder{TurnTransport: "udp", Dns: pb.DNSSettings_builder{Mode: "plain", Servers: []string{"1.1.1.1", "[2001:db8::53]:5353"}}.Build(), ManualCaptcha: true, VkPlatform: "mobile", TurnAddress: "turn.example.org:443", PacingMs: 20}.Build()}.Build()
+	if _, err = f.client.UpdateProfile(f.ctx, edits); err != nil {
+		t.Fatal(err)
+	}
+	p, err := f.client.GetProfile(f.ctx, pb.ProfileRequest_builder{Id: imported.GetId()}.Build())
+	if err != nil {
+		t.Fatal(err)
+	}
+	c := p.GetConnection()
+	if c.GetVk().GetPlatform() != "mobile" || !c.GetVk().GetManualCaptcha() || c.GetVk().GetTurnAddress() != "turn.example.org:443" || c.GetTurnTransport() != "udp" || c.GetDns().GetMode() != "plain" || len(c.GetDns().GetServers()) != 2 || c.GetObfuscation().GetTimingMs() != 20 {
+		t.Fatal("advanced settings lost")
+	}
+	if c.GetClientId() != "unchanged-id" || c.GetPeer() != "server.example:56000" || c.GetObfuscation().GetKey() != "private-key" || c.GetObfuscation().GetMode() != "rtpopus3" || c.GetWg().GetConfig() != "private-wg" {
+		t.Fatal("server-owned fields changed")
+	}
+	// Invalid edits are atomic and cannot overwrite the saved profile.
+	edits.GetAdvanced().SetTurnAddress("https://invalid.example")
+	if _, err = f.client.UpdateProfile(f.ctx, edits); status.Code(err) != codes.InvalidArgument {
+		t.Fatalf("invalid address: %v", err)
+	}
+	saved, err := f.store.Get(f.ctx, imported.GetId())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if saved.Connection.VK.TurnAddress != "turn.example.org:443" {
+		t.Fatal("invalid edit persisted")
+	}
+	// Omitting advanced edits preserves them; empty counts preserve engine defaults.
+	edits.ClearAdvanced()
+	edits.SetStreams(0)
+	edits.SetStreamsPerCredential(0)
+	if _, err = f.client.UpdateProfile(f.ctx, edits); err != nil {
+		t.Fatal(err)
+	}
+	saved, err = f.store.Get(f.ctx, imported.GetId())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if saved.Connection.VK.Platform != "mobile" || saved.Connection.Obfuscation.TimingMs != 20 || saved.Connection.Streams != 0 {
+		t.Fatal("partial edits lost values")
+	}
+	// Explicit empty advanced values clear overrides, unlike an absent message.
+	edits.SetAdvanced(pb.ProfileAdvancedEdits_builder{Dns: pb.DNSSettings_builder{}.Build()}.Build())
+	if _, err = f.client.UpdateProfile(f.ctx, edits); err != nil {
+		t.Fatal(err)
+	}
+	saved, err = f.store.Get(f.ctx, imported.GetId())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if saved.Connection.VK.Platform != "" || saved.Connection.VK.TurnAddress != "" || saved.Connection.TurnTransport != "" || saved.Connection.DNS.Mode != "" || saved.Connection.Obfuscation.TimingMs != 0 {
+		t.Fatal("overrides not cleared")
+	}
+}
+
+func TestProfileEditorRejectsInvalidSettings(t *testing.T) {
+	f := newFixture(t, nil)
+	imported, err := f.client.ImportProfile(f.ctx, pb.ImportProfileRequest_builder{FreeturnLink: link(`{"v":1,"provider":"vk","peer":"server.example:56000","vk":"https://vk.ru/call/join/synthetic"}`)}.Build())
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, advanced := range []*pb.ProfileAdvancedEdits{
+		pb.ProfileAdvancedEdits_builder{TurnTransport: "tls"}.Build(),
+		pb.ProfileAdvancedEdits_builder{VkPlatform: "tablet"}.Build(),
+		pb.ProfileAdvancedEdits_builder{Dns: pb.DNSSettings_builder{Mode: "invalid"}.Build()}.Build(),
+		pb.ProfileAdvancedEdits_builder{Dns: pb.DNSSettings_builder{Servers: []string{"https://dns.example/query"}}.Build()}.Build(),
+		pb.ProfileAdvancedEdits_builder{PacingMs: 20}.Build(),
+		pb.ProfileAdvancedEdits_builder{PacingMs: -1}.Build(),
+	} {
+		edits := pb.ProfileEdits_builder{Id: imported.GetId(), Name: "Edited", CallLinks: []string{"https://vk.ru/call/join/synthetic"}, Advanced: advanced}.Build()
+		if _, err = f.client.UpdateProfile(f.ctx, edits); status.Code(err) != codes.InvalidArgument {
+			t.Fatalf("expected invalid argument: %v", err)
+		}
+	}
+}

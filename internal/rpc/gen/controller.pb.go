@@ -559,7 +559,7 @@ func (b0 ProfileRequest_builder) Build() *ProfileRequest {
 	return m0
 }
 
-// Ограниченные поля редактора; секреты и настройки ядра не передаются.
+// Editable client-side settings; server keys and WG configuration are preserved.
 type ProfileEdits struct {
 	state                           protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id                   string                 `protobuf:"bytes,1,opt,name=id"`
@@ -567,6 +567,7 @@ type ProfileEdits struct {
 	xxx_hidden_CallLinks            []string               `protobuf:"bytes,3,rep,name=call_links,json=callLinks"`
 	xxx_hidden_Streams              int64                  `protobuf:"varint,4,opt,name=streams"`
 	xxx_hidden_StreamsPerCredential int64                  `protobuf:"varint,5,opt,name=streams_per_credential,json=streamsPerCredential"`
+	xxx_hidden_Advanced             *ProfileAdvancedEdits  `protobuf:"bytes,6,opt,name=advanced"`
 	unknownFields                   protoimpl.UnknownFields
 	sizeCache                       protoimpl.SizeCache
 }
@@ -631,6 +632,13 @@ func (x *ProfileEdits) GetStreamsPerCredential() int64 {
 	return 0
 }
 
+func (x *ProfileEdits) GetAdvanced() *ProfileAdvancedEdits {
+	if x != nil {
+		return x.xxx_hidden_Advanced
+	}
+	return nil
+}
+
 func (x *ProfileEdits) SetId(v string) {
 	x.xxx_hidden_Id = v
 }
@@ -651,6 +659,21 @@ func (x *ProfileEdits) SetStreamsPerCredential(v int64) {
 	x.xxx_hidden_StreamsPerCredential = v
 }
 
+func (x *ProfileEdits) SetAdvanced(v *ProfileAdvancedEdits) {
+	x.xxx_hidden_Advanced = v
+}
+
+func (x *ProfileEdits) HasAdvanced() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Advanced != nil
+}
+
+func (x *ProfileEdits) ClearAdvanced() {
+	x.xxx_hidden_Advanced = nil
+}
+
 type ProfileEdits_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -659,6 +682,7 @@ type ProfileEdits_builder struct {
 	CallLinks            []string
 	Streams              int64
 	StreamsPerCredential int64
+	Advanced             *ProfileAdvancedEdits
 }
 
 func (b0 ProfileEdits_builder) Build() *ProfileEdits {
@@ -670,6 +694,145 @@ func (b0 ProfileEdits_builder) Build() *ProfileEdits {
 	x.xxx_hidden_CallLinks = b.CallLinks
 	x.xxx_hidden_Streams = b.Streams
 	x.xxx_hidden_StreamsPerCredential = b.StreamsPerCredential
+	x.xxx_hidden_Advanced = b.Advanced
+	return m0
+}
+
+type ProfileAdvancedEdits struct {
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_TurnTransport string                 `protobuf:"bytes,1,opt,name=turn_transport,json=turnTransport"`
+	xxx_hidden_Dns           *DNSSettings           `protobuf:"bytes,2,opt,name=dns"`
+	xxx_hidden_ManualCaptcha bool                   `protobuf:"varint,3,opt,name=manual_captcha,json=manualCaptcha"`
+	xxx_hidden_VkPlatform    string                 `protobuf:"bytes,4,opt,name=vk_platform,json=vkPlatform"`
+	xxx_hidden_TurnAddress   string                 `protobuf:"bytes,5,opt,name=turn_address,json=turnAddress"`
+	xxx_hidden_PacingMs      int64                  `protobuf:"varint,6,opt,name=pacing_ms,json=pacingMs"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *ProfileAdvancedEdits) Reset() {
+	*x = ProfileAdvancedEdits{}
+	mi := &file_controller_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProfileAdvancedEdits) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProfileAdvancedEdits) ProtoMessage() {}
+
+func (x *ProfileAdvancedEdits) ProtoReflect() protoreflect.Message {
+	mi := &file_controller_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ProfileAdvancedEdits) GetTurnTransport() string {
+	if x != nil {
+		return x.xxx_hidden_TurnTransport
+	}
+	return ""
+}
+
+func (x *ProfileAdvancedEdits) GetDns() *DNSSettings {
+	if x != nil {
+		return x.xxx_hidden_Dns
+	}
+	return nil
+}
+
+func (x *ProfileAdvancedEdits) GetManualCaptcha() bool {
+	if x != nil {
+		return x.xxx_hidden_ManualCaptcha
+	}
+	return false
+}
+
+func (x *ProfileAdvancedEdits) GetVkPlatform() string {
+	if x != nil {
+		return x.xxx_hidden_VkPlatform
+	}
+	return ""
+}
+
+func (x *ProfileAdvancedEdits) GetTurnAddress() string {
+	if x != nil {
+		return x.xxx_hidden_TurnAddress
+	}
+	return ""
+}
+
+func (x *ProfileAdvancedEdits) GetPacingMs() int64 {
+	if x != nil {
+		return x.xxx_hidden_PacingMs
+	}
+	return 0
+}
+
+func (x *ProfileAdvancedEdits) SetTurnTransport(v string) {
+	x.xxx_hidden_TurnTransport = v
+}
+
+func (x *ProfileAdvancedEdits) SetDns(v *DNSSettings) {
+	x.xxx_hidden_Dns = v
+}
+
+func (x *ProfileAdvancedEdits) SetManualCaptcha(v bool) {
+	x.xxx_hidden_ManualCaptcha = v
+}
+
+func (x *ProfileAdvancedEdits) SetVkPlatform(v string) {
+	x.xxx_hidden_VkPlatform = v
+}
+
+func (x *ProfileAdvancedEdits) SetTurnAddress(v string) {
+	x.xxx_hidden_TurnAddress = v
+}
+
+func (x *ProfileAdvancedEdits) SetPacingMs(v int64) {
+	x.xxx_hidden_PacingMs = v
+}
+
+func (x *ProfileAdvancedEdits) HasDns() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Dns != nil
+}
+
+func (x *ProfileAdvancedEdits) ClearDns() {
+	x.xxx_hidden_Dns = nil
+}
+
+type ProfileAdvancedEdits_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	TurnTransport string
+	Dns           *DNSSettings
+	ManualCaptcha bool
+	VkPlatform    string
+	TurnAddress   string
+	PacingMs      int64
+}
+
+func (b0 ProfileAdvancedEdits_builder) Build() *ProfileAdvancedEdits {
+	m0 := &ProfileAdvancedEdits{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_TurnTransport = b.TurnTransport
+	x.xxx_hidden_Dns = b.Dns
+	x.xxx_hidden_ManualCaptcha = b.ManualCaptcha
+	x.xxx_hidden_VkPlatform = b.VkPlatform
+	x.xxx_hidden_TurnAddress = b.TurnAddress
+	x.xxx_hidden_PacingMs = b.PacingMs
 	return m0
 }
 
@@ -682,7 +845,7 @@ type ImportProfileRequest struct {
 
 func (x *ImportProfileRequest) Reset() {
 	*x = ImportProfileRequest{}
-	mi := &file_controller_proto_msgTypes[7]
+	mi := &file_controller_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -694,7 +857,7 @@ func (x *ImportProfileRequest) String() string {
 func (*ImportProfileRequest) ProtoMessage() {}
 
 func (x *ImportProfileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_controller_proto_msgTypes[7]
+	mi := &file_controller_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -747,7 +910,7 @@ type ProfileSummary struct {
 
 func (x *ProfileSummary) Reset() {
 	*x = ProfileSummary{}
-	mi := &file_controller_proto_msgTypes[8]
+	mi := &file_controller_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -759,7 +922,7 @@ func (x *ProfileSummary) String() string {
 func (*ProfileSummary) ProtoMessage() {}
 
 func (x *ProfileSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_controller_proto_msgTypes[8]
+	mi := &file_controller_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -908,7 +1071,7 @@ type ListProfilesResponse struct {
 
 func (x *ListProfilesResponse) Reset() {
 	*x = ListProfilesResponse{}
-	mi := &file_controller_proto_msgTypes[9]
+	mi := &file_controller_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -920,7 +1083,7 @@ func (x *ListProfilesResponse) String() string {
 func (*ListProfilesResponse) ProtoMessage() {}
 
 func (x *ListProfilesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_controller_proto_msgTypes[9]
+	mi := &file_controller_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -968,7 +1131,7 @@ type Profile struct {
 
 func (x *Profile) Reset() {
 	*x = Profile{}
-	mi := &file_controller_proto_msgTypes[10]
+	mi := &file_controller_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -980,7 +1143,7 @@ func (x *Profile) String() string {
 func (*Profile) ProtoMessage() {}
 
 func (x *Profile) ProtoReflect() protoreflect.Message {
-	mi := &file_controller_proto_msgTypes[10]
+	mi := &file_controller_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1063,7 +1226,7 @@ type Connection struct {
 
 func (x *Connection) Reset() {
 	*x = Connection{}
-	mi := &file_controller_proto_msgTypes[11]
+	mi := &file_controller_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1075,7 +1238,7 @@ func (x *Connection) String() string {
 func (*Connection) ProtoMessage() {}
 
 func (x *Connection) ProtoReflect() protoreflect.Message {
-	mi := &file_controller_proto_msgTypes[11]
+	mi := &file_controller_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1339,13 +1502,15 @@ type VKSettings struct {
 	state                    protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_CallLinks     []string               `protobuf:"bytes,1,rep,name=call_links,json=callLinks"`
 	xxx_hidden_ManualCaptcha bool                   `protobuf:"varint,2,opt,name=manual_captcha,json=manualCaptcha"`
+	xxx_hidden_Platform      string                 `protobuf:"bytes,3,opt,name=platform"`
+	xxx_hidden_TurnAddress   string                 `protobuf:"bytes,4,opt,name=turn_address,json=turnAddress"`
 	unknownFields            protoimpl.UnknownFields
 	sizeCache                protoimpl.SizeCache
 }
 
 func (x *VKSettings) Reset() {
 	*x = VKSettings{}
-	mi := &file_controller_proto_msgTypes[12]
+	mi := &file_controller_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1357,7 +1522,7 @@ func (x *VKSettings) String() string {
 func (*VKSettings) ProtoMessage() {}
 
 func (x *VKSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_controller_proto_msgTypes[12]
+	mi := &file_controller_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1382,6 +1547,20 @@ func (x *VKSettings) GetManualCaptcha() bool {
 	return false
 }
 
+func (x *VKSettings) GetPlatform() string {
+	if x != nil {
+		return x.xxx_hidden_Platform
+	}
+	return ""
+}
+
+func (x *VKSettings) GetTurnAddress() string {
+	if x != nil {
+		return x.xxx_hidden_TurnAddress
+	}
+	return ""
+}
+
 func (x *VKSettings) SetCallLinks(v []string) {
 	x.xxx_hidden_CallLinks = v
 }
@@ -1390,11 +1569,21 @@ func (x *VKSettings) SetManualCaptcha(v bool) {
 	x.xxx_hidden_ManualCaptcha = v
 }
 
+func (x *VKSettings) SetPlatform(v string) {
+	x.xxx_hidden_Platform = v
+}
+
+func (x *VKSettings) SetTurnAddress(v string) {
+	x.xxx_hidden_TurnAddress = v
+}
+
 type VKSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	CallLinks     []string
 	ManualCaptcha bool
+	Platform      string
+	TurnAddress   string
 }
 
 func (b0 VKSettings_builder) Build() *VKSettings {
@@ -1403,6 +1592,8 @@ func (b0 VKSettings_builder) Build() *VKSettings {
 	_, _ = b, x
 	x.xxx_hidden_CallLinks = b.CallLinks
 	x.xxx_hidden_ManualCaptcha = b.ManualCaptcha
+	x.xxx_hidden_Platform = b.Platform
+	x.xxx_hidden_TurnAddress = b.TurnAddress
 	return m0
 }
 
@@ -1416,7 +1607,7 @@ type DNSSettings struct {
 
 func (x *DNSSettings) Reset() {
 	*x = DNSSettings{}
-	mi := &file_controller_proto_msgTypes[13]
+	mi := &file_controller_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1428,7 +1619,7 @@ func (x *DNSSettings) String() string {
 func (*DNSSettings) ProtoMessage() {}
 
 func (x *DNSSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_controller_proto_msgTypes[13]
+	mi := &file_controller_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1493,7 +1684,7 @@ type KCPSettings struct {
 
 func (x *KCPSettings) Reset() {
 	*x = KCPSettings{}
-	mi := &file_controller_proto_msgTypes[14]
+	mi := &file_controller_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1505,7 +1696,7 @@ func (x *KCPSettings) String() string {
 func (*KCPSettings) ProtoMessage() {}
 
 func (x *KCPSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_controller_proto_msgTypes[14]
+	mi := &file_controller_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1641,7 +1832,7 @@ type WireGuardSettings struct {
 
 func (x *WireGuardSettings) Reset() {
 	*x = WireGuardSettings{}
-	mi := &file_controller_proto_msgTypes[15]
+	mi := &file_controller_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1653,7 +1844,7 @@ func (x *WireGuardSettings) String() string {
 func (*WireGuardSettings) ProtoMessage() {}
 
 func (x *WireGuardSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_controller_proto_msgTypes[15]
+	mi := &file_controller_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1700,7 +1891,7 @@ type Obfuscation struct {
 
 func (x *Obfuscation) Reset() {
 	*x = Obfuscation{}
-	mi := &file_controller_proto_msgTypes[16]
+	mi := &file_controller_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1712,7 +1903,7 @@ func (x *Obfuscation) String() string {
 func (*Obfuscation) ProtoMessage() {}
 
 func (x *Obfuscation) ProtoReflect() protoreflect.Message {
-	mi := &file_controller_proto_msgTypes[16]
+	mi := &file_controller_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1789,7 +1980,7 @@ type Snapshot struct {
 
 func (x *Snapshot) Reset() {
 	*x = Snapshot{}
-	mi := &file_controller_proto_msgTypes[17]
+	mi := &file_controller_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1801,7 +1992,7 @@ func (x *Snapshot) String() string {
 func (*Snapshot) ProtoMessage() {}
 
 func (x *Snapshot) ProtoReflect() protoreflect.Message {
-	mi := &file_controller_proto_msgTypes[17]
+	mi := &file_controller_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1940,7 +2131,7 @@ type Latency struct {
 
 func (x *Latency) Reset() {
 	*x = Latency{}
-	mi := &file_controller_proto_msgTypes[18]
+	mi := &file_controller_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1952,7 +2143,7 @@ func (x *Latency) String() string {
 func (*Latency) ProtoMessage() {}
 
 func (x *Latency) ProtoReflect() protoreflect.Message {
-	mi := &file_controller_proto_msgTypes[18]
+	mi := &file_controller_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2062,14 +2253,23 @@ const file_controller_proto_rawDesc = "" +
 	"\x1fsystem_proxy_unavailable_reason\x18\x01 \x01(\tR\x1csystemProxyUnavailableReason\x124\n" +
 	"\x16tun_unavailable_reason\x18\x02 \x01(\tR\x14tunUnavailableReason\" \n" +
 	"\x0eProfileRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"\xa1\x01\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\xe5\x01\n" +
 	"\fProfileEdits\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1d\n" +
 	"\n" +
 	"call_links\x18\x03 \x03(\tR\tcallLinks\x12\x18\n" +
 	"\astreams\x18\x04 \x01(\x03R\astreams\x124\n" +
-	"\x16streams_per_credential\x18\x05 \x01(\x03R\x14streamsPerCredential\"A\n" +
+	"\x16streams_per_credential\x18\x05 \x01(\x03R\x14streamsPerCredential\x12B\n" +
+	"\badvanced\x18\x06 \x01(\v2&.wireglow.control.ProfileAdvancedEditsR\badvanced\"\xf6\x01\n" +
+	"\x14ProfileAdvancedEdits\x12%\n" +
+	"\x0eturn_transport\x18\x01 \x01(\tR\rturnTransport\x12/\n" +
+	"\x03dns\x18\x02 \x01(\v2\x1d.wireglow.control.DNSSettingsR\x03dns\x12%\n" +
+	"\x0emanual_captcha\x18\x03 \x01(\bR\rmanualCaptcha\x12\x1f\n" +
+	"\vvk_platform\x18\x04 \x01(\tR\n" +
+	"vkPlatform\x12!\n" +
+	"\fturn_address\x18\x05 \x01(\tR\vturnAddress\x12\x1b\n" +
+	"\tpacing_ms\x18\x06 \x01(\x03R\bpacingMs\"A\n" +
 	"\x14ImportProfileRequest\x12#\n" +
 	"\rfreeturn_link\x18\x01 \x01(\tR\ffreeturnLinkJ\x04\b\x02\x10\x03\"\xa5\x02\n" +
 	"\x0eProfileSummary\x12\x0e\n" +
@@ -2107,12 +2307,14 @@ const file_controller_proto_rawDesc = "" +
 	"\x03kcp\x18\v \x01(\v2\x1d.wireglow.control.KCPSettingsR\x03kcp\x123\n" +
 	"\x02wg\x18\f \x01(\v2#.wireglow.control.WireGuardSettingsR\x02wg\x12\x12\n" +
 	"\x04peer\x18\r \x01(\tR\x04peer\x12?\n" +
-	"\vobfuscation\x18\x0e \x01(\v2\x1d.wireglow.control.ObfuscationR\vobfuscation\"R\n" +
+	"\vobfuscation\x18\x0e \x01(\v2\x1d.wireglow.control.ObfuscationR\vobfuscation\"\x91\x01\n" +
 	"\n" +
 	"VKSettings\x12\x1d\n" +
 	"\n" +
 	"call_links\x18\x01 \x03(\tR\tcallLinks\x12%\n" +
-	"\x0emanual_captcha\x18\x02 \x01(\bR\rmanualCaptcha\";\n" +
+	"\x0emanual_captcha\x18\x02 \x01(\bR\rmanualCaptcha\x12\x1a\n" +
+	"\bplatform\x18\x03 \x01(\tR\bplatform\x12!\n" +
+	"\fturn_address\x18\x04 \x01(\tR\vturnAddress\";\n" +
 	"\vDNSSettings\x12\x12\n" +
 	"\x04mode\x18\x01 \x01(\tR\x04mode\x12\x18\n" +
 	"\aservers\x18\x02 \x03(\tR\aservers\"\xd2\x01\n" +
@@ -2190,7 +2392,7 @@ const file_controller_proto_rawDesc = "" +
 	"\x0eWatchSnapshots\x12\x16.google.protobuf.Empty\x1a\x1a.wireglow.control.Snapshot0\x01B*Z#wireglow/internal/rpc/gen;controlpb\x92\x03\x02\b\x02b\beditionsp\xe9\a"
 
 var file_controller_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_controller_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_controller_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_controller_proto_goTypes = []any{
 	(ProxyMode)(0),               // 0: wireglow.control.ProxyMode
 	(State)(0),                   // 1: wireglow.control.State
@@ -2201,71 +2403,74 @@ var file_controller_proto_goTypes = []any{
 	(*Capabilities)(nil),         // 6: wireglow.control.Capabilities
 	(*ProfileRequest)(nil),       // 7: wireglow.control.ProfileRequest
 	(*ProfileEdits)(nil),         // 8: wireglow.control.ProfileEdits
-	(*ImportProfileRequest)(nil), // 9: wireglow.control.ImportProfileRequest
-	(*ProfileSummary)(nil),       // 10: wireglow.control.ProfileSummary
-	(*ListProfilesResponse)(nil), // 11: wireglow.control.ListProfilesResponse
-	(*Profile)(nil),              // 12: wireglow.control.Profile
-	(*Connection)(nil),           // 13: wireglow.control.Connection
-	(*VKSettings)(nil),           // 14: wireglow.control.VKSettings
-	(*DNSSettings)(nil),          // 15: wireglow.control.DNSSettings
-	(*KCPSettings)(nil),          // 16: wireglow.control.KCPSettings
-	(*WireGuardSettings)(nil),    // 17: wireglow.control.WireGuardSettings
-	(*Obfuscation)(nil),          // 18: wireglow.control.Obfuscation
-	(*Snapshot)(nil),             // 19: wireglow.control.Snapshot
-	(*Latency)(nil),              // 20: wireglow.control.Latency
-	(*emptypb.Empty)(nil),        // 21: google.protobuf.Empty
+	(*ProfileAdvancedEdits)(nil), // 9: wireglow.control.ProfileAdvancedEdits
+	(*ImportProfileRequest)(nil), // 10: wireglow.control.ImportProfileRequest
+	(*ProfileSummary)(nil),       // 11: wireglow.control.ProfileSummary
+	(*ListProfilesResponse)(nil), // 12: wireglow.control.ListProfilesResponse
+	(*Profile)(nil),              // 13: wireglow.control.Profile
+	(*Connection)(nil),           // 14: wireglow.control.Connection
+	(*VKSettings)(nil),           // 15: wireglow.control.VKSettings
+	(*DNSSettings)(nil),          // 16: wireglow.control.DNSSettings
+	(*KCPSettings)(nil),          // 17: wireglow.control.KCPSettings
+	(*WireGuardSettings)(nil),    // 18: wireglow.control.WireGuardSettings
+	(*Obfuscation)(nil),          // 19: wireglow.control.Obfuscation
+	(*Snapshot)(nil),             // 20: wireglow.control.Snapshot
+	(*Latency)(nil),              // 21: wireglow.control.Latency
+	(*emptypb.Empty)(nil),        // 22: google.protobuf.Empty
 }
 var file_controller_proto_depIdxs = []int32{
 	0,  // 0: wireglow.control.ConnectRequest.mode:type_name -> wireglow.control.ProxyMode
 	0,  // 1: wireglow.control.ProxyModeRequest.mode:type_name -> wireglow.control.ProxyMode
 	0,  // 2: wireglow.control.ClientSettings.preferred_mode:type_name -> wireglow.control.ProxyMode
-	10, // 3: wireglow.control.ListProfilesResponse.profiles:type_name -> wireglow.control.ProfileSummary
-	13, // 4: wireglow.control.Profile.connection:type_name -> wireglow.control.Connection
-	14, // 5: wireglow.control.Connection.vk:type_name -> wireglow.control.VKSettings
-	15, // 6: wireglow.control.Connection.dns:type_name -> wireglow.control.DNSSettings
-	16, // 7: wireglow.control.Connection.kcp:type_name -> wireglow.control.KCPSettings
-	17, // 8: wireglow.control.Connection.wg:type_name -> wireglow.control.WireGuardSettings
-	18, // 9: wireglow.control.Connection.obfuscation:type_name -> wireglow.control.Obfuscation
-	0,  // 10: wireglow.control.Snapshot.active_mode:type_name -> wireglow.control.ProxyMode
-	1,  // 11: wireglow.control.Snapshot.state:type_name -> wireglow.control.State
-	20, // 12: wireglow.control.Snapshot.latency:type_name -> wireglow.control.Latency
-	21, // 13: wireglow.control.ControllerService.GetSettings:input_type -> google.protobuf.Empty
-	5,  // 14: wireglow.control.ControllerService.SetSettings:input_type -> wireglow.control.ClientSettings
-	21, // 15: wireglow.control.ControllerService.GetCapabilities:input_type -> google.protobuf.Empty
-	21, // 16: wireglow.control.ControllerService.Hello:input_type -> google.protobuf.Empty
-	21, // 17: wireglow.control.ControllerService.ListProfiles:input_type -> google.protobuf.Empty
-	9,  // 18: wireglow.control.ControllerService.PreviewImport:input_type -> wireglow.control.ImportProfileRequest
-	9,  // 19: wireglow.control.ControllerService.ImportProfile:input_type -> wireglow.control.ImportProfileRequest
-	7,  // 20: wireglow.control.ControllerService.GetProfile:input_type -> wireglow.control.ProfileRequest
-	8,  // 21: wireglow.control.ControllerService.UpdateProfile:input_type -> wireglow.control.ProfileEdits
-	7,  // 22: wireglow.control.ControllerService.DeleteProfile:input_type -> wireglow.control.ProfileRequest
-	3,  // 23: wireglow.control.ControllerService.Connect:input_type -> wireglow.control.ConnectRequest
-	21, // 24: wireglow.control.ControllerService.Disconnect:input_type -> google.protobuf.Empty
-	4,  // 25: wireglow.control.ControllerService.SwitchProxyMode:input_type -> wireglow.control.ProxyModeRequest
-	21, // 26: wireglow.control.ControllerService.GetSnapshot:input_type -> google.protobuf.Empty
-	21, // 27: wireglow.control.ControllerService.CheckLatency:input_type -> google.protobuf.Empty
-	21, // 28: wireglow.control.ControllerService.WatchSnapshots:input_type -> google.protobuf.Empty
-	5,  // 29: wireglow.control.ControllerService.GetSettings:output_type -> wireglow.control.ClientSettings
-	5,  // 30: wireglow.control.ControllerService.SetSettings:output_type -> wireglow.control.ClientSettings
-	6,  // 31: wireglow.control.ControllerService.GetCapabilities:output_type -> wireglow.control.Capabilities
-	2,  // 32: wireglow.control.ControllerService.Hello:output_type -> wireglow.control.HelloResponse
-	11, // 33: wireglow.control.ControllerService.ListProfiles:output_type -> wireglow.control.ListProfilesResponse
-	10, // 34: wireglow.control.ControllerService.PreviewImport:output_type -> wireglow.control.ProfileSummary
-	10, // 35: wireglow.control.ControllerService.ImportProfile:output_type -> wireglow.control.ProfileSummary
-	12, // 36: wireglow.control.ControllerService.GetProfile:output_type -> wireglow.control.Profile
-	10, // 37: wireglow.control.ControllerService.UpdateProfile:output_type -> wireglow.control.ProfileSummary
-	21, // 38: wireglow.control.ControllerService.DeleteProfile:output_type -> google.protobuf.Empty
-	21, // 39: wireglow.control.ControllerService.Connect:output_type -> google.protobuf.Empty
-	19, // 40: wireglow.control.ControllerService.Disconnect:output_type -> wireglow.control.Snapshot
-	19, // 41: wireglow.control.ControllerService.SwitchProxyMode:output_type -> wireglow.control.Snapshot
-	19, // 42: wireglow.control.ControllerService.GetSnapshot:output_type -> wireglow.control.Snapshot
-	19, // 43: wireglow.control.ControllerService.CheckLatency:output_type -> wireglow.control.Snapshot
-	19, // 44: wireglow.control.ControllerService.WatchSnapshots:output_type -> wireglow.control.Snapshot
-	29, // [29:45] is the sub-list for method output_type
-	13, // [13:29] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	9,  // 3: wireglow.control.ProfileEdits.advanced:type_name -> wireglow.control.ProfileAdvancedEdits
+	16, // 4: wireglow.control.ProfileAdvancedEdits.dns:type_name -> wireglow.control.DNSSettings
+	11, // 5: wireglow.control.ListProfilesResponse.profiles:type_name -> wireglow.control.ProfileSummary
+	14, // 6: wireglow.control.Profile.connection:type_name -> wireglow.control.Connection
+	15, // 7: wireglow.control.Connection.vk:type_name -> wireglow.control.VKSettings
+	16, // 8: wireglow.control.Connection.dns:type_name -> wireglow.control.DNSSettings
+	17, // 9: wireglow.control.Connection.kcp:type_name -> wireglow.control.KCPSettings
+	18, // 10: wireglow.control.Connection.wg:type_name -> wireglow.control.WireGuardSettings
+	19, // 11: wireglow.control.Connection.obfuscation:type_name -> wireglow.control.Obfuscation
+	0,  // 12: wireglow.control.Snapshot.active_mode:type_name -> wireglow.control.ProxyMode
+	1,  // 13: wireglow.control.Snapshot.state:type_name -> wireglow.control.State
+	21, // 14: wireglow.control.Snapshot.latency:type_name -> wireglow.control.Latency
+	22, // 15: wireglow.control.ControllerService.GetSettings:input_type -> google.protobuf.Empty
+	5,  // 16: wireglow.control.ControllerService.SetSettings:input_type -> wireglow.control.ClientSettings
+	22, // 17: wireglow.control.ControllerService.GetCapabilities:input_type -> google.protobuf.Empty
+	22, // 18: wireglow.control.ControllerService.Hello:input_type -> google.protobuf.Empty
+	22, // 19: wireglow.control.ControllerService.ListProfiles:input_type -> google.protobuf.Empty
+	10, // 20: wireglow.control.ControllerService.PreviewImport:input_type -> wireglow.control.ImportProfileRequest
+	10, // 21: wireglow.control.ControllerService.ImportProfile:input_type -> wireglow.control.ImportProfileRequest
+	7,  // 22: wireglow.control.ControllerService.GetProfile:input_type -> wireglow.control.ProfileRequest
+	8,  // 23: wireglow.control.ControllerService.UpdateProfile:input_type -> wireglow.control.ProfileEdits
+	7,  // 24: wireglow.control.ControllerService.DeleteProfile:input_type -> wireglow.control.ProfileRequest
+	3,  // 25: wireglow.control.ControllerService.Connect:input_type -> wireglow.control.ConnectRequest
+	22, // 26: wireglow.control.ControllerService.Disconnect:input_type -> google.protobuf.Empty
+	4,  // 27: wireglow.control.ControllerService.SwitchProxyMode:input_type -> wireglow.control.ProxyModeRequest
+	22, // 28: wireglow.control.ControllerService.GetSnapshot:input_type -> google.protobuf.Empty
+	22, // 29: wireglow.control.ControllerService.CheckLatency:input_type -> google.protobuf.Empty
+	22, // 30: wireglow.control.ControllerService.WatchSnapshots:input_type -> google.protobuf.Empty
+	5,  // 31: wireglow.control.ControllerService.GetSettings:output_type -> wireglow.control.ClientSettings
+	5,  // 32: wireglow.control.ControllerService.SetSettings:output_type -> wireglow.control.ClientSettings
+	6,  // 33: wireglow.control.ControllerService.GetCapabilities:output_type -> wireglow.control.Capabilities
+	2,  // 34: wireglow.control.ControllerService.Hello:output_type -> wireglow.control.HelloResponse
+	12, // 35: wireglow.control.ControllerService.ListProfiles:output_type -> wireglow.control.ListProfilesResponse
+	11, // 36: wireglow.control.ControllerService.PreviewImport:output_type -> wireglow.control.ProfileSummary
+	11, // 37: wireglow.control.ControllerService.ImportProfile:output_type -> wireglow.control.ProfileSummary
+	13, // 38: wireglow.control.ControllerService.GetProfile:output_type -> wireglow.control.Profile
+	11, // 39: wireglow.control.ControllerService.UpdateProfile:output_type -> wireglow.control.ProfileSummary
+	22, // 40: wireglow.control.ControllerService.DeleteProfile:output_type -> google.protobuf.Empty
+	22, // 41: wireglow.control.ControllerService.Connect:output_type -> google.protobuf.Empty
+	20, // 42: wireglow.control.ControllerService.Disconnect:output_type -> wireglow.control.Snapshot
+	20, // 43: wireglow.control.ControllerService.SwitchProxyMode:output_type -> wireglow.control.Snapshot
+	20, // 44: wireglow.control.ControllerService.GetSnapshot:output_type -> wireglow.control.Snapshot
+	20, // 45: wireglow.control.ControllerService.CheckLatency:output_type -> wireglow.control.Snapshot
+	20, // 46: wireglow.control.ControllerService.WatchSnapshots:output_type -> wireglow.control.Snapshot
+	31, // [31:47] is the sub-list for method output_type
+	15, // [15:31] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_controller_proto_init() }
@@ -2279,7 +2484,7 @@ func file_controller_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_controller_proto_rawDesc), len(file_controller_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   19,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
