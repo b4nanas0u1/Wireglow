@@ -98,6 +98,27 @@ class ControllerServiceClient extends $grpc.Client {
     return $createUnaryCall(_$updateProfile, request, options: options);
   }
 
+  $grpc.ResponseFuture<$0.Empty> exportProfiles(
+    $1.ExportProfilesRequest request, {
+    $grpc.CallOptions? options,
+  }) {
+    return $createUnaryCall(_$exportProfiles, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$1.ProfileFilePreview> previewProfileFile(
+    $1.ProfileFileRequest request, {
+    $grpc.CallOptions? options,
+  }) {
+    return $createUnaryCall(_$previewProfileFile, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$1.ImportProfileFileResponse> importProfileFile(
+    $1.ImportProfileFileRequest request, {
+    $grpc.CallOptions? options,
+  }) {
+    return $createUnaryCall(_$importProfileFile, request, options: options);
+  }
+
   $grpc.ResponseFuture<$0.Empty> deleteProfile(
     $1.ProfileRequest request, {
     $grpc.CallOptions? options,
@@ -199,6 +220,21 @@ class ControllerServiceClient extends $grpc.Client {
           '/wireglow.control.ControllerService/UpdateProfile',
           ($1.ProfileEdits value) => value.writeToBuffer(),
           $1.ProfileSummary.fromBuffer);
+  static final _$exportProfiles =
+      $grpc.ClientMethod<$1.ExportProfilesRequest, $0.Empty>(
+          '/wireglow.control.ControllerService/ExportProfiles',
+          ($1.ExportProfilesRequest value) => value.writeToBuffer(),
+          $0.Empty.fromBuffer);
+  static final _$previewProfileFile =
+      $grpc.ClientMethod<$1.ProfileFileRequest, $1.ProfileFilePreview>(
+          '/wireglow.control.ControllerService/PreviewProfileFile',
+          ($1.ProfileFileRequest value) => value.writeToBuffer(),
+          $1.ProfileFilePreview.fromBuffer);
+  static final _$importProfileFile = $grpc.ClientMethod<
+          $1.ImportProfileFileRequest, $1.ImportProfileFileResponse>(
+      '/wireglow.control.ControllerService/ImportProfileFile',
+      ($1.ImportProfileFileRequest value) => value.writeToBuffer(),
+      $1.ImportProfileFileResponse.fromBuffer);
   static final _$deleteProfile =
       $grpc.ClientMethod<$1.ProfileRequest, $0.Empty>(
           '/wireglow.control.ControllerService/DeleteProfile',
@@ -301,6 +337,32 @@ abstract class ControllerServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $1.ProfileEdits.fromBuffer(value),
         ($1.ProfileSummary value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$1.ExportProfilesRequest, $0.Empty>(
+        'ExportProfiles',
+        exportProfiles_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) =>
+            $1.ExportProfilesRequest.fromBuffer(value),
+        ($0.Empty value) => value.writeToBuffer()));
+    $addMethod(
+        $grpc.ServiceMethod<$1.ProfileFileRequest, $1.ProfileFilePreview>(
+            'PreviewProfileFile',
+            previewProfileFile_Pre,
+            false,
+            false,
+            ($core.List<$core.int> value) =>
+                $1.ProfileFileRequest.fromBuffer(value),
+            ($1.ProfileFilePreview value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$1.ImportProfileFileRequest,
+            $1.ImportProfileFileResponse>(
+        'ImportProfileFile',
+        importProfileFile_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) =>
+            $1.ImportProfileFileRequest.fromBuffer(value),
+        ($1.ImportProfileFileResponse value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$1.ProfileRequest, $0.Empty>(
         'DeleteProfile',
         deleteProfile_Pre,
@@ -423,6 +485,32 @@ abstract class ControllerServiceBase extends $grpc.Service {
 
   $async.Future<$1.ProfileSummary> updateProfile(
       $grpc.ServiceCall call, $1.ProfileEdits request);
+
+  $async.Future<$0.Empty> exportProfiles_Pre($grpc.ServiceCall $call,
+      $async.Future<$1.ExportProfilesRequest> $request) async {
+    return exportProfiles($call, await $request);
+  }
+
+  $async.Future<$0.Empty> exportProfiles(
+      $grpc.ServiceCall call, $1.ExportProfilesRequest request);
+
+  $async.Future<$1.ProfileFilePreview> previewProfileFile_Pre(
+      $grpc.ServiceCall $call,
+      $async.Future<$1.ProfileFileRequest> $request) async {
+    return previewProfileFile($call, await $request);
+  }
+
+  $async.Future<$1.ProfileFilePreview> previewProfileFile(
+      $grpc.ServiceCall call, $1.ProfileFileRequest request);
+
+  $async.Future<$1.ImportProfileFileResponse> importProfileFile_Pre(
+      $grpc.ServiceCall $call,
+      $async.Future<$1.ImportProfileFileRequest> $request) async {
+    return importProfileFile($call, await $request);
+  }
+
+  $async.Future<$1.ImportProfileFileResponse> importProfileFile(
+      $grpc.ServiceCall call, $1.ImportProfileFileRequest request);
 
   $async.Future<$0.Empty> deleteProfile_Pre($grpc.ServiceCall $call,
       $async.Future<$1.ProfileRequest> $request) async {

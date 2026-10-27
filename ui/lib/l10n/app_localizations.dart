@@ -985,6 +985,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter 0–60000 milliseconds.'**
   String get editorInvalidPacing;
+
+  /// No description provided for @importProfiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Import profiles'**
+  String get importProfiles;
+
+  /// No description provided for @exportProfiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Export profiles'**
+  String get exportProfiles;
+
+  /// No description provided for @importProfilesAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Import…'**
+  String get importProfilesAction;
+
+  /// No description provided for @exportProfilesAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Export…'**
+  String get exportProfilesAction;
+
+  /// No description provided for @profileTransferHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer connection profiles between devices or keep a backup.'**
+  String get profileTransferHelp;
+
+  /// No description provided for @importProfilesSettingsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Review a Wireglow file and choose what to add.'**
+  String get importProfilesSettingsHelp;
+
+  /// No description provided for @exportProfilesSettingsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Save all profiles or select individual ones.'**
+  String get exportProfilesSettingsHelp;
+
+  /// No description provided for @importProfilesHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore profiles from a Wireglow export. Review the file before importing.'**
+  String get importProfilesHelp;
+
+  /// No description provided for @exportProfilesHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the profiles to save to a file.'**
+  String get exportProfilesHelp;
+
+  /// No description provided for @profileFileType.
+  ///
+  /// In en, this message translates to:
+  /// **'Wireglow profiles file (.json)'**
+  String get profileFileType;
+
+  /// No description provided for @chooseProfileFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose file…'**
+  String get chooseProfileFile;
+
+  /// No description provided for @changeProfileFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get changeProfileFile;
+
+  /// No description provided for @selectAllProfiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Select all'**
+  String get selectAllProfiles;
+
+  /// No description provided for @profileExportSecretsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Includes connection settings, keys and call links. Anyone with this file can use these connections.'**
+  String get profileExportSecretsHelp;
+
+  /// No description provided for @profileImportReviewHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Existing profiles are matched by ID. Replacing a profile applies on the next connection.'**
+  String get profileImportReviewHelp;
+
+  /// No description provided for @skipExistingProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip existing'**
+  String get skipExistingProfile;
+
+  /// No description provided for @copyImportedProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a copy'**
+  String get copyImportedProfile;
+
+  /// No description provided for @replaceExistingProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace existing'**
+  String get replaceExistingProfile;
+
+  /// No description provided for @profileArchiveInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Wireglow file, unsupported version or file too large (maximum 16 MiB and 1000 profiles).'**
+  String get profileArchiveInvalid;
+
+  /// No description provided for @profilePreviewExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview expired or a session operation is running. Open the file again and review the profiles.'**
+  String get profilePreviewExpired;
+
+  /// No description provided for @profileTransferFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not complete the operation. Check file permissions and available disk space, then choose the file again.'**
+  String get profileTransferFailed;
+
+  /// No description provided for @profileImportPartial.
+  ///
+  /// In en, this message translates to:
+  /// **'Some profiles were not imported. Saved profiles are listed below. Choose the file again to retry.'**
+  String get profileImportPartial;
+
+  /// No description provided for @profileImportDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported'**
+  String get profileImportDone;
+
+  /// No description provided for @profileImportSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get profileImportSkipped;
+
+  /// No description provided for @profileImportChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Changed after preview; not imported'**
+  String get profileImportChanged;
+
+  /// No description provided for @profileImportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save this profile'**
+  String get profileImportFailed;
+
+  /// No description provided for @closeProfileTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeProfileTransfer;
+
+  /// No description provided for @profileCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No profiles selected} =1{1 profile} other{{count} profiles}}'**
+  String profileCount(int count);
+
+  /// No description provided for @exportProfileCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Export {count}'**
+  String exportProfileCount(int count);
+
+  /// No description provided for @importProfileCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Import {count}'**
+  String importProfileCount(int count);
+
+  /// No description provided for @profilesExported.
+  ///
+  /// In en, this message translates to:
+  /// **'Profiles exported: {count}'**
+  String profilesExported(int count);
+
+  /// No description provided for @profilesImported.
+  ///
+  /// In en, this message translates to:
+  /// **'Profiles imported: {count}'**
+  String profilesImported(int count);
+
+  /// No description provided for @profileAlreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'Already saved as “{name}”'**
+  String profileAlreadyExists(String name);
 }
 
 class _AppLocalizationsDelegate

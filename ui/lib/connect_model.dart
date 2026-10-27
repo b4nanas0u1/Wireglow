@@ -316,6 +316,31 @@ class ConnectModel extends ChangeNotifier {
     }
   }
 
+  Future<ImportProfileFileResponse> importProfileFile(
+    String token,
+    List<ProfileImportChoice> choices,
+  ) async {
+    if (!available || commandPending || connecting || stopping) {
+      throw const UiError(UiErrorCode.waitController);
+    }
+    commandPending = true;
+    _notify();
+    try {
+      return await repository.importProfileFile(token, choices);
+    } finally {
+      // Refresh even after a lost reply: some files may already have been saved.
+      try {
+        profiles = await repository.profiles();
+        selected =
+            profiles.where((p) => p.id == selected?.id).firstOrNull ??
+            profiles.firstOrNull;
+      } finally {
+        commandPending = false;
+        _notify();
+      }
+    }
+  }
+
   Future<void> deleteProfile(String id) async {
     if (!available || busy || !profiles.any((p) => p.id == id)) return;
     commandPending = true;

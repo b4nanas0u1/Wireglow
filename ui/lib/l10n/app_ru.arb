@@ -189,5 +189,80 @@
         "type": "String"
       }
     }
+  },
+  "importProfiles": "Импорт профилей",
+  "exportProfiles": "Экспорт профилей",
+  "importProfilesAction": "Импорт…",
+  "exportProfilesAction": "Экспорт…",
+  "profileTransferHelp": "Переносите профили подключений между устройствами или сохраняйте резервную копию.",
+  "importProfilesSettingsHelp": "Просмотрите файл Wireglow и выберите профили для импорта.",
+  "exportProfilesSettingsHelp": "Сохраните все профили или выберите отдельные.",
+  "importProfilesHelp": "Восстановите профили из файла Wireglow. Перед импортом проверьте его содержимое.",
+  "exportProfilesHelp": "Выберите профили для сохранения в файл.",
+  "profileFileType": "Файл профилей Wireglow (.json)",
+  "chooseProfileFile": "Выбрать файл…",
+  "changeProfileFile": "Изменить",
+  "selectAllProfiles": "Выбрать все",
+  "profileExportSecretsHelp": "Включает настройки подключений, ключи и ссылки на звонки. Любой, у кого есть этот файл, сможет использовать эти подключения.",
+  "profileImportReviewHelp": "Существующие профили определяются по ID. Замена профиля применяется при следующем подключении.",
+  "skipExistingProfile": "Пропустить",
+  "copyImportedProfile": "Создать копию",
+  "replaceExistingProfile": "Заменить",
+  "profileArchiveInvalid": "Некорректный файл Wireglow, неподдерживаемая версия или превышен лимит: 16 МиБ и 1000 профилей.",
+  "profilePreviewExpired": "Предпросмотр устарел или выполняется операция подключения. Откройте файл и проверьте профили ещё раз.",
+  "profileTransferFailed": "Не удалось завершить операцию. Проверьте права доступа и свободное место, затем выберите файл ещё раз.",
+  "profileImportPartial": "Часть профилей не импортирована. Результат для каждого профиля указан ниже. Для повтора выберите файл ещё раз.",
+  "profileImportDone": "Импортирован",
+  "profileImportSkipped": "Пропущен",
+  "profileImportChanged": "Изменён после предпросмотра; не импортирован",
+  "profileImportFailed": "Не удалось сохранить профиль",
+  "closeProfileTransfer": "Закрыть",
+  "profileCount": "{count, plural, =0{Профили не выбраны} one{{count} профиль} few{{count} профиля} many{{count} профилей} other{{count} профиля}}",
+  "@profileCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportProfileCount": "Экспортировать: {count}",
+  "@exportProfileCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importProfileCount": "Импортировать: {count}",
+  "@importProfileCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profilesExported": "Профилей экспортировано: {count}",
+  "@profilesExported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profilesImported": "Профилей импортировано: {count}",
+  "@profilesImported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileAlreadyExists": "Уже сохранён как «{name}»",
+  "@profileAlreadyExists": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

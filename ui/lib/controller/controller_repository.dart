@@ -123,6 +123,26 @@ class ControllerRepository {
     ImportProfileRequest(freeturnLink: link),
     options: _deadline(),
   );
+  Future<void> exportProfiles(List<String> ids, String path) async {
+    await client.exportProfiles(
+      ExportProfilesRequest(ids: ids, path: path),
+      options: CallOptions(timeout: const Duration(seconds: 60)),
+    );
+  }
+
+  Future<ProfileFilePreview> previewProfileFile(String path) =>
+      client.previewProfileFile(
+        ProfileFileRequest(path: path),
+        options: CallOptions(timeout: const Duration(seconds: 60)),
+      );
+  Future<ImportProfileFileResponse> importProfileFile(
+    String token,
+    List<ProfileImportChoice> choices,
+  ) => client.importProfileFile(
+    ImportProfileFileRequest(token: token, choices: choices),
+    options: CallOptions(timeout: const Duration(seconds: 60)),
+  );
+
   Future<void> connect(
     String id, {
     ProxyMode mode = ProxyMode.PROXY_MODE_LOCAL,

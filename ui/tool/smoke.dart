@@ -69,7 +69,48 @@ Future<void> main() async {
         'Profile editor settings did not survive Dart–Go round trip',
       );
     }
+    final transferDir = await Directory(
+      '${Platform.environment['WIREGLOW_DATA_DIR']!}/transfer-smoke',
+    ).create(recursive: true);
+    final exportPath = '${transferDir.path}/profiles.json';
+    await repository.exportProfiles([vkProfile.id], exportPath);
     await repository.deleteProfile(vkProfile.id);
+    final preview = await repository.previewProfileFile(exportPath);
+    if (preview.entries.length != 1 || preview.entries.single.hasExisting()) {
+      throw StateError('Unexpected profile transfer preview');
+    }
+    final restored = await repository.importProfileFile(preview.token, [
+      ProfileImportChoice(
+        index: 0,
+        action: ProfileImportAction.PROFILE_IMPORT_ACTION_ADD,
+      ),
+    ]);
+    final restoredConnection = (await repository.getProfile(vkProfile.id))
+        .connection;
+    if (restored.results.single.status != 'imported' ||
+        restoredConnection.vk.turnAddress != '[2001:db8::1]:443' ||
+        restoredConnection.vk.platform != 'mobile' ||
+        !restoredConnection.vk.manualCaptcha ||
+        restoredConnection.dns.servers.single != '1.1.1.1:53') {
+      throw StateError('Profile archive round trip lost advanced settings');
+    }
+    final conflict = await repository.previewProfileFile(exportPath);
+    if (!conflict.entries.single.hasExisting()) {
+      throw StateError('Profile archive conflict not detected');
+    }
+    final skipped = await repository.importProfileFile(conflict.token, [
+      ProfileImportChoice(
+        index: 0,
+        action: ProfileImportAction.PROFILE_IMPORT_ACTION_SKIP,
+      ),
+    ]);
+    if (skipped.results.single.status != 'skipped') {
+      throw StateError('Skip existing profile failed');
+    }
+    await repository.deleteProfile(vkProfile.id);
+    stdout.writeln(
+      'PASS: profile file export/preview/import, full settings round trip and conflict skip',
+    );
     stdout.writeln('PASS: advanced profile edits survive Dart–Go round trip');
     await repository.connect(imported.id);
     await Future<void>.delayed(const Duration(milliseconds: 600));

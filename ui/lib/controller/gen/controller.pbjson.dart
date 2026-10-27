@@ -56,6 +56,25 @@ final $typed_data.Uint8List stateDescriptor = $convert.base64Decode(
     'JLEAYSEwoPU1RBVEVfQ09OTkVDVEVEEAcSEgoOU1RBVEVfU1RPUFBJTkcQCBIQCgxTVEFURV9G'
     'QUlMRUQQCQ==');
 
+@$core.Deprecated('Use profileImportActionDescriptor instead')
+const ProfileImportAction$json = {
+  '1': 'ProfileImportAction',
+  '2': [
+    {'1': 'PROFILE_IMPORT_ACTION_UNSPECIFIED', '2': 0},
+    {'1': 'PROFILE_IMPORT_ACTION_ADD', '2': 1},
+    {'1': 'PROFILE_IMPORT_ACTION_SKIP', '2': 2},
+    {'1': 'PROFILE_IMPORT_ACTION_COPY', '2': 3},
+    {'1': 'PROFILE_IMPORT_ACTION_REPLACE', '2': 4},
+  ],
+};
+
+/// Descriptor for `ProfileImportAction`. Decode as a `google.protobuf.EnumDescriptorProto`.
+final $typed_data.Uint8List profileImportActionDescriptor = $convert.base64Decode(
+    'ChNQcm9maWxlSW1wb3J0QWN0aW9uEiUKIVBST0ZJTEVfSU1QT1JUX0FDVElPTl9VTlNQRUNJRk'
+    'lFRBAAEh0KGVBST0ZJTEVfSU1QT1JUX0FDVElPTl9BREQQARIeChpQUk9GSUxFX0lNUE9SVF9B'
+    'Q1RJT05fU0tJUBACEh4KGlBST0ZJTEVfSU1QT1JUX0FDVElPTl9DT1BZEAMSIQodUFJPRklMRV'
+    '9JTVBPUlRfQUNUSU9OX1JFUExBQ0UQBA==');
+
 @$core.Deprecated('Use helloResponseDescriptor instead')
 const HelloResponse$json = {
   '1': 'HelloResponse',
@@ -544,3 +563,157 @@ final $typed_data.Uint8List latencyDescriptor = $convert.base64Decode(
     'CgdMYXRlbmN5EhoKCGNoZWNraW5nGAEgASgIUghjaGVja2luZxIZCghkZWxheV9tcxgCIAEoA1'
     'IHZGVsYXlNcxIdCgpjaGVja2VkX2F0GAMgASgDUgljaGVja2VkQXQSHQoKc3VjY2Vzc19hdBgE'
     'IAEoA1IJc3VjY2Vzc0F0EhQKBWVycm9yGAUgASgJUgVlcnJvcg==');
+
+@$core.Deprecated('Use exportProfilesRequestDescriptor instead')
+const ExportProfilesRequest$json = {
+  '1': 'ExportProfilesRequest',
+  '2': [
+    {'1': 'ids', '3': 1, '4': 3, '5': 9, '10': 'ids'},
+    {'1': 'path', '3': 2, '4': 1, '5': 9, '10': 'path'},
+  ],
+};
+
+/// Descriptor for `ExportProfilesRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List exportProfilesRequestDescriptor = $convert.base64Decode(
+    'ChVFeHBvcnRQcm9maWxlc1JlcXVlc3QSEAoDaWRzGAEgAygJUgNpZHMSEgoEcGF0aBgCIAEoCV'
+    'IEcGF0aA==');
+
+@$core.Deprecated('Use profileFileRequestDescriptor instead')
+const ProfileFileRequest$json = {
+  '1': 'ProfileFileRequest',
+  '2': [
+    {'1': 'path', '3': 1, '4': 1, '5': 9, '10': 'path'},
+  ],
+};
+
+/// Descriptor for `ProfileFileRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List profileFileRequestDescriptor = $convert
+    .base64Decode('ChJQcm9maWxlRmlsZVJlcXVlc3QSEgoEcGF0aBgBIAEoCVIEcGF0aA==');
+
+@$core.Deprecated('Use profileFileEntryDescriptor instead')
+const ProfileFileEntry$json = {
+  '1': 'ProfileFileEntry',
+  '2': [
+    {
+      '1': 'profile',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.wireglow.control.ProfileSummary',
+      '10': 'profile'
+    },
+    {
+      '1': 'existing',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.wireglow.control.ProfileSummary',
+      '10': 'existing'
+    },
+  ],
+};
+
+/// Descriptor for `ProfileFileEntry`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List profileFileEntryDescriptor = $convert.base64Decode(
+    'ChBQcm9maWxlRmlsZUVudHJ5EjoKB3Byb2ZpbGUYASABKAsyIC53aXJlZ2xvdy5jb250cm9sLl'
+    'Byb2ZpbGVTdW1tYXJ5Ugdwcm9maWxlEjwKCGV4aXN0aW5nGAIgASgLMiAud2lyZWdsb3cuY29u'
+    'dHJvbC5Qcm9maWxlU3VtbWFyeVIIZXhpc3Rpbmc=');
+
+@$core.Deprecated('Use profileFilePreviewDescriptor instead')
+const ProfileFilePreview$json = {
+  '1': 'ProfileFilePreview',
+  '2': [
+    {'1': 'token', '3': 1, '4': 1, '5': 9, '10': 'token'},
+    {
+      '1': 'entries',
+      '3': 2,
+      '4': 3,
+      '5': 11,
+      '6': '.wireglow.control.ProfileFileEntry',
+      '10': 'entries'
+    },
+  ],
+};
+
+/// Descriptor for `ProfileFilePreview`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List profileFilePreviewDescriptor = $convert.base64Decode(
+    'ChJQcm9maWxlRmlsZVByZXZpZXcSFAoFdG9rZW4YASABKAlSBXRva2VuEjwKB2VudHJpZXMYAi'
+    'ADKAsyIi53aXJlZ2xvdy5jb250cm9sLlByb2ZpbGVGaWxlRW50cnlSB2VudHJpZXM=');
+
+@$core.Deprecated('Use profileImportChoiceDescriptor instead')
+const ProfileImportChoice$json = {
+  '1': 'ProfileImportChoice',
+  '2': [
+    {'1': 'index', '3': 1, '4': 1, '5': 13, '10': 'index'},
+    {
+      '1': 'action',
+      '3': 2,
+      '4': 1,
+      '5': 14,
+      '6': '.wireglow.control.ProfileImportAction',
+      '10': 'action'
+    },
+  ],
+};
+
+/// Descriptor for `ProfileImportChoice`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List profileImportChoiceDescriptor = $convert.base64Decode(
+    'ChNQcm9maWxlSW1wb3J0Q2hvaWNlEhQKBWluZGV4GAEgASgNUgVpbmRleBI9CgZhY3Rpb24YAi'
+    'ABKA4yJS53aXJlZ2xvdy5jb250cm9sLlByb2ZpbGVJbXBvcnRBY3Rpb25SBmFjdGlvbg==');
+
+@$core.Deprecated('Use importProfileFileRequestDescriptor instead')
+const ImportProfileFileRequest$json = {
+  '1': 'ImportProfileFileRequest',
+  '2': [
+    {'1': 'token', '3': 1, '4': 1, '5': 9, '10': 'token'},
+    {
+      '1': 'choices',
+      '3': 2,
+      '4': 3,
+      '5': 11,
+      '6': '.wireglow.control.ProfileImportChoice',
+      '10': 'choices'
+    },
+  ],
+};
+
+/// Descriptor for `ImportProfileFileRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List importProfileFileRequestDescriptor = $convert.base64Decode(
+    'ChhJbXBvcnRQcm9maWxlRmlsZVJlcXVlc3QSFAoFdG9rZW4YASABKAlSBXRva2VuEj8KB2Nob2'
+    'ljZXMYAiADKAsyJS53aXJlZ2xvdy5jb250cm9sLlByb2ZpbGVJbXBvcnRDaG9pY2VSB2Nob2lj'
+    'ZXM=');
+
+@$core.Deprecated('Use profileImportResultDescriptor instead')
+const ProfileImportResult$json = {
+  '1': 'ProfileImportResult',
+  '2': [
+    {'1': 'index', '3': 1, '4': 1, '5': 13, '10': 'index'},
+    {'1': 'status', '3': 2, '4': 1, '5': 9, '10': 'status'},
+  ],
+};
+
+/// Descriptor for `ProfileImportResult`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List profileImportResultDescriptor = $convert.base64Decode(
+    'ChNQcm9maWxlSW1wb3J0UmVzdWx0EhQKBWluZGV4GAEgASgNUgVpbmRleBIWCgZzdGF0dXMYAi'
+    'ABKAlSBnN0YXR1cw==');
+
+@$core.Deprecated('Use importProfileFileResponseDescriptor instead')
+const ImportProfileFileResponse$json = {
+  '1': 'ImportProfileFileResponse',
+  '2': [
+    {
+      '1': 'results',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.wireglow.control.ProfileImportResult',
+      '10': 'results'
+    },
+  ],
+};
+
+/// Descriptor for `ImportProfileFileResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List importProfileFileResponseDescriptor =
+    $convert.base64Decode(
+        'ChlJbXBvcnRQcm9maWxlRmlsZVJlc3BvbnNlEj8KB3Jlc3VsdHMYASADKAsyJS53aXJlZ2xvdy'
+        '5jb250cm9sLlByb2ZpbGVJbXBvcnRSZXN1bHRSB3Jlc3VsdHM=');

@@ -13,7 +13,6 @@ import 'package:wireglow_ui/l10n/app_localizations.dart';
 import 'package:wireglow_ui/client_settings_tab.dart';
 
 import 'connect_test.dart' show FakeRepository;
-import 'desktop_golden.dart';
 
 void main() {
   setUpAll(() async {
@@ -70,21 +69,21 @@ void main() {
   testWidgets('settings layout supports narrow windows and text scaling', (
     tester,
   ) async {
-    tester.view.physicalSize = const Size(960, 1100);
+    tester.view.physicalSize = const Size(960, 1250);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     final model = ConnectModel(FakeRepository());
-    final languages = LanguageSettings(preference: 'ru');
+    final languages = LanguageSettings(preference: 'en');
     addTearDown(languages.dispose);
     await model.start();
     for (final scale in [1.0, 2.0]) {
       tester.view.physicalSize = scale == 1
-          ? const Size(960, 1100)
+          ? const Size(960, 1250)
           : const Size(420, 400);
       await tester.pumpWidget(
         MaterialApp(
-          locale: const Locale('ru'),
+          locale: const Locale('en'),
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: desktopTheme(Brightness.light),
@@ -103,10 +102,10 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
-      if (scale == 1) {
+      if (scale == 1 && Platform.isLinux) {
         await expectLater(
           find.byKey(const Key('settings-screen')),
-          matchesDesktopGolden('settings'),
+          matchesGoldenFile('goldens/settings-profiles-en.png'),
         );
       }
     }
@@ -163,22 +162,26 @@ void main() {
       await tester.enterText(api, '28001');
       await tester.pump();
       expect(saveEnabled(), true);
+      await tester.ensureVisible(find.text('Сохранить'));
       await tester.tap(find.text('Сохранить'));
       await tester.pumpAndSettle();
       expect(find.text('Порты должны отличаться.'), findsNWidgets(2));
       await tester.enterText(api, '28002');
       await tester.pump();
+      await tester.ensureVisible(find.text('Сохранить'));
       await tester.tap(find.text('Сохранить'));
       await tester.pumpAndSettle();
       expect(find.text('Порты должны отличаться.'), findsNWidgets(2));
       await tester.enterText(api, '65536');
       await tester.pump();
+      await tester.ensureVisible(find.text('Сохранить'));
       await tester.tap(find.text('Сохранить'));
       await tester.pumpAndSettle();
       expect(find.text('Введите порт от 1 до 65535.'), findsOneWidget);
       await tester.enterText(api, '28003');
       await tester.enterText(proxy, '0.0.0.0:9000');
       await tester.pump();
+      await tester.ensureVisible(find.text('Сохранить'));
       await tester.tap(find.text('Сохранить'));
       await tester.pumpAndSettle();
       expect(
@@ -187,29 +190,37 @@ void main() {
       );
       await tester.enterText(proxy, '127.0.0.1:28002');
       await tester.pump();
+      await tester.ensureVisible(find.text('Сохранить'));
       await tester.tap(find.text('Сохранить'));
       await tester.pumpAndSettle();
       expect(find.text('Порты должны отличаться.'), findsNWidgets(2));
       await tester.enterText(proxy, '127.0.0.1:29001');
       await tester.pump();
       repository.settingsError = const GrpcError.unavailable('Save failed');
+      await tester.ensureVisible(find.text('Сохранить'));
       await tester.tap(find.text('Сохранить'));
       await tester.pumpAndSettle();
       expect(find.text('Save failed'), findsOneWidget);
       expect(saveEnabled(), true);
       expect(repository.savedProxy, '127.0.0.1:28001');
       repository.settingsError = null;
+      await tester.ensureVisible(find.text('Сохранить'));
       await tester.tap(find.text('Сохранить'));
       await tester.pumpAndSettle();
       expect(repository.savedProxy, '127.0.0.1:29001');
       expect(repository.savedAPI, 28003);
       expect(saveEnabled(), false);
       expect(repository.connects, 0);
+      ScaffoldMessenger.of(tester.element(find.byType(ClientSettingsTab)))
+          .removeCurrentSnackBar();
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Вернуть значения по умолчанию'));
       await tester.tap(find.text('Вернуть значения по умолчанию'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Отмена'));
       await tester.pumpAndSettle();
       expect(repository.savedProxy, '127.0.0.1:29001');
+      await tester.ensureVisible(find.text('Вернуть значения по умолчанию'));
       await tester.tap(find.text('Вернуть значения по умолчанию'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Сбросить'));

@@ -82,5 +82,38 @@ class State extends $pb.ProtobufEnum {
   const State._(super.value, super.name);
 }
 
+class ProfileImportAction extends $pb.ProtobufEnum {
+  static const ProfileImportAction PROFILE_IMPORT_ACTION_UNSPECIFIED =
+      ProfileImportAction._(
+          0, _omitEnumNames ? '' : 'PROFILE_IMPORT_ACTION_UNSPECIFIED');
+  static const ProfileImportAction PROFILE_IMPORT_ACTION_ADD =
+      ProfileImportAction._(
+          1, _omitEnumNames ? '' : 'PROFILE_IMPORT_ACTION_ADD');
+  static const ProfileImportAction PROFILE_IMPORT_ACTION_SKIP =
+      ProfileImportAction._(
+          2, _omitEnumNames ? '' : 'PROFILE_IMPORT_ACTION_SKIP');
+  static const ProfileImportAction PROFILE_IMPORT_ACTION_COPY =
+      ProfileImportAction._(
+          3, _omitEnumNames ? '' : 'PROFILE_IMPORT_ACTION_COPY');
+  static const ProfileImportAction PROFILE_IMPORT_ACTION_REPLACE =
+      ProfileImportAction._(
+          4, _omitEnumNames ? '' : 'PROFILE_IMPORT_ACTION_REPLACE');
+
+  static const $core.List<ProfileImportAction> values = <ProfileImportAction>[
+    PROFILE_IMPORT_ACTION_UNSPECIFIED,
+    PROFILE_IMPORT_ACTION_ADD,
+    PROFILE_IMPORT_ACTION_SKIP,
+    PROFILE_IMPORT_ACTION_COPY,
+    PROFILE_IMPORT_ACTION_REPLACE,
+  ];
+
+  static final $core.List<ProfileImportAction?> _byValue =
+      $pb.ProtobufEnum.$_initByValueList(values, 4);
+  static ProfileImportAction? valueOf($core.int value) =>
+      value < 0 || value >= _byValue.length ? null : _byValue[value];
+
+  const ProfileImportAction._(super.value, super.name);
+}
+
 const $core.bool _omitEnumNames =
     $core.bool.fromEnvironment('protobuf.omit_enum_names');

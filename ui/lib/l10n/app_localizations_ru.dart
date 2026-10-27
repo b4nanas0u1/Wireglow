@@ -486,4 +486,135 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get editorInvalidPacing => 'Введите 0–60000 миллисекунд.';
+
+  @override
+  String get importProfiles => 'Импорт профилей';
+
+  @override
+  String get exportProfiles => 'Экспорт профилей';
+
+  @override
+  String get importProfilesAction => 'Импорт…';
+
+  @override
+  String get exportProfilesAction => 'Экспорт…';
+
+  @override
+  String get profileTransferHelp =>
+      'Переносите профили подключений между устройствами или сохраняйте резервную копию.';
+
+  @override
+  String get importProfilesSettingsHelp =>
+      'Просмотрите файл Wireglow и выберите профили для импорта.';
+
+  @override
+  String get exportProfilesSettingsHelp =>
+      'Сохраните все профили или выберите отдельные.';
+
+  @override
+  String get importProfilesHelp =>
+      'Восстановите профили из файла Wireglow. Перед импортом проверьте его содержимое.';
+
+  @override
+  String get exportProfilesHelp => 'Выберите профили для сохранения в файл.';
+
+  @override
+  String get profileFileType => 'Файл профилей Wireglow (.json)';
+
+  @override
+  String get chooseProfileFile => 'Выбрать файл…';
+
+  @override
+  String get changeProfileFile => 'Изменить';
+
+  @override
+  String get selectAllProfiles => 'Выбрать все';
+
+  @override
+  String get profileExportSecretsHelp =>
+      'Включает настройки подключений, ключи и ссылки на звонки. Любой, у кого есть этот файл, сможет использовать эти подключения.';
+
+  @override
+  String get profileImportReviewHelp =>
+      'Существующие профили определяются по ID. Замена профиля применяется при следующем подключении.';
+
+  @override
+  String get skipExistingProfile => 'Пропустить';
+
+  @override
+  String get copyImportedProfile => 'Создать копию';
+
+  @override
+  String get replaceExistingProfile => 'Заменить';
+
+  @override
+  String get profileArchiveInvalid =>
+      'Некорректный файл Wireglow, неподдерживаемая версия или превышен лимит: 16 МиБ и 1000 профилей.';
+
+  @override
+  String get profilePreviewExpired =>
+      'Предпросмотр устарел или выполняется операция подключения. Откройте файл и проверьте профили ещё раз.';
+
+  @override
+  String get profileTransferFailed =>
+      'Не удалось завершить операцию. Проверьте права доступа и свободное место, затем выберите файл ещё раз.';
+
+  @override
+  String get profileImportPartial =>
+      'Часть профилей не импортирована. Результат для каждого профиля указан ниже. Для повтора выберите файл ещё раз.';
+
+  @override
+  String get profileImportDone => 'Импортирован';
+
+  @override
+  String get profileImportSkipped => 'Пропущен';
+
+  @override
+  String get profileImportChanged =>
+      'Изменён после предпросмотра; не импортирован';
+
+  @override
+  String get profileImportFailed => 'Не удалось сохранить профиль';
+
+  @override
+  String get closeProfileTransfer => 'Закрыть';
+
+  @override
+  String profileCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count профиля',
+      many: '$count профилей',
+      few: '$count профиля',
+      one: '$count профиль',
+      zero: 'Профили не выбраны',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String exportProfileCount(int count) {
+    return 'Экспортировать: $count';
+  }
+
+  @override
+  String importProfileCount(int count) {
+    return 'Импортировать: $count';
+  }
+
+  @override
+  String profilesExported(int count) {
+    return 'Профилей экспортировано: $count';
+  }
+
+  @override
+  String profilesImported(int count) {
+    return 'Профилей импортировано: $count';
+  }
+
+  @override
+  String profileAlreadyExists(String name) {
+    return 'Уже сохранён как «$name»';
+  }
 }

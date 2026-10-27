@@ -28,3 +28,15 @@ rendering or layout changes.
 
 Golden runs fix APP_VERSION to 0.1.0 to keep build metadata reproducible. The
 default dev version and release values are checked separately by app_info_test.dart.
+
+Profile transfer adds English Linux references `settings-profiles-en.png`,
+`profile-export-en.png` and `profile-import-en.png`. The settings screenshot
+replaces the old Russian `settings.png` assertion; legacy files are retained.
+Windows continues running the behavior/layout assertions; create and review
+native Windows references before enabling comparisons for these new screens.
+
+After intentional changes, regenerate only these references from `ui/`:
+
+```sh
+flutter test --no-pub --dart-define=APP_VERSION=0.1.0 --update-goldens test/profile_transfer_test.dart test/client_settings_test.dart
+```

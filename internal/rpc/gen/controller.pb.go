@@ -133,6 +133,56 @@ func (x State) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
+type ProfileImportAction int32
+
+const (
+	ProfileImportAction_PROFILE_IMPORT_ACTION_UNSPECIFIED ProfileImportAction = 0
+	ProfileImportAction_PROFILE_IMPORT_ACTION_ADD         ProfileImportAction = 1
+	ProfileImportAction_PROFILE_IMPORT_ACTION_SKIP        ProfileImportAction = 2
+	ProfileImportAction_PROFILE_IMPORT_ACTION_COPY        ProfileImportAction = 3
+	ProfileImportAction_PROFILE_IMPORT_ACTION_REPLACE     ProfileImportAction = 4
+)
+
+// Enum value maps for ProfileImportAction.
+var (
+	ProfileImportAction_name = map[int32]string{
+		0: "PROFILE_IMPORT_ACTION_UNSPECIFIED",
+		1: "PROFILE_IMPORT_ACTION_ADD",
+		2: "PROFILE_IMPORT_ACTION_SKIP",
+		3: "PROFILE_IMPORT_ACTION_COPY",
+		4: "PROFILE_IMPORT_ACTION_REPLACE",
+	}
+	ProfileImportAction_value = map[string]int32{
+		"PROFILE_IMPORT_ACTION_UNSPECIFIED": 0,
+		"PROFILE_IMPORT_ACTION_ADD":         1,
+		"PROFILE_IMPORT_ACTION_SKIP":        2,
+		"PROFILE_IMPORT_ACTION_COPY":        3,
+		"PROFILE_IMPORT_ACTION_REPLACE":     4,
+	}
+)
+
+func (x ProfileImportAction) Enum() *ProfileImportAction {
+	p := new(ProfileImportAction)
+	*p = x
+	return p
+}
+
+func (x ProfileImportAction) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ProfileImportAction) Descriptor() protoreflect.EnumDescriptor {
+	return file_controller_proto_enumTypes[2].Descriptor()
+}
+
+func (ProfileImportAction) Type() protoreflect.EnumType {
+	return &file_controller_proto_enumTypes[2]
+}
+
+func (x ProfileImportAction) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
 type HelloResponse struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_BuildId string                 `protobuf:"bytes,1,opt,name=build_id,json=buildId"`
@@ -2231,6 +2281,576 @@ func (b0 Latency_builder) Build() *Latency {
 	return m0
 }
 
+// Transfer uses user-selected local paths; archive contents never enter summaries.
+type ExportProfilesRequest struct {
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ids  []string               `protobuf:"bytes,1,rep,name=ids"`
+	xxx_hidden_Path string                 `protobuf:"bytes,2,opt,name=path"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ExportProfilesRequest) Reset() {
+	*x = ExportProfilesRequest{}
+	mi := &file_controller_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExportProfilesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExportProfilesRequest) ProtoMessage() {}
+
+func (x *ExportProfilesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_controller_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ExportProfilesRequest) GetIds() []string {
+	if x != nil {
+		return x.xxx_hidden_Ids
+	}
+	return nil
+}
+
+func (x *ExportProfilesRequest) GetPath() string {
+	if x != nil {
+		return x.xxx_hidden_Path
+	}
+	return ""
+}
+
+func (x *ExportProfilesRequest) SetIds(v []string) {
+	x.xxx_hidden_Ids = v
+}
+
+func (x *ExportProfilesRequest) SetPath(v string) {
+	x.xxx_hidden_Path = v
+}
+
+type ExportProfilesRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ids  []string
+	Path string
+}
+
+func (b0 ExportProfilesRequest_builder) Build() *ExportProfilesRequest {
+	m0 := &ExportProfilesRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ids = b.Ids
+	x.xxx_hidden_Path = b.Path
+	return m0
+}
+
+type ProfileFileRequest struct {
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Path string                 `protobuf:"bytes,1,opt,name=path"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ProfileFileRequest) Reset() {
+	*x = ProfileFileRequest{}
+	mi := &file_controller_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProfileFileRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProfileFileRequest) ProtoMessage() {}
+
+func (x *ProfileFileRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_controller_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ProfileFileRequest) GetPath() string {
+	if x != nil {
+		return x.xxx_hidden_Path
+	}
+	return ""
+}
+
+func (x *ProfileFileRequest) SetPath(v string) {
+	x.xxx_hidden_Path = v
+}
+
+type ProfileFileRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Path string
+}
+
+func (b0 ProfileFileRequest_builder) Build() *ProfileFileRequest {
+	m0 := &ProfileFileRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Path = b.Path
+	return m0
+}
+
+type ProfileFileEntry struct {
+	state               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Profile  *ProfileSummary        `protobuf:"bytes,1,opt,name=profile"`
+	xxx_hidden_Existing *ProfileSummary        `protobuf:"bytes,2,opt,name=existing"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *ProfileFileEntry) Reset() {
+	*x = ProfileFileEntry{}
+	mi := &file_controller_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProfileFileEntry) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProfileFileEntry) ProtoMessage() {}
+
+func (x *ProfileFileEntry) ProtoReflect() protoreflect.Message {
+	mi := &file_controller_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ProfileFileEntry) GetProfile() *ProfileSummary {
+	if x != nil {
+		return x.xxx_hidden_Profile
+	}
+	return nil
+}
+
+func (x *ProfileFileEntry) GetExisting() *ProfileSummary {
+	if x != nil {
+		return x.xxx_hidden_Existing
+	}
+	return nil
+}
+
+func (x *ProfileFileEntry) SetProfile(v *ProfileSummary) {
+	x.xxx_hidden_Profile = v
+}
+
+func (x *ProfileFileEntry) SetExisting(v *ProfileSummary) {
+	x.xxx_hidden_Existing = v
+}
+
+func (x *ProfileFileEntry) HasProfile() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Profile != nil
+}
+
+func (x *ProfileFileEntry) HasExisting() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Existing != nil
+}
+
+func (x *ProfileFileEntry) ClearProfile() {
+	x.xxx_hidden_Profile = nil
+}
+
+func (x *ProfileFileEntry) ClearExisting() {
+	x.xxx_hidden_Existing = nil
+}
+
+type ProfileFileEntry_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Profile  *ProfileSummary
+	Existing *ProfileSummary
+}
+
+func (b0 ProfileFileEntry_builder) Build() *ProfileFileEntry {
+	m0 := &ProfileFileEntry{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Profile = b.Profile
+	x.xxx_hidden_Existing = b.Existing
+	return m0
+}
+
+type ProfileFilePreview struct {
+	state              protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Token   string                 `protobuf:"bytes,1,opt,name=token"`
+	xxx_hidden_Entries *[]*ProfileFileEntry   `protobuf:"bytes,2,rep,name=entries"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *ProfileFilePreview) Reset() {
+	*x = ProfileFilePreview{}
+	mi := &file_controller_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProfileFilePreview) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProfileFilePreview) ProtoMessage() {}
+
+func (x *ProfileFilePreview) ProtoReflect() protoreflect.Message {
+	mi := &file_controller_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ProfileFilePreview) GetToken() string {
+	if x != nil {
+		return x.xxx_hidden_Token
+	}
+	return ""
+}
+
+func (x *ProfileFilePreview) GetEntries() []*ProfileFileEntry {
+	if x != nil {
+		if x.xxx_hidden_Entries != nil {
+			return *x.xxx_hidden_Entries
+		}
+	}
+	return nil
+}
+
+func (x *ProfileFilePreview) SetToken(v string) {
+	x.xxx_hidden_Token = v
+}
+
+func (x *ProfileFilePreview) SetEntries(v []*ProfileFileEntry) {
+	x.xxx_hidden_Entries = &v
+}
+
+type ProfileFilePreview_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Token   string
+	Entries []*ProfileFileEntry
+}
+
+func (b0 ProfileFilePreview_builder) Build() *ProfileFilePreview {
+	m0 := &ProfileFilePreview{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Token = b.Token
+	x.xxx_hidden_Entries = &b.Entries
+	return m0
+}
+
+type ProfileImportChoice struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Index  uint32                 `protobuf:"varint,1,opt,name=index"`
+	xxx_hidden_Action ProfileImportAction    `protobuf:"varint,2,opt,name=action,enum=wireglow.control.ProfileImportAction"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *ProfileImportChoice) Reset() {
+	*x = ProfileImportChoice{}
+	mi := &file_controller_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProfileImportChoice) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProfileImportChoice) ProtoMessage() {}
+
+func (x *ProfileImportChoice) ProtoReflect() protoreflect.Message {
+	mi := &file_controller_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ProfileImportChoice) GetIndex() uint32 {
+	if x != nil {
+		return x.xxx_hidden_Index
+	}
+	return 0
+}
+
+func (x *ProfileImportChoice) GetAction() ProfileImportAction {
+	if x != nil {
+		return x.xxx_hidden_Action
+	}
+	return ProfileImportAction_PROFILE_IMPORT_ACTION_UNSPECIFIED
+}
+
+func (x *ProfileImportChoice) SetIndex(v uint32) {
+	x.xxx_hidden_Index = v
+}
+
+func (x *ProfileImportChoice) SetAction(v ProfileImportAction) {
+	x.xxx_hidden_Action = v
+}
+
+type ProfileImportChoice_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Index  uint32
+	Action ProfileImportAction
+}
+
+func (b0 ProfileImportChoice_builder) Build() *ProfileImportChoice {
+	m0 := &ProfileImportChoice{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Index = b.Index
+	x.xxx_hidden_Action = b.Action
+	return m0
+}
+
+type ImportProfileFileRequest struct {
+	state              protoimpl.MessageState  `protogen:"opaque.v1"`
+	xxx_hidden_Token   string                  `protobuf:"bytes,1,opt,name=token"`
+	xxx_hidden_Choices *[]*ProfileImportChoice `protobuf:"bytes,2,rep,name=choices"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *ImportProfileFileRequest) Reset() {
+	*x = ImportProfileFileRequest{}
+	mi := &file_controller_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ImportProfileFileRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ImportProfileFileRequest) ProtoMessage() {}
+
+func (x *ImportProfileFileRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_controller_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ImportProfileFileRequest) GetToken() string {
+	if x != nil {
+		return x.xxx_hidden_Token
+	}
+	return ""
+}
+
+func (x *ImportProfileFileRequest) GetChoices() []*ProfileImportChoice {
+	if x != nil {
+		if x.xxx_hidden_Choices != nil {
+			return *x.xxx_hidden_Choices
+		}
+	}
+	return nil
+}
+
+func (x *ImportProfileFileRequest) SetToken(v string) {
+	x.xxx_hidden_Token = v
+}
+
+func (x *ImportProfileFileRequest) SetChoices(v []*ProfileImportChoice) {
+	x.xxx_hidden_Choices = &v
+}
+
+type ImportProfileFileRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Token   string
+	Choices []*ProfileImportChoice
+}
+
+func (b0 ImportProfileFileRequest_builder) Build() *ImportProfileFileRequest {
+	m0 := &ImportProfileFileRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Token = b.Token
+	x.xxx_hidden_Choices = &b.Choices
+	return m0
+}
+
+// Status is imported, skipped, changed or failed. Never contains an underlying error.
+type ProfileImportResult struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Index  uint32                 `protobuf:"varint,1,opt,name=index"`
+	xxx_hidden_Status string                 `protobuf:"bytes,2,opt,name=status"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *ProfileImportResult) Reset() {
+	*x = ProfileImportResult{}
+	mi := &file_controller_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProfileImportResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProfileImportResult) ProtoMessage() {}
+
+func (x *ProfileImportResult) ProtoReflect() protoreflect.Message {
+	mi := &file_controller_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ProfileImportResult) GetIndex() uint32 {
+	if x != nil {
+		return x.xxx_hidden_Index
+	}
+	return 0
+}
+
+func (x *ProfileImportResult) GetStatus() string {
+	if x != nil {
+		return x.xxx_hidden_Status
+	}
+	return ""
+}
+
+func (x *ProfileImportResult) SetIndex(v uint32) {
+	x.xxx_hidden_Index = v
+}
+
+func (x *ProfileImportResult) SetStatus(v string) {
+	x.xxx_hidden_Status = v
+}
+
+type ProfileImportResult_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Index  uint32
+	Status string
+}
+
+func (b0 ProfileImportResult_builder) Build() *ProfileImportResult {
+	m0 := &ProfileImportResult{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Index = b.Index
+	x.xxx_hidden_Status = b.Status
+	return m0
+}
+
+type ImportProfileFileResponse struct {
+	state              protoimpl.MessageState  `protogen:"opaque.v1"`
+	xxx_hidden_Results *[]*ProfileImportResult `protobuf:"bytes,1,rep,name=results"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *ImportProfileFileResponse) Reset() {
+	*x = ImportProfileFileResponse{}
+	mi := &file_controller_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ImportProfileFileResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ImportProfileFileResponse) ProtoMessage() {}
+
+func (x *ImportProfileFileResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_controller_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ImportProfileFileResponse) GetResults() []*ProfileImportResult {
+	if x != nil {
+		if x.xxx_hidden_Results != nil {
+			return *x.xxx_hidden_Results
+		}
+	}
+	return nil
+}
+
+func (x *ImportProfileFileResponse) SetResults(v []*ProfileImportResult) {
+	x.xxx_hidden_Results = &v
+}
+
+type ImportProfileFileResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Results []*ProfileImportResult
+}
+
+func (b0 ImportProfileFileResponse_builder) Build() *ImportProfileFileResponse {
+	m0 := &ImportProfileFileResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Results = &b.Results
+	return m0
+}
+
 var File_controller_proto protoreflect.FileDescriptor
 
 const file_controller_proto_rawDesc = "" +
@@ -2353,7 +2973,29 @@ const file_controller_proto_rawDesc = "" +
 	"checked_at\x18\x03 \x01(\x03R\tcheckedAt\x12\x1d\n" +
 	"\n" +
 	"success_at\x18\x04 \x01(\x03R\tsuccessAt\x12\x14\n" +
-	"\x05error\x18\x05 \x01(\tR\x05error*h\n" +
+	"\x05error\x18\x05 \x01(\tR\x05error\"=\n" +
+	"\x15ExportProfilesRequest\x12\x10\n" +
+	"\x03ids\x18\x01 \x03(\tR\x03ids\x12\x12\n" +
+	"\x04path\x18\x02 \x01(\tR\x04path\"(\n" +
+	"\x12ProfileFileRequest\x12\x12\n" +
+	"\x04path\x18\x01 \x01(\tR\x04path\"\x8c\x01\n" +
+	"\x10ProfileFileEntry\x12:\n" +
+	"\aprofile\x18\x01 \x01(\v2 .wireglow.control.ProfileSummaryR\aprofile\x12<\n" +
+	"\bexisting\x18\x02 \x01(\v2 .wireglow.control.ProfileSummaryR\bexisting\"h\n" +
+	"\x12ProfileFilePreview\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\x12<\n" +
+	"\aentries\x18\x02 \x03(\v2\".wireglow.control.ProfileFileEntryR\aentries\"j\n" +
+	"\x13ProfileImportChoice\x12\x14\n" +
+	"\x05index\x18\x01 \x01(\rR\x05index\x12=\n" +
+	"\x06action\x18\x02 \x01(\x0e2%.wireglow.control.ProfileImportActionR\x06action\"q\n" +
+	"\x18ImportProfileFileRequest\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\x12?\n" +
+	"\achoices\x18\x02 \x03(\v2%.wireglow.control.ProfileImportChoiceR\achoices\"C\n" +
+	"\x13ProfileImportResult\x12\x14\n" +
+	"\x05index\x18\x01 \x01(\rR\x05index\x12\x16\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\"\\\n" +
+	"\x19ImportProfileFileResponse\x12?\n" +
+	"\aresults\x18\x01 \x03(\v2%.wireglow.control.ProfileImportResultR\aresults*h\n" +
 	"\tProxyMode\x12\x1a\n" +
 	"\x16PROXY_MODE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10PROXY_MODE_LOCAL\x10\x01\x12\x15\n" +
@@ -2370,7 +3012,13 @@ const file_controller_proto_rawDesc = "" +
 	"\x18STATE_ACTIVATING_NETWORK\x10\x06\x12\x13\n" +
 	"\x0fSTATE_CONNECTED\x10\a\x12\x12\n" +
 	"\x0eSTATE_STOPPING\x10\b\x12\x10\n" +
-	"\fSTATE_FAILED\x10\t2\xd4\t\n" +
+	"\fSTATE_FAILED\x10\t*\xbe\x01\n" +
+	"\x13ProfileImportAction\x12%\n" +
+	"!PROFILE_IMPORT_ACTION_UNSPECIFIED\x10\x00\x12\x1d\n" +
+	"\x19PROFILE_IMPORT_ACTION_ADD\x10\x01\x12\x1e\n" +
+	"\x1aPROFILE_IMPORT_ACTION_SKIP\x10\x02\x12\x1e\n" +
+	"\x1aPROFILE_IMPORT_ACTION_COPY\x10\x03\x12!\n" +
+	"\x1dPROFILE_IMPORT_ACTION_REPLACE\x10\x042\xf7\v\n" +
 	"\x11ControllerService\x12G\n" +
 	"\vGetSettings\x12\x16.google.protobuf.Empty\x1a .wireglow.control.ClientSettings\x12Q\n" +
 	"\vSetSettings\x12 .wireglow.control.ClientSettings\x1a .wireglow.control.ClientSettings\x12I\n" +
@@ -2381,7 +3029,10 @@ const file_controller_proto_rawDesc = "" +
 	"\rImportProfile\x12&.wireglow.control.ImportProfileRequest\x1a .wireglow.control.ProfileSummary\x12I\n" +
 	"\n" +
 	"GetProfile\x12 .wireglow.control.ProfileRequest\x1a\x19.wireglow.control.Profile\x12Q\n" +
-	"\rUpdateProfile\x12\x1e.wireglow.control.ProfileEdits\x1a .wireglow.control.ProfileSummary\x12I\n" +
+	"\rUpdateProfile\x12\x1e.wireglow.control.ProfileEdits\x1a .wireglow.control.ProfileSummary\x12Q\n" +
+	"\x0eExportProfiles\x12'.wireglow.control.ExportProfilesRequest\x1a\x16.google.protobuf.Empty\x12`\n" +
+	"\x12PreviewProfileFile\x12$.wireglow.control.ProfileFileRequest\x1a$.wireglow.control.ProfileFilePreview\x12l\n" +
+	"\x11ImportProfileFile\x12*.wireglow.control.ImportProfileFileRequest\x1a+.wireglow.control.ImportProfileFileResponse\x12I\n" +
 	"\rDeleteProfile\x12 .wireglow.control.ProfileRequest\x1a\x16.google.protobuf.Empty\x12C\n" +
 	"\aConnect\x12 .wireglow.control.ConnectRequest\x1a\x16.google.protobuf.Empty\x12@\n" +
 	"\n" +
@@ -2391,86 +3042,107 @@ const file_controller_proto_rawDesc = "" +
 	"\fCheckLatency\x12\x16.google.protobuf.Empty\x1a\x1a.wireglow.control.Snapshot\x12F\n" +
 	"\x0eWatchSnapshots\x12\x16.google.protobuf.Empty\x1a\x1a.wireglow.control.Snapshot0\x01B*Z#wireglow/internal/rpc/gen;controlpb\x92\x03\x02\b\x02b\beditionsp\xe9\a"
 
-var file_controller_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_controller_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_controller_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_controller_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
 var file_controller_proto_goTypes = []any{
-	(ProxyMode)(0),               // 0: wireglow.control.ProxyMode
-	(State)(0),                   // 1: wireglow.control.State
-	(*HelloResponse)(nil),        // 2: wireglow.control.HelloResponse
-	(*ConnectRequest)(nil),       // 3: wireglow.control.ConnectRequest
-	(*ProxyModeRequest)(nil),     // 4: wireglow.control.ProxyModeRequest
-	(*ClientSettings)(nil),       // 5: wireglow.control.ClientSettings
-	(*Capabilities)(nil),         // 6: wireglow.control.Capabilities
-	(*ProfileRequest)(nil),       // 7: wireglow.control.ProfileRequest
-	(*ProfileEdits)(nil),         // 8: wireglow.control.ProfileEdits
-	(*ProfileAdvancedEdits)(nil), // 9: wireglow.control.ProfileAdvancedEdits
-	(*ImportProfileRequest)(nil), // 10: wireglow.control.ImportProfileRequest
-	(*ProfileSummary)(nil),       // 11: wireglow.control.ProfileSummary
-	(*ListProfilesResponse)(nil), // 12: wireglow.control.ListProfilesResponse
-	(*Profile)(nil),              // 13: wireglow.control.Profile
-	(*Connection)(nil),           // 14: wireglow.control.Connection
-	(*VKSettings)(nil),           // 15: wireglow.control.VKSettings
-	(*DNSSettings)(nil),          // 16: wireglow.control.DNSSettings
-	(*KCPSettings)(nil),          // 17: wireglow.control.KCPSettings
-	(*WireGuardSettings)(nil),    // 18: wireglow.control.WireGuardSettings
-	(*Obfuscation)(nil),          // 19: wireglow.control.Obfuscation
-	(*Snapshot)(nil),             // 20: wireglow.control.Snapshot
-	(*Latency)(nil),              // 21: wireglow.control.Latency
-	(*emptypb.Empty)(nil),        // 22: google.protobuf.Empty
+	(ProxyMode)(0),                    // 0: wireglow.control.ProxyMode
+	(State)(0),                        // 1: wireglow.control.State
+	(ProfileImportAction)(0),          // 2: wireglow.control.ProfileImportAction
+	(*HelloResponse)(nil),             // 3: wireglow.control.HelloResponse
+	(*ConnectRequest)(nil),            // 4: wireglow.control.ConnectRequest
+	(*ProxyModeRequest)(nil),          // 5: wireglow.control.ProxyModeRequest
+	(*ClientSettings)(nil),            // 6: wireglow.control.ClientSettings
+	(*Capabilities)(nil),              // 7: wireglow.control.Capabilities
+	(*ProfileRequest)(nil),            // 8: wireglow.control.ProfileRequest
+	(*ProfileEdits)(nil),              // 9: wireglow.control.ProfileEdits
+	(*ProfileAdvancedEdits)(nil),      // 10: wireglow.control.ProfileAdvancedEdits
+	(*ImportProfileRequest)(nil),      // 11: wireglow.control.ImportProfileRequest
+	(*ProfileSummary)(nil),            // 12: wireglow.control.ProfileSummary
+	(*ListProfilesResponse)(nil),      // 13: wireglow.control.ListProfilesResponse
+	(*Profile)(nil),                   // 14: wireglow.control.Profile
+	(*Connection)(nil),                // 15: wireglow.control.Connection
+	(*VKSettings)(nil),                // 16: wireglow.control.VKSettings
+	(*DNSSettings)(nil),               // 17: wireglow.control.DNSSettings
+	(*KCPSettings)(nil),               // 18: wireglow.control.KCPSettings
+	(*WireGuardSettings)(nil),         // 19: wireglow.control.WireGuardSettings
+	(*Obfuscation)(nil),               // 20: wireglow.control.Obfuscation
+	(*Snapshot)(nil),                  // 21: wireglow.control.Snapshot
+	(*Latency)(nil),                   // 22: wireglow.control.Latency
+	(*ExportProfilesRequest)(nil),     // 23: wireglow.control.ExportProfilesRequest
+	(*ProfileFileRequest)(nil),        // 24: wireglow.control.ProfileFileRequest
+	(*ProfileFileEntry)(nil),          // 25: wireglow.control.ProfileFileEntry
+	(*ProfileFilePreview)(nil),        // 26: wireglow.control.ProfileFilePreview
+	(*ProfileImportChoice)(nil),       // 27: wireglow.control.ProfileImportChoice
+	(*ImportProfileFileRequest)(nil),  // 28: wireglow.control.ImportProfileFileRequest
+	(*ProfileImportResult)(nil),       // 29: wireglow.control.ProfileImportResult
+	(*ImportProfileFileResponse)(nil), // 30: wireglow.control.ImportProfileFileResponse
+	(*emptypb.Empty)(nil),             // 31: google.protobuf.Empty
 }
 var file_controller_proto_depIdxs = []int32{
 	0,  // 0: wireglow.control.ConnectRequest.mode:type_name -> wireglow.control.ProxyMode
 	0,  // 1: wireglow.control.ProxyModeRequest.mode:type_name -> wireglow.control.ProxyMode
 	0,  // 2: wireglow.control.ClientSettings.preferred_mode:type_name -> wireglow.control.ProxyMode
-	9,  // 3: wireglow.control.ProfileEdits.advanced:type_name -> wireglow.control.ProfileAdvancedEdits
-	16, // 4: wireglow.control.ProfileAdvancedEdits.dns:type_name -> wireglow.control.DNSSettings
-	11, // 5: wireglow.control.ListProfilesResponse.profiles:type_name -> wireglow.control.ProfileSummary
-	14, // 6: wireglow.control.Profile.connection:type_name -> wireglow.control.Connection
-	15, // 7: wireglow.control.Connection.vk:type_name -> wireglow.control.VKSettings
-	16, // 8: wireglow.control.Connection.dns:type_name -> wireglow.control.DNSSettings
-	17, // 9: wireglow.control.Connection.kcp:type_name -> wireglow.control.KCPSettings
-	18, // 10: wireglow.control.Connection.wg:type_name -> wireglow.control.WireGuardSettings
-	19, // 11: wireglow.control.Connection.obfuscation:type_name -> wireglow.control.Obfuscation
+	10, // 3: wireglow.control.ProfileEdits.advanced:type_name -> wireglow.control.ProfileAdvancedEdits
+	17, // 4: wireglow.control.ProfileAdvancedEdits.dns:type_name -> wireglow.control.DNSSettings
+	12, // 5: wireglow.control.ListProfilesResponse.profiles:type_name -> wireglow.control.ProfileSummary
+	15, // 6: wireglow.control.Profile.connection:type_name -> wireglow.control.Connection
+	16, // 7: wireglow.control.Connection.vk:type_name -> wireglow.control.VKSettings
+	17, // 8: wireglow.control.Connection.dns:type_name -> wireglow.control.DNSSettings
+	18, // 9: wireglow.control.Connection.kcp:type_name -> wireglow.control.KCPSettings
+	19, // 10: wireglow.control.Connection.wg:type_name -> wireglow.control.WireGuardSettings
+	20, // 11: wireglow.control.Connection.obfuscation:type_name -> wireglow.control.Obfuscation
 	0,  // 12: wireglow.control.Snapshot.active_mode:type_name -> wireglow.control.ProxyMode
 	1,  // 13: wireglow.control.Snapshot.state:type_name -> wireglow.control.State
-	21, // 14: wireglow.control.Snapshot.latency:type_name -> wireglow.control.Latency
-	22, // 15: wireglow.control.ControllerService.GetSettings:input_type -> google.protobuf.Empty
-	5,  // 16: wireglow.control.ControllerService.SetSettings:input_type -> wireglow.control.ClientSettings
-	22, // 17: wireglow.control.ControllerService.GetCapabilities:input_type -> google.protobuf.Empty
-	22, // 18: wireglow.control.ControllerService.Hello:input_type -> google.protobuf.Empty
-	22, // 19: wireglow.control.ControllerService.ListProfiles:input_type -> google.protobuf.Empty
-	10, // 20: wireglow.control.ControllerService.PreviewImport:input_type -> wireglow.control.ImportProfileRequest
-	10, // 21: wireglow.control.ControllerService.ImportProfile:input_type -> wireglow.control.ImportProfileRequest
-	7,  // 22: wireglow.control.ControllerService.GetProfile:input_type -> wireglow.control.ProfileRequest
-	8,  // 23: wireglow.control.ControllerService.UpdateProfile:input_type -> wireglow.control.ProfileEdits
-	7,  // 24: wireglow.control.ControllerService.DeleteProfile:input_type -> wireglow.control.ProfileRequest
-	3,  // 25: wireglow.control.ControllerService.Connect:input_type -> wireglow.control.ConnectRequest
-	22, // 26: wireglow.control.ControllerService.Disconnect:input_type -> google.protobuf.Empty
-	4,  // 27: wireglow.control.ControllerService.SwitchProxyMode:input_type -> wireglow.control.ProxyModeRequest
-	22, // 28: wireglow.control.ControllerService.GetSnapshot:input_type -> google.protobuf.Empty
-	22, // 29: wireglow.control.ControllerService.CheckLatency:input_type -> google.protobuf.Empty
-	22, // 30: wireglow.control.ControllerService.WatchSnapshots:input_type -> google.protobuf.Empty
-	5,  // 31: wireglow.control.ControllerService.GetSettings:output_type -> wireglow.control.ClientSettings
-	5,  // 32: wireglow.control.ControllerService.SetSettings:output_type -> wireglow.control.ClientSettings
-	6,  // 33: wireglow.control.ControllerService.GetCapabilities:output_type -> wireglow.control.Capabilities
-	2,  // 34: wireglow.control.ControllerService.Hello:output_type -> wireglow.control.HelloResponse
-	12, // 35: wireglow.control.ControllerService.ListProfiles:output_type -> wireglow.control.ListProfilesResponse
-	11, // 36: wireglow.control.ControllerService.PreviewImport:output_type -> wireglow.control.ProfileSummary
-	11, // 37: wireglow.control.ControllerService.ImportProfile:output_type -> wireglow.control.ProfileSummary
-	13, // 38: wireglow.control.ControllerService.GetProfile:output_type -> wireglow.control.Profile
-	11, // 39: wireglow.control.ControllerService.UpdateProfile:output_type -> wireglow.control.ProfileSummary
-	22, // 40: wireglow.control.ControllerService.DeleteProfile:output_type -> google.protobuf.Empty
-	22, // 41: wireglow.control.ControllerService.Connect:output_type -> google.protobuf.Empty
-	20, // 42: wireglow.control.ControllerService.Disconnect:output_type -> wireglow.control.Snapshot
-	20, // 43: wireglow.control.ControllerService.SwitchProxyMode:output_type -> wireglow.control.Snapshot
-	20, // 44: wireglow.control.ControllerService.GetSnapshot:output_type -> wireglow.control.Snapshot
-	20, // 45: wireglow.control.ControllerService.CheckLatency:output_type -> wireglow.control.Snapshot
-	20, // 46: wireglow.control.ControllerService.WatchSnapshots:output_type -> wireglow.control.Snapshot
-	31, // [31:47] is the sub-list for method output_type
-	15, // [15:31] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	22, // 14: wireglow.control.Snapshot.latency:type_name -> wireglow.control.Latency
+	12, // 15: wireglow.control.ProfileFileEntry.profile:type_name -> wireglow.control.ProfileSummary
+	12, // 16: wireglow.control.ProfileFileEntry.existing:type_name -> wireglow.control.ProfileSummary
+	25, // 17: wireglow.control.ProfileFilePreview.entries:type_name -> wireglow.control.ProfileFileEntry
+	2,  // 18: wireglow.control.ProfileImportChoice.action:type_name -> wireglow.control.ProfileImportAction
+	27, // 19: wireglow.control.ImportProfileFileRequest.choices:type_name -> wireglow.control.ProfileImportChoice
+	29, // 20: wireglow.control.ImportProfileFileResponse.results:type_name -> wireglow.control.ProfileImportResult
+	31, // 21: wireglow.control.ControllerService.GetSettings:input_type -> google.protobuf.Empty
+	6,  // 22: wireglow.control.ControllerService.SetSettings:input_type -> wireglow.control.ClientSettings
+	31, // 23: wireglow.control.ControllerService.GetCapabilities:input_type -> google.protobuf.Empty
+	31, // 24: wireglow.control.ControllerService.Hello:input_type -> google.protobuf.Empty
+	31, // 25: wireglow.control.ControllerService.ListProfiles:input_type -> google.protobuf.Empty
+	11, // 26: wireglow.control.ControllerService.PreviewImport:input_type -> wireglow.control.ImportProfileRequest
+	11, // 27: wireglow.control.ControllerService.ImportProfile:input_type -> wireglow.control.ImportProfileRequest
+	8,  // 28: wireglow.control.ControllerService.GetProfile:input_type -> wireglow.control.ProfileRequest
+	9,  // 29: wireglow.control.ControllerService.UpdateProfile:input_type -> wireglow.control.ProfileEdits
+	23, // 30: wireglow.control.ControllerService.ExportProfiles:input_type -> wireglow.control.ExportProfilesRequest
+	24, // 31: wireglow.control.ControllerService.PreviewProfileFile:input_type -> wireglow.control.ProfileFileRequest
+	28, // 32: wireglow.control.ControllerService.ImportProfileFile:input_type -> wireglow.control.ImportProfileFileRequest
+	8,  // 33: wireglow.control.ControllerService.DeleteProfile:input_type -> wireglow.control.ProfileRequest
+	4,  // 34: wireglow.control.ControllerService.Connect:input_type -> wireglow.control.ConnectRequest
+	31, // 35: wireglow.control.ControllerService.Disconnect:input_type -> google.protobuf.Empty
+	5,  // 36: wireglow.control.ControllerService.SwitchProxyMode:input_type -> wireglow.control.ProxyModeRequest
+	31, // 37: wireglow.control.ControllerService.GetSnapshot:input_type -> google.protobuf.Empty
+	31, // 38: wireglow.control.ControllerService.CheckLatency:input_type -> google.protobuf.Empty
+	31, // 39: wireglow.control.ControllerService.WatchSnapshots:input_type -> google.protobuf.Empty
+	6,  // 40: wireglow.control.ControllerService.GetSettings:output_type -> wireglow.control.ClientSettings
+	6,  // 41: wireglow.control.ControllerService.SetSettings:output_type -> wireglow.control.ClientSettings
+	7,  // 42: wireglow.control.ControllerService.GetCapabilities:output_type -> wireglow.control.Capabilities
+	3,  // 43: wireglow.control.ControllerService.Hello:output_type -> wireglow.control.HelloResponse
+	13, // 44: wireglow.control.ControllerService.ListProfiles:output_type -> wireglow.control.ListProfilesResponse
+	12, // 45: wireglow.control.ControllerService.PreviewImport:output_type -> wireglow.control.ProfileSummary
+	12, // 46: wireglow.control.ControllerService.ImportProfile:output_type -> wireglow.control.ProfileSummary
+	14, // 47: wireglow.control.ControllerService.GetProfile:output_type -> wireglow.control.Profile
+	12, // 48: wireglow.control.ControllerService.UpdateProfile:output_type -> wireglow.control.ProfileSummary
+	31, // 49: wireglow.control.ControllerService.ExportProfiles:output_type -> google.protobuf.Empty
+	26, // 50: wireglow.control.ControllerService.PreviewProfileFile:output_type -> wireglow.control.ProfileFilePreview
+	30, // 51: wireglow.control.ControllerService.ImportProfileFile:output_type -> wireglow.control.ImportProfileFileResponse
+	31, // 52: wireglow.control.ControllerService.DeleteProfile:output_type -> google.protobuf.Empty
+	31, // 53: wireglow.control.ControllerService.Connect:output_type -> google.protobuf.Empty
+	21, // 54: wireglow.control.ControllerService.Disconnect:output_type -> wireglow.control.Snapshot
+	21, // 55: wireglow.control.ControllerService.SwitchProxyMode:output_type -> wireglow.control.Snapshot
+	21, // 56: wireglow.control.ControllerService.GetSnapshot:output_type -> wireglow.control.Snapshot
+	21, // 57: wireglow.control.ControllerService.CheckLatency:output_type -> wireglow.control.Snapshot
+	21, // 58: wireglow.control.ControllerService.WatchSnapshots:output_type -> wireglow.control.Snapshot
+	40, // [40:59] is the sub-list for method output_type
+	21, // [21:40] is the sub-list for method input_type
+	21, // [21:21] is the sub-list for extension type_name
+	21, // [21:21] is the sub-list for extension extendee
+	0,  // [0:21] is the sub-list for field type_name
 }
 
 func init() { file_controller_proto_init() }
@@ -2483,8 +3155,8 @@ func file_controller_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_controller_proto_rawDesc), len(file_controller_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   20,
+			NumEnums:      3,
+			NumMessages:   28,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
