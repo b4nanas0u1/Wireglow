@@ -58,13 +58,22 @@ message ClientSettings {
 }
 message Capabilities { string system_proxy_unavailable_reason = 1; string tun_unavailable_reason = 2; }
 message ProfileRequest { string id = 1; }
-// Ограниченные поля редактора; секреты и настройки ядра не передаются.
+// Editable client-side settings; server keys and WG configuration are preserved.
 message ProfileEdits {
   string id = 1;
   string name = 2;
   repeated string call_links = 3;
   int64 streams = 4;
   int64 streams_per_credential = 5;
+  ProfileAdvancedEdits advanced = 6;
+}
+message ProfileAdvancedEdits {
+  string turn_transport = 1;
+  DNSSettings dns = 2;
+  bool manual_captcha = 3;
+  string vk_platform = 4;
+  string turn_address = 5;
+  int64 pacing_ms = 6;
 }
 message ImportProfileRequest {
   string freeturn_link = 1;
@@ -107,6 +116,8 @@ message Connection {
 message VKSettings {
   repeated string call_links = 1;
   bool manual_captcha = 2;
+  string platform = 3;
+  string turn_address = 4;
 }
 message DNSSettings {
   string mode = 1;
