@@ -16,7 +16,7 @@ The project is under active development.
 
 ## Client features
 
-- Import, store, and edit selected settings in free-turn-proxy profiles.
+- Import, store, and edit selected settings in free-turn-proxy profiles. The editor groups name, VK call links and performance settings, with advanced VK authorization, TURN address/transport, DNS and pacing controls in an expandable section.
 - Connect and disconnect sessions, and view their status and latency.
 - Use a local HTTP/SOCKS proxy or switch to system proxy mode.
 - Experimental [Linux TUN mode](docs/en/tun-mode.md) with an installed helper or a temporary helper in portable builds.
