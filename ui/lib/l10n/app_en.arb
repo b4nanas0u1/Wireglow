@@ -134,5 +134,60 @@
   "lightTheme": "Light",
   "tunMode": "TUN",
   "tunHelpWindows": "Experimental Windows TUN requires the portable bundle and UAC elevation. It reconnects the session and uses direct HTTPS bootstrap DNS. Other active VPNs block activation. For TURN, select TCP transport; application UDP traffic is supported.",
-  "tunHelp": "TUN captures IP traffic. Enabling it reconnects the session and uses 1.1.1.1 as direct bootstrap DNS. Other active VPNs block activation."
+  "tunHelp": "TUN captures IP traffic. Enabling it reconnects the session and uses 1.1.1.1 as direct bootstrap DNS. Other active VPNs block activation.",
+  "editorTitle": "Edit profile",
+  "editorProfile": "Profile",
+  "editorName": "Profile name",
+  "editorNameRequired": "Enter a profile name.",
+  "editorVK": "VK Calls",
+  "editorCallLinks": "Call links",
+  "editorCallLink": "Call link {number}",
+  "editorRemoveLink": "Remove call link",
+  "editorAddLink": "Add call link",
+  "editorPerformance": "Performance",
+  "editorStreams": "Streams per call",
+  "editorCredentials": "Streams per TURN credential set",
+  "editorStreamsHelp": "Parallel TURN sessions for each call link.",
+  "editorCredentialsHelp": "Sessions sharing one set of credentials from VK.",
+  "editorAdvanced": "Advanced settings",
+  "editorVKAuth": "VK authorization",
+  "editorPlatform": "Device type",
+  "editorCaptcha": "Manual CAPTCHA",
+  "editorCaptchaHelp": "Solve in a browser instead of automatically.",
+  "editorTransport": "Transport",
+  "editorUDPHelp": "UDP transport is unavailable in Windows TUN mode.",
+  "editorTurnAddress": "Node address",
+  "editorTurnHint": "Host or host:port",
+  "editorTurnHelp": "Leave empty to use the node from VK. Without a port, the port from VK is used. For IPv6 with a port, use [address]:port.",
+  "editorDNSMode": "DNS mode",
+  "editorDNSAuto": "Automatic",
+  "editorDNSPlain": "Plain DNS",
+  "editorDNSServers": "Custom DNS servers",
+  "editorDNSHelp": "DNS for FreeTurn connections. Enter IP[:port] addresses separated by commas.",
+  "editorDoHHelp": "DoH uses the engine’s built-in servers. Custom DoH URLs are not supported.",
+  "editorTunDNSHelp": "TUN mode uses DNS selected by the application. Profile DNS applies in local and system proxy modes.",
+  "editorObfuscation": "Obfuscation",
+  "editorObfuscationOff": "Disabled in this profile",
+  "editorPacing": "Pacing, ms",
+  "editorPacingHelp": "Interval between outgoing packets. 0 disables pacing.",
+  "editorPacingDisabled": "Available when obfuscation is enabled in the imported profile.",
+  "editorReconnect": "Changes apply on the next connection.",
+  "editorDefault": "Default ({value})",
+  "editorInvalidStreams": "Enter 1–1024, or leave empty for the default.",
+  "editorInvalidLinks": "Enter at least one call link, without commas.",
+  "editorInvalidPacing": "Enter 0–60000 milliseconds.",
+  "@editorCallLink": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "@editorDefault": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  }
 }

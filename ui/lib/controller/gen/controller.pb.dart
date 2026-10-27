@@ -446,7 +446,7 @@ class ProfileRequest extends $pb.GeneratedMessage {
   void clearId() => $_clearField(1);
 }
 
-/// Ограниченные поля редактора; секреты и настройки ядра не передаются.
+/// Editable client-side settings; server keys and WG configuration are preserved.
 class ProfileEdits extends $pb.GeneratedMessage {
   factory ProfileEdits({
     $core.String? id,
@@ -454,6 +454,7 @@ class ProfileEdits extends $pb.GeneratedMessage {
     $core.Iterable<$core.String>? callLinks,
     $fixnum.Int64? streams,
     $fixnum.Int64? streamsPerCredential,
+    ProfileAdvancedEdits? advanced,
   }) {
     final result = ProfileEdits._();
     if (id != null) result.id = id;
@@ -462,6 +463,7 @@ class ProfileEdits extends $pb.GeneratedMessage {
     if (streams != null) result.streams = streams;
     if (streamsPerCredential != null)
       result.streamsPerCredential = streamsPerCredential;
+    if (advanced != null) result.advanced = advanced;
     return result;
   }
 
@@ -484,6 +486,8 @@ class ProfileEdits extends $pb.GeneratedMessage {
     ..pPS(3, _omitFieldNames ? '' : 'callLinks')
     ..aInt64(4, _omitFieldNames ? '' : 'streams')
     ..aInt64(5, _omitFieldNames ? '' : 'streamsPerCredential')
+    ..aOM<ProfileAdvancedEdits>(6, _omitFieldNames ? '' : 'advanced',
+        subBuilder: ProfileAdvancedEdits.$_createMessage)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -546,6 +550,139 @@ class ProfileEdits extends $pb.GeneratedMessage {
   $core.bool hasStreamsPerCredential() => $_has(4);
   @$pb.TagNumber(5)
   void clearStreamsPerCredential() => $_clearField(5);
+
+  @$pb.TagNumber(6)
+  ProfileAdvancedEdits get advanced => $_getN(5);
+  @$pb.TagNumber(6)
+  set advanced(ProfileAdvancedEdits value) => $_setField(6, value);
+  @$pb.TagNumber(6)
+  $core.bool hasAdvanced() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearAdvanced() => $_clearField(6);
+  @$pb.TagNumber(6)
+  ProfileAdvancedEdits ensureAdvanced() => $_ensure(5);
+}
+
+class ProfileAdvancedEdits extends $pb.GeneratedMessage {
+  factory ProfileAdvancedEdits({
+    $core.String? turnTransport,
+    DNSSettings? dns,
+    $core.bool? manualCaptcha,
+    $core.String? vkPlatform,
+    $core.String? turnAddress,
+    $fixnum.Int64? pacingMs,
+  }) {
+    final result = ProfileAdvancedEdits._();
+    if (turnTransport != null) result.turnTransport = turnTransport;
+    if (dns != null) result.dns = dns;
+    if (manualCaptcha != null) result.manualCaptcha = manualCaptcha;
+    if (vkPlatform != null) result.vkPlatform = vkPlatform;
+    if (turnAddress != null) result.turnAddress = turnAddress;
+    if (pacingMs != null) result.pacingMs = pacingMs;
+    return result;
+  }
+
+  ProfileAdvancedEdits._();
+
+  factory ProfileAdvancedEdits.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      ProfileAdvancedEdits()..mergeFromBuffer(data, registry);
+  factory ProfileAdvancedEdits.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      ProfileAdvancedEdits()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'ProfileAdvancedEdits',
+      package:
+          const $pb.PackageName(_omitMessageNames ? '' : 'wireglow.control'),
+      createEmptyInstance: ProfileAdvancedEdits.$_createMessage)
+    ..aOS(1, _omitFieldNames ? '' : 'turnTransport')
+    ..aOM<DNSSettings>(2, _omitFieldNames ? '' : 'dns',
+        subBuilder: DNSSettings.$_createMessage)
+    ..aOB(3, _omitFieldNames ? '' : 'manualCaptcha')
+    ..aOS(4, _omitFieldNames ? '' : 'vkPlatform')
+    ..aOS(5, _omitFieldNames ? '' : 'turnAddress')
+    ..aInt64(6, _omitFieldNames ? '' : 'pacingMs')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ProfileAdvancedEdits clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ProfileAdvancedEdits copyWith(void Function(ProfileAdvancedEdits) updates) =>
+      super.copyWith((message) => updates(message as ProfileAdvancedEdits))
+          as ProfileAdvancedEdits;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  @$core.Deprecated(
+      'Use ProfileAdvancedEdits() / ProfileAdvancedEdits.new instead')
+  static ProfileAdvancedEdits create() => ProfileAdvancedEdits._();
+  static $pb.GeneratedMessage $_createMessage() => ProfileAdvancedEdits._();
+  @$core.override
+  ProfileAdvancedEdits createEmptyInstance() => ProfileAdvancedEdits._();
+  @$core.pragma('dart2js:noInline')
+  static ProfileAdvancedEdits getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ProfileAdvancedEdits>(
+          ProfileAdvancedEdits.$_createMessage);
+  static ProfileAdvancedEdits? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get turnTransport => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set turnTransport($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasTurnTransport() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearTurnTransport() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  DNSSettings get dns => $_getN(1);
+  @$pb.TagNumber(2)
+  set dns(DNSSettings value) => $_setField(2, value);
+  @$pb.TagNumber(2)
+  $core.bool hasDns() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearDns() => $_clearField(2);
+  @$pb.TagNumber(2)
+  DNSSettings ensureDns() => $_ensure(1);
+
+  @$pb.TagNumber(3)
+  $core.bool get manualCaptcha => $_getBF(2);
+  @$pb.TagNumber(3)
+  set manualCaptcha($core.bool value) => $_setBool(2, value);
+  @$pb.TagNumber(3)
+  $core.bool hasManualCaptcha() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearManualCaptcha() => $_clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.String get vkPlatform => $_getSZ(3);
+  @$pb.TagNumber(4)
+  set vkPlatform($core.String value) => $_setString(3, value);
+  @$pb.TagNumber(4)
+  $core.bool hasVkPlatform() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearVkPlatform() => $_clearField(4);
+
+  @$pb.TagNumber(5)
+  $core.String get turnAddress => $_getSZ(4);
+  @$pb.TagNumber(5)
+  set turnAddress($core.String value) => $_setString(4, value);
+  @$pb.TagNumber(5)
+  $core.bool hasTurnAddress() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearTurnAddress() => $_clearField(5);
+
+  @$pb.TagNumber(6)
+  $fixnum.Int64 get pacingMs => $_getI64(5);
+  @$pb.TagNumber(6)
+  set pacingMs($fixnum.Int64 value) => $_setInt64(5, value);
+  @$pb.TagNumber(6)
+  $core.bool hasPacingMs() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearPacingMs() => $_clearField(6);
 }
 
 class ImportProfileRequest extends $pb.GeneratedMessage {
@@ -1120,10 +1257,14 @@ class VKSettings extends $pb.GeneratedMessage {
   factory VKSettings({
     $core.Iterable<$core.String>? callLinks,
     $core.bool? manualCaptcha,
+    $core.String? platform,
+    $core.String? turnAddress,
   }) {
     final result = VKSettings._();
     if (callLinks != null) result.callLinks.addAll(callLinks);
     if (manualCaptcha != null) result.manualCaptcha = manualCaptcha;
+    if (platform != null) result.platform = platform;
+    if (turnAddress != null) result.turnAddress = turnAddress;
     return result;
   }
 
@@ -1143,6 +1284,8 @@ class VKSettings extends $pb.GeneratedMessage {
       createEmptyInstance: VKSettings.$_createMessage)
     ..pPS(1, _omitFieldNames ? '' : 'callLinks')
     ..aOB(2, _omitFieldNames ? '' : 'manualCaptcha')
+    ..aOS(3, _omitFieldNames ? '' : 'platform')
+    ..aOS(4, _omitFieldNames ? '' : 'turnAddress')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -1176,6 +1319,24 @@ class VKSettings extends $pb.GeneratedMessage {
   $core.bool hasManualCaptcha() => $_has(1);
   @$pb.TagNumber(2)
   void clearManualCaptcha() => $_clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get platform => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set platform($core.String value) => $_setString(2, value);
+  @$pb.TagNumber(3)
+  $core.bool hasPlatform() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearPlatform() => $_clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.String get turnAddress => $_getSZ(3);
+  @$pb.TagNumber(4)
+  set turnAddress($core.String value) => $_setString(3, value);
+  @$pb.TagNumber(4)
+  $core.bool hasTurnAddress() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearTurnAddress() => $_clearField(4);
 }
 
 class DNSSettings extends $pb.GeneratedMessage {

@@ -349,4 +349,141 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get tunHelp =>
       'TUN перехватывает IP-трафик. Включение переподключает сессию и использует 1.1.1.1 как прямой bootstrap DNS. Другой активный VPN блокирует включение.';
+
+  @override
+  String get editorTitle => 'Редактор профиля';
+
+  @override
+  String get editorProfile => 'Профиль';
+
+  @override
+  String get editorName => 'Имя профиля';
+
+  @override
+  String get editorNameRequired => 'Укажите имя профиля.';
+
+  @override
+  String get editorVK => 'VK Звонки';
+
+  @override
+  String get editorCallLinks => 'Ссылки звонков';
+
+  @override
+  String editorCallLink(int number) {
+    return 'Ссылка звонка $number';
+  }
+
+  @override
+  String get editorRemoveLink => 'Удалить ссылку звонка';
+
+  @override
+  String get editorAddLink => 'Добавить ссылку';
+
+  @override
+  String get editorPerformance => 'Производительность';
+
+  @override
+  String get editorStreams => 'Потоки на звонок';
+
+  @override
+  String get editorCredentials => 'Потоки на набор TURN-доступа';
+
+  @override
+  String get editorStreamsHelp => 'Параллельные TURN-сессии для каждой ссылки.';
+
+  @override
+  String get editorCredentialsHelp => 'Сессии с общими учётными данными от VK.';
+
+  @override
+  String get editorAdvanced => 'Дополнительные настройки';
+
+  @override
+  String get editorVKAuth => 'Авторизация VK';
+
+  @override
+  String get editorPlatform => 'Тип устройства';
+
+  @override
+  String get editorCaptcha => 'Ручная CAPTCHA';
+
+  @override
+  String get editorCaptchaHelp =>
+      'Решать в браузере вместо автоматического решения.';
+
+  @override
+  String get editorTransport => 'Транспорт';
+
+  @override
+  String get editorUDPHelp => 'UDP-транспорт недоступен в Windows TUN.';
+
+  @override
+  String get editorTurnAddress => 'Адрес узла';
+
+  @override
+  String get editorTurnHint => 'Хост или хост:порт';
+
+  @override
+  String get editorTurnHelp =>
+      'Оставьте пустым для выбора узла через VK. Без порта используется порт от VK. IPv6 с портом: [адрес]:порт.';
+
+  @override
+  String get editorDNSMode => 'Режим DNS';
+
+  @override
+  String get editorDNSAuto => 'Автоматически';
+
+  @override
+  String get editorDNSPlain => 'Обычный DNS';
+
+  @override
+  String get editorDNSServers => 'Свои DNS-серверы';
+
+  @override
+  String get editorDNSHelp =>
+      'DNS для соединений FreeTurn. Адреса IP[:порт], через запятую.';
+
+  @override
+  String get editorDoHHelp =>
+      'DoH использует встроенные серверы ядра. Свой URL DoH не поддерживается.';
+
+  @override
+  String get editorTunDNSHelp =>
+      'В TUN DNS выбирает приложение. DNS профиля применяется в локальном и системном прокси.';
+
+  @override
+  String get editorObfuscation => 'Обфускация';
+
+  @override
+  String get editorObfuscationOff => 'Выключена в этом профиле';
+
+  @override
+  String get editorPacing => 'Пейсинг, мс';
+
+  @override
+  String get editorPacingHelp =>
+      'Интервал между отправками пакетов. 0 — без задержки.';
+
+  @override
+  String get editorPacingDisabled =>
+      'Доступен при включённой обфускации в импортированном профиле.';
+
+  @override
+  String get editorReconnect =>
+      'Изменения применятся при следующем подключении.';
+
+  @override
+  String editorDefault(String value) {
+    return 'По умолчанию ($value)';
+  }
+
+  @override
+  String get editorInvalidStreams =>
+      'Введите 1–1024 или оставьте пустым для значения по умолчанию.';
+
+  @override
+  String get editorInvalidLinks =>
+      'Укажите хотя бы одну ссылку звонка без запятых.';
+
+  @override
+  String get editorInvalidPacing => 'Введите 0–60000 миллисекунд.';
 }

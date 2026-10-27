@@ -143,6 +143,7 @@ class ControllerRepository {
     required List<String> callLinks,
     required int streams,
     required int streamsPerCredential,
+    ProfileAdvancedEdits? advanced,
   }) => client.updateProfile(
     ProfileEdits(
       id: id,
@@ -150,6 +151,7 @@ class ControllerRepository {
       callLinks: callLinks,
       streams: Int64(streams),
       streamsPerCredential: Int64(streamsPerCredential),
+      advanced: advanced,
     ),
     options: _deadline(),
   );

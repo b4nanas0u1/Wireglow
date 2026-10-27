@@ -739,6 +739,252 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'TUN captures IP traffic. Enabling it reconnects the session and uses 1.1.1.1 as direct bootstrap DNS. Other active VPNs block activation.'**
   String get tunHelp;
+
+  /// No description provided for @editorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get editorTitle;
+
+  /// No description provided for @editorProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get editorProfile;
+
+  /// No description provided for @editorName.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile name'**
+  String get editorName;
+
+  /// No description provided for @editorNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a profile name.'**
+  String get editorNameRequired;
+
+  /// No description provided for @editorVK.
+  ///
+  /// In en, this message translates to:
+  /// **'VK Calls'**
+  String get editorVK;
+
+  /// No description provided for @editorCallLinks.
+  ///
+  /// In en, this message translates to:
+  /// **'Call links'**
+  String get editorCallLinks;
+
+  /// No description provided for @editorCallLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Call link {number}'**
+  String editorCallLink(int number);
+
+  /// No description provided for @editorRemoveLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove call link'**
+  String get editorRemoveLink;
+
+  /// No description provided for @editorAddLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Add call link'**
+  String get editorAddLink;
+
+  /// No description provided for @editorPerformance.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance'**
+  String get editorPerformance;
+
+  /// No description provided for @editorStreams.
+  ///
+  /// In en, this message translates to:
+  /// **'Streams per call'**
+  String get editorStreams;
+
+  /// No description provided for @editorCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Streams per TURN credential set'**
+  String get editorCredentials;
+
+  /// No description provided for @editorStreamsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Parallel TURN sessions for each call link.'**
+  String get editorStreamsHelp;
+
+  /// No description provided for @editorCredentialsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sessions sharing one set of credentials from VK.'**
+  String get editorCredentialsHelp;
+
+  /// No description provided for @editorAdvanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced settings'**
+  String get editorAdvanced;
+
+  /// No description provided for @editorVKAuth.
+  ///
+  /// In en, this message translates to:
+  /// **'VK authorization'**
+  String get editorVKAuth;
+
+  /// No description provided for @editorPlatform.
+  ///
+  /// In en, this message translates to:
+  /// **'Device type'**
+  String get editorPlatform;
+
+  /// No description provided for @editorCaptcha.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual CAPTCHA'**
+  String get editorCaptcha;
+
+  /// No description provided for @editorCaptchaHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Solve in a browser instead of automatically.'**
+  String get editorCaptchaHelp;
+
+  /// No description provided for @editorTransport.
+  ///
+  /// In en, this message translates to:
+  /// **'Transport'**
+  String get editorTransport;
+
+  /// No description provided for @editorUDPHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'UDP transport is unavailable in Windows TUN mode.'**
+  String get editorUDPHelp;
+
+  /// No description provided for @editorTurnAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Node address'**
+  String get editorTurnAddress;
+
+  /// No description provided for @editorTurnHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Host or host:port'**
+  String get editorTurnHint;
+
+  /// No description provided for @editorTurnHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty to use the node from VK. Without a port, the port from VK is used. For IPv6 with a port, use [address]:port.'**
+  String get editorTurnHelp;
+
+  /// No description provided for @editorDNSMode.
+  ///
+  /// In en, this message translates to:
+  /// **'DNS mode'**
+  String get editorDNSMode;
+
+  /// No description provided for @editorDNSAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get editorDNSAuto;
+
+  /// No description provided for @editorDNSPlain.
+  ///
+  /// In en, this message translates to:
+  /// **'Plain DNS'**
+  String get editorDNSPlain;
+
+  /// No description provided for @editorDNSServers.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom DNS servers'**
+  String get editorDNSServers;
+
+  /// No description provided for @editorDNSHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'DNS for FreeTurn connections. Enter IP[:port] addresses separated by commas.'**
+  String get editorDNSHelp;
+
+  /// No description provided for @editorDoHHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'DoH uses the engine’s built-in servers. Custom DoH URLs are not supported.'**
+  String get editorDoHHelp;
+
+  /// No description provided for @editorTunDNSHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'TUN mode uses DNS selected by the application. Profile DNS applies in local and system proxy modes.'**
+  String get editorTunDNSHelp;
+
+  /// No description provided for @editorObfuscation.
+  ///
+  /// In en, this message translates to:
+  /// **'Obfuscation'**
+  String get editorObfuscation;
+
+  /// No description provided for @editorObfuscationOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled in this profile'**
+  String get editorObfuscationOff;
+
+  /// No description provided for @editorPacing.
+  ///
+  /// In en, this message translates to:
+  /// **'Pacing, ms'**
+  String get editorPacing;
+
+  /// No description provided for @editorPacingHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Interval between outgoing packets. 0 disables pacing.'**
+  String get editorPacingHelp;
+
+  /// No description provided for @editorPacingDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Available when obfuscation is enabled in the imported profile.'**
+  String get editorPacingDisabled;
+
+  /// No description provided for @editorReconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes apply on the next connection.'**
+  String get editorReconnect;
+
+  /// No description provided for @editorDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default ({value})'**
+  String editorDefault(String value);
+
+  /// No description provided for @editorInvalidStreams.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter 1–1024, or leave empty for the default.'**
+  String get editorInvalidStreams;
+
+  /// No description provided for @editorInvalidLinks.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter at least one call link, without commas.'**
+  String get editorInvalidLinks;
+
+  /// No description provided for @editorInvalidPacing.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter 0–60000 milliseconds.'**
+  String get editorInvalidPacing;
 }
 
 class _AppLocalizationsDelegate

@@ -190,6 +190,14 @@ const ProfileEdits$json = {
       '5': 3,
       '10': 'streamsPerCredential'
     },
+    {
+      '1': 'advanced',
+      '3': 6,
+      '4': 1,
+      '5': 11,
+      '6': '.wireglow.control.ProfileAdvancedEdits',
+      '10': 'advanced'
+    },
   ],
 };
 
@@ -197,7 +205,37 @@ const ProfileEdits$json = {
 final $typed_data.Uint8List profileEditsDescriptor = $convert.base64Decode(
     'CgxQcm9maWxlRWRpdHMSDgoCaWQYASABKAlSAmlkEhIKBG5hbWUYAiABKAlSBG5hbWUSHQoKY2'
     'FsbF9saW5rcxgDIAMoCVIJY2FsbExpbmtzEhgKB3N0cmVhbXMYBCABKANSB3N0cmVhbXMSNAoW'
-    'c3RyZWFtc19wZXJfY3JlZGVudGlhbBgFIAEoA1IUc3RyZWFtc1BlckNyZWRlbnRpYWw=');
+    'c3RyZWFtc19wZXJfY3JlZGVudGlhbBgFIAEoA1IUc3RyZWFtc1BlckNyZWRlbnRpYWwSQgoIYW'
+    'R2YW5jZWQYBiABKAsyJi53aXJlZ2xvdy5jb250cm9sLlByb2ZpbGVBZHZhbmNlZEVkaXRzUghh'
+    'ZHZhbmNlZA==');
+
+@$core.Deprecated('Use profileAdvancedEditsDescriptor instead')
+const ProfileAdvancedEdits$json = {
+  '1': 'ProfileAdvancedEdits',
+  '2': [
+    {'1': 'turn_transport', '3': 1, '4': 1, '5': 9, '10': 'turnTransport'},
+    {
+      '1': 'dns',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.wireglow.control.DNSSettings',
+      '10': 'dns'
+    },
+    {'1': 'manual_captcha', '3': 3, '4': 1, '5': 8, '10': 'manualCaptcha'},
+    {'1': 'vk_platform', '3': 4, '4': 1, '5': 9, '10': 'vkPlatform'},
+    {'1': 'turn_address', '3': 5, '4': 1, '5': 9, '10': 'turnAddress'},
+    {'1': 'pacing_ms', '3': 6, '4': 1, '5': 3, '10': 'pacingMs'},
+  ],
+};
+
+/// Descriptor for `ProfileAdvancedEdits`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List profileAdvancedEditsDescriptor = $convert.base64Decode(
+    'ChRQcm9maWxlQWR2YW5jZWRFZGl0cxIlCg50dXJuX3RyYW5zcG9ydBgBIAEoCVINdHVyblRyYW'
+    '5zcG9ydBIvCgNkbnMYAiABKAsyHS53aXJlZ2xvdy5jb250cm9sLkROU1NldHRpbmdzUgNkbnMS'
+    'JQoObWFudWFsX2NhcHRjaGEYAyABKAhSDW1hbnVhbENhcHRjaGESHwoLdmtfcGxhdGZvcm0YBC'
+    'ABKAlSCnZrUGxhdGZvcm0SIQoMdHVybl9hZGRyZXNzGAUgASgJUgt0dXJuQWRkcmVzcxIbCglw'
+    'YWNpbmdfbXMYBiABKANSCHBhY2luZ01z');
 
 @$core.Deprecated('Use importProfileRequestDescriptor instead')
 const ImportProfileRequest$json = {
@@ -371,13 +409,16 @@ const VKSettings$json = {
   '2': [
     {'1': 'call_links', '3': 1, '4': 3, '5': 9, '10': 'callLinks'},
     {'1': 'manual_captcha', '3': 2, '4': 1, '5': 8, '10': 'manualCaptcha'},
+    {'1': 'platform', '3': 3, '4': 1, '5': 9, '10': 'platform'},
+    {'1': 'turn_address', '3': 4, '4': 1, '5': 9, '10': 'turnAddress'},
   ],
 };
 
 /// Descriptor for `VKSettings`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List vKSettingsDescriptor = $convert.base64Decode(
     'CgpWS1NldHRpbmdzEh0KCmNhbGxfbGlua3MYASADKAlSCWNhbGxMaW5rcxIlCg5tYW51YWxfY2'
-    'FwdGNoYRgCIAEoCFINbWFudWFsQ2FwdGNoYQ==');
+    'FwdGNoYRgCIAEoCFINbWFudWFsQ2FwdGNoYRIaCghwbGF0Zm9ybRgDIAEoCVIIcGxhdGZvcm0S'
+    'IQoMdHVybl9hZGRyZXNzGAQgASgJUgt0dXJuQWRkcmVzcw==');
 
 @$core.Deprecated('Use dNSSettingsDescriptor instead')
 const DNSSettings$json = {

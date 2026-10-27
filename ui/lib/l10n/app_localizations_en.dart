@@ -350,4 +350,142 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get tunHelp =>
       'TUN captures IP traffic. Enabling it reconnects the session and uses 1.1.1.1 as direct bootstrap DNS. Other active VPNs block activation.';
+
+  @override
+  String get editorTitle => 'Edit profile';
+
+  @override
+  String get editorProfile => 'Profile';
+
+  @override
+  String get editorName => 'Profile name';
+
+  @override
+  String get editorNameRequired => 'Enter a profile name.';
+
+  @override
+  String get editorVK => 'VK Calls';
+
+  @override
+  String get editorCallLinks => 'Call links';
+
+  @override
+  String editorCallLink(int number) {
+    return 'Call link $number';
+  }
+
+  @override
+  String get editorRemoveLink => 'Remove call link';
+
+  @override
+  String get editorAddLink => 'Add call link';
+
+  @override
+  String get editorPerformance => 'Performance';
+
+  @override
+  String get editorStreams => 'Streams per call';
+
+  @override
+  String get editorCredentials => 'Streams per TURN credential set';
+
+  @override
+  String get editorStreamsHelp => 'Parallel TURN sessions for each call link.';
+
+  @override
+  String get editorCredentialsHelp =>
+      'Sessions sharing one set of credentials from VK.';
+
+  @override
+  String get editorAdvanced => 'Advanced settings';
+
+  @override
+  String get editorVKAuth => 'VK authorization';
+
+  @override
+  String get editorPlatform => 'Device type';
+
+  @override
+  String get editorCaptcha => 'Manual CAPTCHA';
+
+  @override
+  String get editorCaptchaHelp =>
+      'Solve in a browser instead of automatically.';
+
+  @override
+  String get editorTransport => 'Transport';
+
+  @override
+  String get editorUDPHelp =>
+      'UDP transport is unavailable in Windows TUN mode.';
+
+  @override
+  String get editorTurnAddress => 'Node address';
+
+  @override
+  String get editorTurnHint => 'Host or host:port';
+
+  @override
+  String get editorTurnHelp =>
+      'Leave empty to use the node from VK. Without a port, the port from VK is used. For IPv6 with a port, use [address]:port.';
+
+  @override
+  String get editorDNSMode => 'DNS mode';
+
+  @override
+  String get editorDNSAuto => 'Automatic';
+
+  @override
+  String get editorDNSPlain => 'Plain DNS';
+
+  @override
+  String get editorDNSServers => 'Custom DNS servers';
+
+  @override
+  String get editorDNSHelp =>
+      'DNS for FreeTurn connections. Enter IP[:port] addresses separated by commas.';
+
+  @override
+  String get editorDoHHelp =>
+      'DoH uses the engine’s built-in servers. Custom DoH URLs are not supported.';
+
+  @override
+  String get editorTunDNSHelp =>
+      'TUN mode uses DNS selected by the application. Profile DNS applies in local and system proxy modes.';
+
+  @override
+  String get editorObfuscation => 'Obfuscation';
+
+  @override
+  String get editorObfuscationOff => 'Disabled in this profile';
+
+  @override
+  String get editorPacing => 'Pacing, ms';
+
+  @override
+  String get editorPacingHelp =>
+      'Interval between outgoing packets. 0 disables pacing.';
+
+  @override
+  String get editorPacingDisabled =>
+      'Available when obfuscation is enabled in the imported profile.';
+
+  @override
+  String get editorReconnect => 'Changes apply on the next connection.';
+
+  @override
+  String editorDefault(String value) {
+    return 'Default ($value)';
+  }
+
+  @override
+  String get editorInvalidStreams =>
+      'Enter 1–1024, or leave empty for the default.';
+
+  @override
+  String get editorInvalidLinks =>
+      'Enter at least one call link, without commas.';
+
+  @override
+  String get editorInvalidPacing => 'Enter 0–60000 milliseconds.';
 }
