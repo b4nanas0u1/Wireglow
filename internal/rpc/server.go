@@ -212,7 +212,7 @@ func (s *service) UpdateProfile(ctx context.Context, req *pb.ProfileEdits) (*pb.
 		return nil, rpcError(err)
 	}
 	name := strings.TrimSpace(req.GetName())
-	if name == "" || len([]rune(name)) > 80 || req.GetStreams() < 1 || req.GetStreamsPerCredential() < 1 {
+	if name == "" || len([]rune(name)) > 80 || req.GetStreams() < 0 || req.GetStreams() > 1024 || req.GetStreamsPerCredential() < 0 || req.GetStreamsPerCredential() > 1024 {
 		return nil, status.Error(codes.InvalidArgument, "name and stream counts must be valid")
 	}
 	p.Connection.Name = name
@@ -222,6 +222,9 @@ func (s *service) UpdateProfile(ctx context.Context, req *pb.ProfileEdits) (*pb.
 		links := make([]string, 0, len(req.GetCallLinks()))
 		for _, link := range req.GetCallLinks() {
 			if link = strings.TrimSpace(link); link != "" {
+				if strings.Contains(link, ",") {
+					return nil, status.Error(codes.InvalidArgument, "call links must not contain commas")
+				}
 				links = append(links, link)
 			}
 		}
@@ -232,6 +235,9 @@ func (s *service) UpdateProfile(ctx context.Context, req *pb.ProfileEdits) (*pb.
 			p.Connection.VK = &freeturn.VKSettings{}
 		}
 		p.Connection.VK.CallLinks = links
+	}
+	if err := applyAdvancedEdits(&p.Connection, req.GetAdvanced()); err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 	if err := s.backend.Profiles.Update(ctx, p); err != nil {
 		return nil, rpcError(err)

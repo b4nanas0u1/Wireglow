@@ -339,6 +339,7 @@ class ConnectModel extends ChangeNotifier {
     required List<String> callLinks,
     required int streams,
     required int streamsPerCredential,
+    ProfileAdvancedEdits? advanced,
   }) async {
     if (!available || commandPending || connecting || stopping) {
       throw const UiError(UiErrorCode.waitController);
@@ -352,6 +353,7 @@ class ConnectModel extends ChangeNotifier {
         callLinks: callLinks,
         streams: streams,
         streamsPerCredential: streamsPerCredential,
+        advanced: advanced,
       );
       profiles = await repository.profiles();
       selected = profiles.where((p) => p.id == id).firstOrNull;

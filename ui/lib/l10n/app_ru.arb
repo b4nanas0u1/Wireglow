@@ -134,5 +134,60 @@
   "lightTheme": "Светлая",
   "tunMode": "TUN",
   "tunHelpWindows": "Экспериментальный Windows TUN требует portable-сборку и повышение прав через UAC. Он переподключает сессию и использует прямой HTTPS bootstrap DNS. Другой активный VPN блокирует включение. Для TURN выберите транспорт TCP; UDP-трафик приложений поддерживается.",
-  "tunHelp": "TUN перехватывает IP-трафик. Включение переподключает сессию и использует 1.1.1.1 как прямой bootstrap DNS. Другой активный VPN блокирует включение."
+  "tunHelp": "TUN перехватывает IP-трафик. Включение переподключает сессию и использует 1.1.1.1 как прямой bootstrap DNS. Другой активный VPN блокирует включение.",
+  "editorTitle": "Редактор профиля",
+  "editorProfile": "Профиль",
+  "editorName": "Имя профиля",
+  "editorNameRequired": "Укажите имя профиля.",
+  "editorVK": "VK Звонки",
+  "editorCallLinks": "Ссылки звонков",
+  "editorCallLink": "Ссылка звонка {number}",
+  "editorRemoveLink": "Удалить ссылку звонка",
+  "editorAddLink": "Добавить ссылку",
+  "editorPerformance": "Производительность",
+  "editorStreams": "Потоки на звонок",
+  "editorCredentials": "Потоки на набор TURN-доступа",
+  "editorStreamsHelp": "Параллельные TURN-сессии для каждой ссылки.",
+  "editorCredentialsHelp": "Сессии с общими учётными данными от VK.",
+  "editorAdvanced": "Дополнительные настройки",
+  "editorVKAuth": "Авторизация VK",
+  "editorPlatform": "Тип устройства",
+  "editorCaptcha": "Ручная CAPTCHA",
+  "editorCaptchaHelp": "Решать в браузере вместо автоматического решения.",
+  "editorTransport": "Транспорт",
+  "editorUDPHelp": "UDP-транспорт недоступен в Windows TUN.",
+  "editorTurnAddress": "Адрес узла",
+  "editorTurnHint": "Хост или хост:порт",
+  "editorTurnHelp": "Оставьте пустым для выбора узла через VK. Без порта используется порт от VK. IPv6 с портом: [адрес]:порт.",
+  "editorDNSMode": "Режим DNS",
+  "editorDNSAuto": "Автоматически",
+  "editorDNSPlain": "Обычный DNS",
+  "editorDNSServers": "Свои DNS-серверы",
+  "editorDNSHelp": "DNS для соединений FreeTurn. Адреса IP[:порт], через запятую.",
+  "editorDoHHelp": "DoH использует встроенные серверы ядра. Свой URL DoH не поддерживается.",
+  "editorTunDNSHelp": "В TUN DNS выбирает приложение. DNS профиля применяется в локальном и системном прокси.",
+  "editorObfuscation": "Обфускация",
+  "editorObfuscationOff": "Выключена в этом профиле",
+  "editorPacing": "Пейсинг, мс",
+  "editorPacingHelp": "Интервал между отправками пакетов. 0 — без задержки.",
+  "editorPacingDisabled": "Доступен при включённой обфускации в импортированном профиле.",
+  "editorReconnect": "Изменения применятся при следующем подключении.",
+  "editorDefault": "По умолчанию ({value})",
+  "editorInvalidStreams": "Введите 1–1024 или оставьте пустым для значения по умолчанию.",
+  "editorInvalidLinks": "Укажите хотя бы одну ссылку звонка без запятых.",
+  "editorInvalidPacing": "Введите 0–60000 миллисекунд.",
+  "@editorCallLink": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "@editorDefault": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -18,7 +18,7 @@ func profileMessage(p profile.Profile) *pb.Profile {
 		Obfuscation: pb.Obfuscation_builder{Mode: c.Obfuscation.Mode, Key: c.Obfuscation.Key, TimingMs: int64(c.Obfuscation.TimingMs)}.Build(),
 	}
 	if c.VK != nil {
-		result.Vk = pb.VKSettings_builder{CallLinks: append([]string(nil), c.VK.CallLinks...), ManualCaptcha: c.VK.ManualCaptcha}.Build()
+		result.Vk = pb.VKSettings_builder{CallLinks: append([]string(nil), c.VK.CallLinks...), ManualCaptcha: c.VK.ManualCaptcha, Platform: c.VK.Platform, TurnAddress: c.VK.TurnAddress}.Build()
 	}
 	if c.KCP != nil {
 		k := c.KCP

@@ -99,6 +99,7 @@ Add or adjust tests for changed behavior. For intentional visual changes,
 inspect rendered results before updating golden files. Follow
 [the golden test instructions](ui/test/goldens/README.md); references are
 host-specific. Do not update goldens or relax assertions just to hide a failure.
+Create GUI reference mockups and golden screenshots in English.
 
 ## Generated files and dependencies
 

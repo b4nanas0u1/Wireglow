@@ -41,6 +41,36 @@ Future<void> main() async {
         profiles.single.peer != '127.0.0.1:56000') {
       throw StateError('Import/summary mismatch');
     }
+    final vkLink =
+        'freeturn://${base64Url.encode(utf8.encode(jsonEncode({'v': 1, 'name': 'Editor interop', 'provider': 'vk', 'peer': 'server.example:56000', 'vk': 'https://vk.ru/call/join/synthetic'}))).replaceAll('=', '')}';
+    final vkProfile = await repository.import(vkLink);
+    await repository.updateProfile(
+      id: vkProfile.id,
+      name: 'Edited interop',
+      callLinks: ['https://vk.ru/call/join/synthetic'],
+      streams: 0,
+      streamsPerCredential: 0,
+      advanced: ProfileAdvancedEdits(
+        turnTransport: 'tcp',
+        vkPlatform: 'mobile',
+        manualCaptcha: true,
+        turnAddress: '[2001:db8::1]:443',
+        dns: DNSSettings(mode: 'plain', servers: ['1.1.1.1:53']),
+      ),
+    );
+    final edited = (await repository.getProfile(vkProfile.id)).connection;
+    if (edited.vk.platform != 'mobile' ||
+        !edited.vk.manualCaptcha ||
+        edited.vk.turnAddress != '[2001:db8::1]:443' ||
+        edited.dns.servers.single != '1.1.1.1:53' ||
+        edited.streams.toInt() != 0 ||
+        edited.turnTransport != 'tcp') {
+      throw StateError(
+        'Profile editor settings did not survive Dart–Go round trip',
+      );
+    }
+    await repository.deleteProfile(vkProfile.id);
+    stdout.writeln('PASS: advanced profile edits survive Dart–Go round trip');
     await repository.connect(imported.id);
     await Future<void>.delayed(const Duration(milliseconds: 600));
     if ((await repository.snapshot()).activeMode !=
