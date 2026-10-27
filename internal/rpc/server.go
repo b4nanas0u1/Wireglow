@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"wireglow/internal/application/controller"
+	"wireglow/internal/application/profiletransfer"
 	"wireglow/internal/backend"
 	"wireglow/internal/domain/profile"
 	"wireglow/internal/domain/proxymode"
@@ -37,6 +38,7 @@ type Options struct {
 
 type service struct {
 	pb.UnimplementedControllerServiceServer
+	transfer *profiletransfer.Service
 	backend  *backend.Backend
 	options  Options
 	mu       sync.Mutex
@@ -53,7 +55,7 @@ func NewServer(b *backend.Backend, o Options) (*grpc.Server, error) {
 		return nil, errors.New("rpc: incomplete server options")
 	}
 	o.Token = append([]byte(nil), o.Token...)
-	s := &service{backend: b, options: o}
+	s := &service{backend: b, options: o, transfer: &profiletransfer.Service{Store: b.Profiles, Files: persistence.ProfileFiles{ProfilesDir: b.Profiles.Dir}}}
 	server := grpc.NewServer(
 		grpc.MaxRecvMsgSize(MaxMessageBytes), grpc.MaxSendMsgSize(MaxMessageBytes),
 		grpc.UnaryInterceptor(s.unaryAuth), grpc.StreamInterceptor(s.streamAuth),

@@ -189,5 +189,80 @@
         "type": "String"
       }
     }
+  },
+  "importProfiles": "Import profiles",
+  "exportProfiles": "Export profiles",
+  "importProfilesAction": "Import…",
+  "exportProfilesAction": "Export…",
+  "profileTransferHelp": "Transfer connection profiles between devices or keep a backup.",
+  "importProfilesSettingsHelp": "Review a Wireglow file and choose what to add.",
+  "exportProfilesSettingsHelp": "Save all profiles or select individual ones.",
+  "importProfilesHelp": "Restore profiles from a Wireglow export. Review the file before importing.",
+  "exportProfilesHelp": "Choose the profiles to save to a file.",
+  "profileFileType": "Wireglow profiles file (.json)",
+  "chooseProfileFile": "Choose file…",
+  "changeProfileFile": "Change",
+  "selectAllProfiles": "Select all",
+  "profileExportSecretsHelp": "Includes connection settings, keys and call links. Anyone with this file can use these connections.",
+  "profileImportReviewHelp": "Existing profiles are matched by ID. Replacing a profile applies on the next connection.",
+  "skipExistingProfile": "Skip existing",
+  "copyImportedProfile": "Create a copy",
+  "replaceExistingProfile": "Replace existing",
+  "profileArchiveInvalid": "Invalid Wireglow file, unsupported version or file too large (maximum 16 MiB and 1000 profiles).",
+  "profilePreviewExpired": "Preview expired or a session operation is running. Open the file again and review the profiles.",
+  "profileTransferFailed": "Could not complete the operation. Check file permissions and available disk space, then choose the file again.",
+  "profileImportPartial": "Some profiles were not imported. Saved profiles are listed below. Choose the file again to retry.",
+  "profileImportDone": "Imported",
+  "profileImportSkipped": "Skipped",
+  "profileImportChanged": "Changed after preview; not imported",
+  "profileImportFailed": "Could not save this profile",
+  "closeProfileTransfer": "Close",
+  "profileCount": "{count, plural, =0{No profiles selected} =1{1 profile} other{{count} profiles}}",
+  "@profileCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportProfileCount": "Export {count}",
+  "@exportProfileCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importProfileCount": "Import {count}",
+  "@importProfileCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profilesExported": "Profiles exported: {count}",
+  "@profilesExported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profilesImported": "Profiles imported: {count}",
+  "@profilesImported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileAlreadyExists": "Already saved as “{name}”",
+  "@profileAlreadyExists": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

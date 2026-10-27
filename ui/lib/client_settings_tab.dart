@@ -1,4 +1,5 @@
 import 'checked_popup_menu.dart';
+import 'profile_transfer_dialog.dart';
 
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, TargetPlatform;
@@ -330,6 +331,8 @@ class _ClientSettingsTabState extends State<ClientSettingsTab> {
                     ),
                   ],
                 ]),
+                const SizedBox(height: 20),
+                block(context, l.profiles, [ProfileTransferSettings(model: m)]),
                 const SizedBox(height: 20),
                 block(context, l.networkSettings, [
                   Text(l.addressesHelp),

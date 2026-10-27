@@ -20,22 +20,25 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ControllerService_GetSettings_FullMethodName     = "/wireglow.control.ControllerService/GetSettings"
-	ControllerService_SetSettings_FullMethodName     = "/wireglow.control.ControllerService/SetSettings"
-	ControllerService_GetCapabilities_FullMethodName = "/wireglow.control.ControllerService/GetCapabilities"
-	ControllerService_Hello_FullMethodName           = "/wireglow.control.ControllerService/Hello"
-	ControllerService_ListProfiles_FullMethodName    = "/wireglow.control.ControllerService/ListProfiles"
-	ControllerService_PreviewImport_FullMethodName   = "/wireglow.control.ControllerService/PreviewImport"
-	ControllerService_ImportProfile_FullMethodName   = "/wireglow.control.ControllerService/ImportProfile"
-	ControllerService_GetProfile_FullMethodName      = "/wireglow.control.ControllerService/GetProfile"
-	ControllerService_UpdateProfile_FullMethodName   = "/wireglow.control.ControllerService/UpdateProfile"
-	ControllerService_DeleteProfile_FullMethodName   = "/wireglow.control.ControllerService/DeleteProfile"
-	ControllerService_Connect_FullMethodName         = "/wireglow.control.ControllerService/Connect"
-	ControllerService_Disconnect_FullMethodName      = "/wireglow.control.ControllerService/Disconnect"
-	ControllerService_SwitchProxyMode_FullMethodName = "/wireglow.control.ControllerService/SwitchProxyMode"
-	ControllerService_GetSnapshot_FullMethodName     = "/wireglow.control.ControllerService/GetSnapshot"
-	ControllerService_CheckLatency_FullMethodName    = "/wireglow.control.ControllerService/CheckLatency"
-	ControllerService_WatchSnapshots_FullMethodName  = "/wireglow.control.ControllerService/WatchSnapshots"
+	ControllerService_GetSettings_FullMethodName        = "/wireglow.control.ControllerService/GetSettings"
+	ControllerService_SetSettings_FullMethodName        = "/wireglow.control.ControllerService/SetSettings"
+	ControllerService_GetCapabilities_FullMethodName    = "/wireglow.control.ControllerService/GetCapabilities"
+	ControllerService_Hello_FullMethodName              = "/wireglow.control.ControllerService/Hello"
+	ControllerService_ListProfiles_FullMethodName       = "/wireglow.control.ControllerService/ListProfiles"
+	ControllerService_PreviewImport_FullMethodName      = "/wireglow.control.ControllerService/PreviewImport"
+	ControllerService_ImportProfile_FullMethodName      = "/wireglow.control.ControllerService/ImportProfile"
+	ControllerService_GetProfile_FullMethodName         = "/wireglow.control.ControllerService/GetProfile"
+	ControllerService_UpdateProfile_FullMethodName      = "/wireglow.control.ControllerService/UpdateProfile"
+	ControllerService_ExportProfiles_FullMethodName     = "/wireglow.control.ControllerService/ExportProfiles"
+	ControllerService_PreviewProfileFile_FullMethodName = "/wireglow.control.ControllerService/PreviewProfileFile"
+	ControllerService_ImportProfileFile_FullMethodName  = "/wireglow.control.ControllerService/ImportProfileFile"
+	ControllerService_DeleteProfile_FullMethodName      = "/wireglow.control.ControllerService/DeleteProfile"
+	ControllerService_Connect_FullMethodName            = "/wireglow.control.ControllerService/Connect"
+	ControllerService_Disconnect_FullMethodName         = "/wireglow.control.ControllerService/Disconnect"
+	ControllerService_SwitchProxyMode_FullMethodName    = "/wireglow.control.ControllerService/SwitchProxyMode"
+	ControllerService_GetSnapshot_FullMethodName        = "/wireglow.control.ControllerService/GetSnapshot"
+	ControllerService_CheckLatency_FullMethodName       = "/wireglow.control.ControllerService/CheckLatency"
+	ControllerService_WatchSnapshots_FullMethodName     = "/wireglow.control.ControllerService/WatchSnapshots"
 )
 
 // ControllerServiceClient is the client API for ControllerService service.
@@ -54,6 +57,9 @@ type ControllerServiceClient interface {
 	// Явное чтение для редактора: ответ содержит секреты, не предназначен для логов.
 	GetProfile(ctx context.Context, in *ProfileRequest, opts ...grpc.CallOption) (*Profile, error)
 	UpdateProfile(ctx context.Context, in *ProfileEdits, opts ...grpc.CallOption) (*ProfileSummary, error)
+	ExportProfiles(ctx context.Context, in *ExportProfilesRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	PreviewProfileFile(ctx context.Context, in *ProfileFileRequest, opts ...grpc.CallOption) (*ProfileFilePreview, error)
+	ImportProfileFile(ctx context.Context, in *ImportProfileFileRequest, opts ...grpc.CallOption) (*ImportProfileFileResponse, error)
 	DeleteProfile(ctx context.Context, in *ProfileRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ACK означает принятие запуска; результат и прогресс читаются из snapshots.
 	Connect(ctx context.Context, in *ConnectRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -167,6 +173,36 @@ func (c *controllerServiceClient) UpdateProfile(ctx context.Context, in *Profile
 	return out, nil
 }
 
+func (c *controllerServiceClient) ExportProfiles(ctx context.Context, in *ExportProfilesRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ControllerService_ExportProfiles_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *controllerServiceClient) PreviewProfileFile(ctx context.Context, in *ProfileFileRequest, opts ...grpc.CallOption) (*ProfileFilePreview, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProfileFilePreview)
+	err := c.cc.Invoke(ctx, ControllerService_PreviewProfileFile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *controllerServiceClient) ImportProfileFile(ctx context.Context, in *ImportProfileFileRequest, opts ...grpc.CallOption) (*ImportProfileFileResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ImportProfileFileResponse)
+	err := c.cc.Invoke(ctx, ControllerService_ImportProfileFile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *controllerServiceClient) DeleteProfile(ctx context.Context, in *ProfileRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
@@ -262,6 +298,9 @@ type ControllerServiceServer interface {
 	// Явное чтение для редактора: ответ содержит секреты, не предназначен для логов.
 	GetProfile(context.Context, *ProfileRequest) (*Profile, error)
 	UpdateProfile(context.Context, *ProfileEdits) (*ProfileSummary, error)
+	ExportProfiles(context.Context, *ExportProfilesRequest) (*emptypb.Empty, error)
+	PreviewProfileFile(context.Context, *ProfileFileRequest) (*ProfileFilePreview, error)
+	ImportProfileFile(context.Context, *ImportProfileFileRequest) (*ImportProfileFileResponse, error)
 	DeleteProfile(context.Context, *ProfileRequest) (*emptypb.Empty, error)
 	// ACK означает принятие запуска; результат и прогресс читаются из snapshots.
 	Connect(context.Context, *ConnectRequest) (*emptypb.Empty, error)
@@ -311,6 +350,15 @@ func (UnimplementedControllerServiceServer) GetProfile(context.Context, *Profile
 }
 func (UnimplementedControllerServiceServer) UpdateProfile(context.Context, *ProfileEdits) (*ProfileSummary, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateProfile not implemented")
+}
+func (UnimplementedControllerServiceServer) ExportProfiles(context.Context, *ExportProfilesRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method ExportProfiles not implemented")
+}
+func (UnimplementedControllerServiceServer) PreviewProfileFile(context.Context, *ProfileFileRequest) (*ProfileFilePreview, error) {
+	return nil, status.Error(codes.Unimplemented, "method PreviewProfileFile not implemented")
+}
+func (UnimplementedControllerServiceServer) ImportProfileFile(context.Context, *ImportProfileFileRequest) (*ImportProfileFileResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ImportProfileFile not implemented")
 }
 func (UnimplementedControllerServiceServer) DeleteProfile(context.Context, *ProfileRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteProfile not implemented")
@@ -516,6 +564,60 @@ func _ControllerService_UpdateProfile_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ControllerService_ExportProfiles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExportProfilesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ControllerServiceServer).ExportProfiles(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ControllerService_ExportProfiles_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ControllerServiceServer).ExportProfiles(ctx, req.(*ExportProfilesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ControllerService_PreviewProfileFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProfileFileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ControllerServiceServer).PreviewProfileFile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ControllerService_PreviewProfileFile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ControllerServiceServer).PreviewProfileFile(ctx, req.(*ProfileFileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ControllerService_ImportProfileFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ImportProfileFileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ControllerServiceServer).ImportProfileFile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ControllerService_ImportProfileFile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ControllerServiceServer).ImportProfileFile(ctx, req.(*ImportProfileFileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ControllerService_DeleteProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ProfileRequest)
 	if err := dec(in); err != nil {
@@ -677,6 +779,18 @@ var ControllerService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateProfile",
 			Handler:    _ControllerService_UpdateProfile_Handler,
+		},
+		{
+			MethodName: "ExportProfiles",
+			Handler:    _ControllerService_ExportProfiles_Handler,
+		},
+		{
+			MethodName: "PreviewProfileFile",
+			Handler:    _ControllerService_PreviewProfileFile_Handler,
+		},
+		{
+			MethodName: "ImportProfileFile",
+			Handler:    _ControllerService_ImportProfileFile_Handler,
 		},
 		{
 			MethodName: "DeleteProfile",

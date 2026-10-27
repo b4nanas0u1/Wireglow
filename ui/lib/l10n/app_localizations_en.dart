@@ -488,4 +488,132 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editorInvalidPacing => 'Enter 0–60000 milliseconds.';
+
+  @override
+  String get importProfiles => 'Import profiles';
+
+  @override
+  String get exportProfiles => 'Export profiles';
+
+  @override
+  String get importProfilesAction => 'Import…';
+
+  @override
+  String get exportProfilesAction => 'Export…';
+
+  @override
+  String get profileTransferHelp =>
+      'Transfer connection profiles between devices or keep a backup.';
+
+  @override
+  String get importProfilesSettingsHelp =>
+      'Review a Wireglow file and choose what to add.';
+
+  @override
+  String get exportProfilesSettingsHelp =>
+      'Save all profiles or select individual ones.';
+
+  @override
+  String get importProfilesHelp =>
+      'Restore profiles from a Wireglow export. Review the file before importing.';
+
+  @override
+  String get exportProfilesHelp => 'Choose the profiles to save to a file.';
+
+  @override
+  String get profileFileType => 'Wireglow profiles file (.json)';
+
+  @override
+  String get chooseProfileFile => 'Choose file…';
+
+  @override
+  String get changeProfileFile => 'Change';
+
+  @override
+  String get selectAllProfiles => 'Select all';
+
+  @override
+  String get profileExportSecretsHelp =>
+      'Includes connection settings, keys and call links. Anyone with this file can use these connections.';
+
+  @override
+  String get profileImportReviewHelp =>
+      'Existing profiles are matched by ID. Replacing a profile applies on the next connection.';
+
+  @override
+  String get skipExistingProfile => 'Skip existing';
+
+  @override
+  String get copyImportedProfile => 'Create a copy';
+
+  @override
+  String get replaceExistingProfile => 'Replace existing';
+
+  @override
+  String get profileArchiveInvalid =>
+      'Invalid Wireglow file, unsupported version or file too large (maximum 16 MiB and 1000 profiles).';
+
+  @override
+  String get profilePreviewExpired =>
+      'Preview expired or a session operation is running. Open the file again and review the profiles.';
+
+  @override
+  String get profileTransferFailed =>
+      'Could not complete the operation. Check file permissions and available disk space, then choose the file again.';
+
+  @override
+  String get profileImportPartial =>
+      'Some profiles were not imported. Saved profiles are listed below. Choose the file again to retry.';
+
+  @override
+  String get profileImportDone => 'Imported';
+
+  @override
+  String get profileImportSkipped => 'Skipped';
+
+  @override
+  String get profileImportChanged => 'Changed after preview; not imported';
+
+  @override
+  String get profileImportFailed => 'Could not save this profile';
+
+  @override
+  String get closeProfileTransfer => 'Close';
+
+  @override
+  String profileCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count profiles',
+      one: '1 profile',
+      zero: 'No profiles selected',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String exportProfileCount(int count) {
+    return 'Export $count';
+  }
+
+  @override
+  String importProfileCount(int count) {
+    return 'Import $count';
+  }
+
+  @override
+  String profilesExported(int count) {
+    return 'Profiles exported: $count';
+  }
+
+  @override
+  String profilesImported(int count) {
+    return 'Profiles imported: $count';
+  }
+
+  @override
+  String profileAlreadyExists(String name) {
+    return 'Already saved as “$name”';
+  }
 }

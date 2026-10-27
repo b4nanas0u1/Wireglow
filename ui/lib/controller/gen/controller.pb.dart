@@ -1924,6 +1924,541 @@ class Latency extends $pb.GeneratedMessage {
   void clearError() => $_clearField(5);
 }
 
+/// Transfer uses user-selected local paths; archive contents never enter summaries.
+class ExportProfilesRequest extends $pb.GeneratedMessage {
+  factory ExportProfilesRequest({
+    $core.Iterable<$core.String>? ids,
+    $core.String? path,
+  }) {
+    final result = ExportProfilesRequest._();
+    if (ids != null) result.ids.addAll(ids);
+    if (path != null) result.path = path;
+    return result;
+  }
+
+  ExportProfilesRequest._();
+
+  factory ExportProfilesRequest.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      ExportProfilesRequest()..mergeFromBuffer(data, registry);
+  factory ExportProfilesRequest.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      ExportProfilesRequest()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'ExportProfilesRequest',
+      package:
+          const $pb.PackageName(_omitMessageNames ? '' : 'wireglow.control'),
+      createEmptyInstance: ExportProfilesRequest.$_createMessage)
+    ..pPS(1, _omitFieldNames ? '' : 'ids')
+    ..aOS(2, _omitFieldNames ? '' : 'path')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ExportProfilesRequest clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ExportProfilesRequest copyWith(
+          void Function(ExportProfilesRequest) updates) =>
+      super.copyWith((message) => updates(message as ExportProfilesRequest))
+          as ExportProfilesRequest;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  @$core.Deprecated(
+      'Use ExportProfilesRequest() / ExportProfilesRequest.new instead')
+  static ExportProfilesRequest create() => ExportProfilesRequest._();
+  static $pb.GeneratedMessage $_createMessage() => ExportProfilesRequest._();
+  @$core.override
+  ExportProfilesRequest createEmptyInstance() => ExportProfilesRequest._();
+  @$core.pragma('dart2js:noInline')
+  static ExportProfilesRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ExportProfilesRequest>(
+          ExportProfilesRequest.$_createMessage);
+  static ExportProfilesRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $pb.PbList<$core.String> get ids => $_getList(0);
+
+  @$pb.TagNumber(2)
+  $core.String get path => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set path($core.String value) => $_setString(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasPath() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearPath() => $_clearField(2);
+}
+
+class ProfileFileRequest extends $pb.GeneratedMessage {
+  factory ProfileFileRequest({
+    $core.String? path,
+  }) {
+    final result = ProfileFileRequest._();
+    if (path != null) result.path = path;
+    return result;
+  }
+
+  ProfileFileRequest._();
+
+  factory ProfileFileRequest.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      ProfileFileRequest()..mergeFromBuffer(data, registry);
+  factory ProfileFileRequest.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      ProfileFileRequest()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'ProfileFileRequest',
+      package:
+          const $pb.PackageName(_omitMessageNames ? '' : 'wireglow.control'),
+      createEmptyInstance: ProfileFileRequest.$_createMessage)
+    ..aOS(1, _omitFieldNames ? '' : 'path')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ProfileFileRequest clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ProfileFileRequest copyWith(void Function(ProfileFileRequest) updates) =>
+      super.copyWith((message) => updates(message as ProfileFileRequest))
+          as ProfileFileRequest;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  @$core.Deprecated('Use ProfileFileRequest() / ProfileFileRequest.new instead')
+  static ProfileFileRequest create() => ProfileFileRequest._();
+  static $pb.GeneratedMessage $_createMessage() => ProfileFileRequest._();
+  @$core.override
+  ProfileFileRequest createEmptyInstance() => ProfileFileRequest._();
+  @$core.pragma('dart2js:noInline')
+  static ProfileFileRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ProfileFileRequest>(
+          ProfileFileRequest.$_createMessage);
+  static ProfileFileRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get path => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set path($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasPath() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearPath() => $_clearField(1);
+}
+
+class ProfileFileEntry extends $pb.GeneratedMessage {
+  factory ProfileFileEntry({
+    ProfileSummary? profile,
+    ProfileSummary? existing,
+  }) {
+    final result = ProfileFileEntry._();
+    if (profile != null) result.profile = profile;
+    if (existing != null) result.existing = existing;
+    return result;
+  }
+
+  ProfileFileEntry._();
+
+  factory ProfileFileEntry.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      ProfileFileEntry()..mergeFromBuffer(data, registry);
+  factory ProfileFileEntry.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      ProfileFileEntry()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'ProfileFileEntry',
+      package:
+          const $pb.PackageName(_omitMessageNames ? '' : 'wireglow.control'),
+      createEmptyInstance: ProfileFileEntry.$_createMessage)
+    ..aOM<ProfileSummary>(1, _omitFieldNames ? '' : 'profile',
+        subBuilder: ProfileSummary.$_createMessage)
+    ..aOM<ProfileSummary>(2, _omitFieldNames ? '' : 'existing',
+        subBuilder: ProfileSummary.$_createMessage)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ProfileFileEntry clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ProfileFileEntry copyWith(void Function(ProfileFileEntry) updates) =>
+      super.copyWith((message) => updates(message as ProfileFileEntry))
+          as ProfileFileEntry;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  @$core.Deprecated('Use ProfileFileEntry() / ProfileFileEntry.new instead')
+  static ProfileFileEntry create() => ProfileFileEntry._();
+  static $pb.GeneratedMessage $_createMessage() => ProfileFileEntry._();
+  @$core.override
+  ProfileFileEntry createEmptyInstance() => ProfileFileEntry._();
+  @$core.pragma('dart2js:noInline')
+  static ProfileFileEntry getDefault() =>
+      _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ProfileFileEntry>(
+          ProfileFileEntry.$_createMessage);
+  static ProfileFileEntry? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  ProfileSummary get profile => $_getN(0);
+  @$pb.TagNumber(1)
+  set profile(ProfileSummary value) => $_setField(1, value);
+  @$pb.TagNumber(1)
+  $core.bool hasProfile() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearProfile() => $_clearField(1);
+  @$pb.TagNumber(1)
+  ProfileSummary ensureProfile() => $_ensure(0);
+
+  @$pb.TagNumber(2)
+  ProfileSummary get existing => $_getN(1);
+  @$pb.TagNumber(2)
+  set existing(ProfileSummary value) => $_setField(2, value);
+  @$pb.TagNumber(2)
+  $core.bool hasExisting() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearExisting() => $_clearField(2);
+  @$pb.TagNumber(2)
+  ProfileSummary ensureExisting() => $_ensure(1);
+}
+
+class ProfileFilePreview extends $pb.GeneratedMessage {
+  factory ProfileFilePreview({
+    $core.String? token,
+    $core.Iterable<ProfileFileEntry>? entries,
+  }) {
+    final result = ProfileFilePreview._();
+    if (token != null) result.token = token;
+    if (entries != null) result.entries.addAll(entries);
+    return result;
+  }
+
+  ProfileFilePreview._();
+
+  factory ProfileFilePreview.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      ProfileFilePreview()..mergeFromBuffer(data, registry);
+  factory ProfileFilePreview.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      ProfileFilePreview()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'ProfileFilePreview',
+      package:
+          const $pb.PackageName(_omitMessageNames ? '' : 'wireglow.control'),
+      createEmptyInstance: ProfileFilePreview.$_createMessage)
+    ..aOS(1, _omitFieldNames ? '' : 'token')
+    ..pPM<ProfileFileEntry>(2, _omitFieldNames ? '' : 'entries',
+        subBuilder: ProfileFileEntry.$_createMessage)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ProfileFilePreview clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ProfileFilePreview copyWith(void Function(ProfileFilePreview) updates) =>
+      super.copyWith((message) => updates(message as ProfileFilePreview))
+          as ProfileFilePreview;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  @$core.Deprecated('Use ProfileFilePreview() / ProfileFilePreview.new instead')
+  static ProfileFilePreview create() => ProfileFilePreview._();
+  static $pb.GeneratedMessage $_createMessage() => ProfileFilePreview._();
+  @$core.override
+  ProfileFilePreview createEmptyInstance() => ProfileFilePreview._();
+  @$core.pragma('dart2js:noInline')
+  static ProfileFilePreview getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ProfileFilePreview>(
+          ProfileFilePreview.$_createMessage);
+  static ProfileFilePreview? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get token => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set token($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasToken() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearToken() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $pb.PbList<ProfileFileEntry> get entries => $_getList(1);
+}
+
+class ProfileImportChoice extends $pb.GeneratedMessage {
+  factory ProfileImportChoice({
+    $core.int? index,
+    ProfileImportAction? action,
+  }) {
+    final result = ProfileImportChoice._();
+    if (index != null) result.index = index;
+    if (action != null) result.action = action;
+    return result;
+  }
+
+  ProfileImportChoice._();
+
+  factory ProfileImportChoice.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      ProfileImportChoice()..mergeFromBuffer(data, registry);
+  factory ProfileImportChoice.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      ProfileImportChoice()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'ProfileImportChoice',
+      package:
+          const $pb.PackageName(_omitMessageNames ? '' : 'wireglow.control'),
+      createEmptyInstance: ProfileImportChoice.$_createMessage)
+    ..aI(1, _omitFieldNames ? '' : 'index', fieldType: $pb.PbFieldType.OU3)
+    ..aE<ProfileImportAction>(2, _omitFieldNames ? '' : 'action',
+        enumValues: ProfileImportAction.values)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ProfileImportChoice clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ProfileImportChoice copyWith(void Function(ProfileImportChoice) updates) =>
+      super.copyWith((message) => updates(message as ProfileImportChoice))
+          as ProfileImportChoice;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  @$core
+      .Deprecated('Use ProfileImportChoice() / ProfileImportChoice.new instead')
+  static ProfileImportChoice create() => ProfileImportChoice._();
+  static $pb.GeneratedMessage $_createMessage() => ProfileImportChoice._();
+  @$core.override
+  ProfileImportChoice createEmptyInstance() => ProfileImportChoice._();
+  @$core.pragma('dart2js:noInline')
+  static ProfileImportChoice getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ProfileImportChoice>(
+          ProfileImportChoice.$_createMessage);
+  static ProfileImportChoice? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.int get index => $_getIZ(0);
+  @$pb.TagNumber(1)
+  set index($core.int value) => $_setUnsignedInt32(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasIndex() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearIndex() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  ProfileImportAction get action => $_getN(1);
+  @$pb.TagNumber(2)
+  set action(ProfileImportAction value) => $_setField(2, value);
+  @$pb.TagNumber(2)
+  $core.bool hasAction() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearAction() => $_clearField(2);
+}
+
+class ImportProfileFileRequest extends $pb.GeneratedMessage {
+  factory ImportProfileFileRequest({
+    $core.String? token,
+    $core.Iterable<ProfileImportChoice>? choices,
+  }) {
+    final result = ImportProfileFileRequest._();
+    if (token != null) result.token = token;
+    if (choices != null) result.choices.addAll(choices);
+    return result;
+  }
+
+  ImportProfileFileRequest._();
+
+  factory ImportProfileFileRequest.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      ImportProfileFileRequest()..mergeFromBuffer(data, registry);
+  factory ImportProfileFileRequest.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      ImportProfileFileRequest()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'ImportProfileFileRequest',
+      package:
+          const $pb.PackageName(_omitMessageNames ? '' : 'wireglow.control'),
+      createEmptyInstance: ImportProfileFileRequest.$_createMessage)
+    ..aOS(1, _omitFieldNames ? '' : 'token')
+    ..pPM<ProfileImportChoice>(2, _omitFieldNames ? '' : 'choices',
+        subBuilder: ProfileImportChoice.$_createMessage)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ImportProfileFileRequest clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ImportProfileFileRequest copyWith(
+          void Function(ImportProfileFileRequest) updates) =>
+      super.copyWith((message) => updates(message as ImportProfileFileRequest))
+          as ImportProfileFileRequest;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  @$core.Deprecated(
+      'Use ImportProfileFileRequest() / ImportProfileFileRequest.new instead')
+  static ImportProfileFileRequest create() => ImportProfileFileRequest._();
+  static $pb.GeneratedMessage $_createMessage() => ImportProfileFileRequest._();
+  @$core.override
+  ImportProfileFileRequest createEmptyInstance() =>
+      ImportProfileFileRequest._();
+  @$core.pragma('dart2js:noInline')
+  static ImportProfileFileRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ImportProfileFileRequest>(
+          ImportProfileFileRequest.$_createMessage);
+  static ImportProfileFileRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get token => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set token($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasToken() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearToken() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $pb.PbList<ProfileImportChoice> get choices => $_getList(1);
+}
+
+/// Status is imported, skipped, changed or failed. Never contains an underlying error.
+class ProfileImportResult extends $pb.GeneratedMessage {
+  factory ProfileImportResult({
+    $core.int? index,
+    $core.String? status,
+  }) {
+    final result = ProfileImportResult._();
+    if (index != null) result.index = index;
+    if (status != null) result.status = status;
+    return result;
+  }
+
+  ProfileImportResult._();
+
+  factory ProfileImportResult.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      ProfileImportResult()..mergeFromBuffer(data, registry);
+  factory ProfileImportResult.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      ProfileImportResult()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'ProfileImportResult',
+      package:
+          const $pb.PackageName(_omitMessageNames ? '' : 'wireglow.control'),
+      createEmptyInstance: ProfileImportResult.$_createMessage)
+    ..aI(1, _omitFieldNames ? '' : 'index', fieldType: $pb.PbFieldType.OU3)
+    ..aOS(2, _omitFieldNames ? '' : 'status')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ProfileImportResult clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ProfileImportResult copyWith(void Function(ProfileImportResult) updates) =>
+      super.copyWith((message) => updates(message as ProfileImportResult))
+          as ProfileImportResult;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  @$core
+      .Deprecated('Use ProfileImportResult() / ProfileImportResult.new instead')
+  static ProfileImportResult create() => ProfileImportResult._();
+  static $pb.GeneratedMessage $_createMessage() => ProfileImportResult._();
+  @$core.override
+  ProfileImportResult createEmptyInstance() => ProfileImportResult._();
+  @$core.pragma('dart2js:noInline')
+  static ProfileImportResult getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ProfileImportResult>(
+          ProfileImportResult.$_createMessage);
+  static ProfileImportResult? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.int get index => $_getIZ(0);
+  @$pb.TagNumber(1)
+  set index($core.int value) => $_setUnsignedInt32(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasIndex() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearIndex() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get status => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set status($core.String value) => $_setString(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasStatus() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearStatus() => $_clearField(2);
+}
+
+class ImportProfileFileResponse extends $pb.GeneratedMessage {
+  factory ImportProfileFileResponse({
+    $core.Iterable<ProfileImportResult>? results,
+  }) {
+    final result = ImportProfileFileResponse._();
+    if (results != null) result.results.addAll(results);
+    return result;
+  }
+
+  ImportProfileFileResponse._();
+
+  factory ImportProfileFileResponse.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      ImportProfileFileResponse()..mergeFromBuffer(data, registry);
+  factory ImportProfileFileResponse.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      ImportProfileFileResponse()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'ImportProfileFileResponse',
+      package:
+          const $pb.PackageName(_omitMessageNames ? '' : 'wireglow.control'),
+      createEmptyInstance: ImportProfileFileResponse.$_createMessage)
+    ..pPM<ProfileImportResult>(1, _omitFieldNames ? '' : 'results',
+        subBuilder: ProfileImportResult.$_createMessage)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ImportProfileFileResponse clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ImportProfileFileResponse copyWith(
+          void Function(ImportProfileFileResponse) updates) =>
+      super.copyWith((message) => updates(message as ImportProfileFileResponse))
+          as ImportProfileFileResponse;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  @$core.Deprecated(
+      'Use ImportProfileFileResponse() / ImportProfileFileResponse.new instead')
+  static ImportProfileFileResponse create() => ImportProfileFileResponse._();
+  static $pb.GeneratedMessage $_createMessage() =>
+      ImportProfileFileResponse._();
+  @$core.override
+  ImportProfileFileResponse createEmptyInstance() =>
+      ImportProfileFileResponse._();
+  @$core.pragma('dart2js:noInline')
+  static ImportProfileFileResponse getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ImportProfileFileResponse>(
+          ImportProfileFileResponse.$_createMessage);
+  static ImportProfileFileResponse? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $pb.PbList<ProfileImportResult> get results => $_getList(0);
+}
+
 const $core.bool _omitFieldNames =
     $core.bool.fromEnvironment('protobuf.omit_field_names');
 const $core.bool _omitMessageNames =

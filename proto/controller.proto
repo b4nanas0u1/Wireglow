@@ -20,6 +20,9 @@ service ControllerService {
   // Явное чтение для редактора: ответ содержит секреты, не предназначен для логов.
   rpc GetProfile(ProfileRequest) returns (Profile);
   rpc UpdateProfile(ProfileEdits) returns (ProfileSummary);
+  rpc ExportProfiles(ExportProfilesRequest) returns (google.protobuf.Empty);
+  rpc PreviewProfileFile(ProfileFileRequest) returns (ProfileFilePreview);
+  rpc ImportProfileFile(ImportProfileFileRequest) returns (ImportProfileFileResponse);
   rpc DeleteProfile(ProfileRequest) returns (google.protobuf.Empty);
   // ACK означает принятие запуска; результат и прогресс читаются из snapshots.
   rpc Connect(ConnectRequest) returns (google.protobuf.Empty);
@@ -168,3 +171,21 @@ message Latency {
   int64 success_at = 4;
   string error = 5;
 }
+
+// Transfer uses user-selected local paths; archive contents never enter summaries.
+message ExportProfilesRequest { repeated string ids = 1; string path = 2; }
+message ProfileFileRequest { string path = 1; }
+message ProfileFileEntry { ProfileSummary profile = 1; ProfileSummary existing = 2; }
+message ProfileFilePreview { string token = 1; repeated ProfileFileEntry entries = 2; }
+enum ProfileImportAction {
+ PROFILE_IMPORT_ACTION_UNSPECIFIED = 0;
+ PROFILE_IMPORT_ACTION_ADD = 1;
+ PROFILE_IMPORT_ACTION_SKIP = 2;
+ PROFILE_IMPORT_ACTION_COPY = 3;
+ PROFILE_IMPORT_ACTION_REPLACE = 4;
+}
+message ProfileImportChoice { uint32 index = 1; ProfileImportAction action = 2; }
+message ImportProfileFileRequest { string token = 1; repeated ProfileImportChoice choices = 2; }
+// Status is imported, skipped, changed or failed. Never contains an underlying error.
+message ProfileImportResult { uint32 index = 1; string status = 2; }
+message ImportProfileFileResponse { repeated ProfileImportResult results = 1; }
