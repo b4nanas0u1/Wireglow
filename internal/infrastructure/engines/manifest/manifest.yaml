@@ -3,15 +3,15 @@
 engines:
   free-turn-proxy:
     repository: hackdiaz-dev/free-turn-proxy
-    version: "v4.0.3"
+    version: "v4.1.0"
     platforms:
       linux-amd64:
         asset: client-linux-amd64
-        sha256: ac9124bf61ac2e3fdc771a1c287ee39a9e5dbed11537482dddf0b8dbcdbf0396
+        sha256: 60e36fba59f24c8dd3872a384f51e884e3ea322ce2593f2d3564844ff2236947
         compression: none
       windows-amd64:
         asset: client-windows-amd64.exe
-        sha256: d8db214b01e1a3062c2b691899bdfaffbd7c052d2ff4b2f8333577c014bc13da
+        sha256: 401f430445906a99e22e8a89e6c893f06edb51637f5ff9808bf77a0d76b240af
         compression: none
   mihomo:
     repository: MetaCubeX/mihomo
